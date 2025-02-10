@@ -10,6 +10,6 @@ setcookie('user_id', '', time() - 3600, '/');
 setcookie('user_name', '', time() - 3600, '/');
 
 // Átirányítjuk a felhasználót a bejelentkezési oldalra
-header('Location: ../bejelentkezes/');
+header('Location: ../kezdolap/');
 exit;
 ?>

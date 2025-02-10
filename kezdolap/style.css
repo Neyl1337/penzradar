@@ -3,6 +3,18 @@ body {
     color: white;
     cursor: url("../kepek/cursor.ico"), default;
 }
+.kartya1 {
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 10px;
+}
+.kartya1 a{
+    color: rgb(255, 0, 0);
+    text-decoration: none;
+}
+.kartya1 h3 {
+    color: #ff0000;
+}
 .oldalsav {
     background-color: #1e1e1e;
     min-height: 100vh;
@@ -22,6 +34,7 @@ body {
     background-color: #1e1e1e;
     color: white;
     border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
 }
 .kartya b {
     color: #63ffbe;

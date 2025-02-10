@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Bejelentkezés</title>
+    <title>PénzRadar - Új jelszó</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -11,31 +11,23 @@
 <body>
     <div class="bejelentkezo-doboz">
         <h1>PénzRadar</h1>
-        <h5>Bejelentkezés</h5>
+        <h5>Új jelszó kérése</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
         <form id="login-form">
             <div class="mb-3">
-                <label for="nev" class="form-label">Név</label>
-                <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
+                <label for="email" class="form-label">Email cím</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email cím" required>
             </div>
-            <div class="mb-3">
-                <label for="jelszo" class="form-label">Jelszó</label>
-                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó" required>
-            </div>
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="emlekezzRam" name="emlekezzRam">
-                <label class="form-check-label" for="emlekezzRam">Név elmentése</label>
-            </div>
-            <button type="submit" class="btn btn-zold w-100">Bejelentkezés</button> <br> <br>
+            <button type="submit" class="btn btn-zold w-100">Kód kérése</button> <br> <br>
             <div class= "oldal">
                 <center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
             </div>
         </form>      
         <div class="almenet">
             <br>
-            <p>Elfelejtetted a jelszavadat? <a href="../ujjelszo/">Új jelszó kérése</a></p>
+            <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>
             <p>Nincs még fiókod? <a href="../regisztracio/">Regisztráció</a></p>
         </div>
     </div>

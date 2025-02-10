@@ -5,9 +5,9 @@ body {
     margin: 0;
     }
     .calendar {
-    background-color: #111111;
+    background-color: #1e1e1e;
     border-radius: 10px;
-    box-shadow: 0 0 30px #222222;
+    box-shadow: 0 0 15px #63ffbe;
     overflow: hidden;
     width: 300px;
     padding: 20px;

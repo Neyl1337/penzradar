@@ -11,17 +11,18 @@
 <body>
     <div class="regisztracios-doboz">
         <h1>PénzRadar</h1>
+        <h5>Regisztráció</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
         <form action="adatbazis_signup.php" method="POST" id="regForm">
             <div class="mb-3">
-                <label for="email" class="form-label">Email cím</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email cím" required>
-            </div>
-            <div class="mb-3">
                 <label for="nev" class="form-label">Név</label>
                 <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email cím</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email cím" required>
             </div>
             <div class="mb-3">
                 <label for="jelszo" class="form-label">Jelszó</label>
@@ -37,6 +38,10 @@
             </div>
             <button type="submit" id="regisztracio" class="btn btn-zold w-100">Regisztráció</button>
         </form>        
+        <div class= "oldal">
+            <br><center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
+            <br>
+        </div>
         <div class="almenet">
             <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>
         </div>
