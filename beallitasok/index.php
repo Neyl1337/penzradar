@@ -71,21 +71,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                 </header>
                 <div id="jelszovaltoztatas" style="visibility: hidden;">
                     <div class="jelszovaltoztatas">
-                        <form id="jelszovaltoztatasform">
-                            <div class="mb-3">
-                                <label for="jelszo" class="form-label">Régi jelszó</label>
-                                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Régi jelszó" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="jelszo" class="form-label">Új jelszó</label>
-                                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Új jelszó" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="jelszo" class="form-label">Új jelszó</label>
-                                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Új jelszó mégegyszer" required>
-                            </div>
-                            <button type="submit" class="btn btn-zold w-100">Megváltoztatom</button>
-                        </form>
+                        <a href="../ujjelszo/"><button class="btn btn-zold w-100">Jelszóváltoztatás</button></a>
                     </div>
                 </div>
             </main>

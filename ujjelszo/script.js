@@ -1,54 +1,30 @@
-window.onload = () => {
-    const elmentettNev = localStorage.getItem('nev');
-    const elmentettEmlekezzRam = localStorage.getItem('emlekezzRam') === 'true';
+document.getElementById('regForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const submitButton = document.querySelector('button[type="submit"]');
+    const uzenetElem = document.getElementById('Uzenet');
 
-    if (elmentettNev && elmentettEmlekezzRam) {
-        document.getElementById('nev').value = elmentettNev;
-        document.getElementById('emlekezzRam').checked = true;
-    }
-};
+    submitButton.disabled = true;
+    submitButton.innerText = "Kérlek várj...";
 
-const form = document.getElementById('login-form');
-const uzenetElem = document.getElementById('Uzenet');
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const nev = document.getElementById('nev').value;
-    const jelszo = document.getElementById('jelszo').value;
-    const emlekezzRam = document.getElementById('emlekezzRam').checked;
-
-    const formData = new FormData(form);
-    const response = await fetch('adatbazis_login.php', {
+    const response = await fetch('adatbazis_signup.php', {
         method: 'POST',
         body: formData
     });
 
     const result = await response.json();
 
-    if (result.siker) {
-        uzenetElem.style.display = 'block';
-        uzenetElem.style.color = '#90EE90';
-        uzenetElem.querySelector('p').textContent = 'Sikeres bejelentkezés!';
+    uzenetElem.style.display = 'block';
+    uzenetElem.querySelector('p').textContent = result.message;
+    uzenetElem.style.color = result.success ? '#90EE90' : '#FF7F7F';
 
-        if (emlekezzRam) {
-            localStorage.setItem('nev', nev);
-            localStorage.setItem('emlekezzRam', 'true');
+    setTimeout(() => {
+        if (result.success) {
+            window.location.href = result.redirect;
         } else {
-            localStorage.removeItem('nev');
-            localStorage.removeItem('emlekezzRam');
-        }
-
-        setTimeout(() => {
-            window.location.href = result.redirect_url;
-        }, 1000);
-    } else {
-        uzenetElem.style.display = 'block';
-        uzenetElem.style.color = '#FF7F7F';
-        uzenetElem.querySelector('p').textContent = result.uzenet;
-
-        setTimeout(() => {
+            submitButton.disabled = false;
+            submitButton.innerText = "Kód küldése";
             uzenetElem.style.display = 'none';
-        }, 3000);
-    }
+        }
+    }, 1500);
 });

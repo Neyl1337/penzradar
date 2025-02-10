@@ -1,24 +1,31 @@
 <?php
 require_once '../adatbazis.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../PHPMailer/Exception.php';
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
+
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nev = $_POST['nev'] ?? '';
     $email = $_POST['email'] ?? '';
     $jelszo = $_POST['jelszo'] ?? '';
-    $jelszoMegerosites = $_POST['jelszo_megerosites'] ?? '';
+    $jelszo_megerosites = $_POST['jelszo_megerosites'] ?? '';
     $aszf = $_POST['aszf'] ?? '';
 
-    if (empty($nev) || empty($email) || empty($jelszo) || empty($jelszoMegerosites) || empty($aszf)) {
+    if (empty($nev) || empty($email) || empty($jelszo) || empty($jelszo_megerosites) || empty($aszf)) {
         echo json_encode(["success" => false, "message" => "Minden mező kitöltése kötelező.", "type" => "error"]);
         exit;
     }
 
-    if ($jelszo !== $jelszoMegerosites) {
+    if ($jelszo !== $jelszo_megerosites) {
         echo json_encode(["success" => false, "message" => "A két jelszó nem egyezik.", "type" => "error"]);
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match("/^[^@]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/", $email)) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(["success" => false, "message" => "Az email cím nem érvényes.", "type" => "error"]);
         exit;
     }
@@ -28,45 +35,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $hashedPassword = password_hash($jelszo, PASSWORD_DEFAULT);
-    $rang = "Felhasználó";
-
-    // Ellenőrizzük, hogy az email és a felhasználónév már létezik-e
-    $stmtEmail = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE email = ?");
-    $stmtEmail->execute([$email]);
-    $emailExists = $stmtEmail->fetchColumn() > 0;
-
-    $stmtNev = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE nev = ?");
-    $stmtNev->execute([$nev]);
-    $nevExists = $stmtNev->fetchColumn() > 0;
-
-    if ($emailExists && $nevExists) {
-        echo json_encode(["success" => false, "message" => "A megadott név és email már használatban van.", "type" => "error"]);
+    if (!preg_match("/^[a-zA-Z0-9]+$/", $nev)) {
+        echo json_encode(["success" => false, "message" => "A név csak betűkből és számokból állhat.", "type" => "error"]);
         exit;
     }
 
-    if ($emailExists) {
+    $hashedPassword = password_hash($jelszo, PASSWORD_DEFAULT);
+    
+    $stmtEmail = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE email = ?");
+    $stmtEmail->execute([$email]);
+    if ($stmtEmail->fetchColumn() > 0) {
         echo json_encode(["success" => false, "message" => "Az email cím már használatban van.", "type" => "error"]);
         exit;
     }
 
-    if ($nevExists) {
+    $stmtNev = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE nev = ?");
+    $stmtNev->execute([$nev]);
+    if ($stmtNev->fetchColumn() > 0) {
         echo json_encode(["success" => false, "message" => "A felhasználónév már használatban van.", "type" => "error"]);
         exit;
     }
 
-    $stmt = $pdo->prepare("INSERT INTO felhasznalok (nev, email, jelszo, rang) VALUES (?, ?, ?, ?)");
-    if ($stmt->execute([$nev, $email, $hashedPassword, $rang])) {
-        $felhasznaloId = $pdo->lastInsertId();
-        $stmtPersely = $pdo->prepare("INSERT INTO persely (felhasznalo_id, egyenleg) VALUES (?, ?)");
-        $alapertek = 0;
-        if ($stmtPersely->execute([$felhasznaloId, $alapertek])) {
-            echo json_encode(["success" => true, "message" => "Sikeres regisztráció", "type" => "success"]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Hiba történt", "type" => "error"]);
-        }
-    } else {
-        echo json_encode(["success" => false, "message" => "Hiba történt a regisztráció során.", "type" => "error"]);
+    $kod = rand(100000, 999999);
+    $_SESSION['reg_nev'] = $nev;
+    $_SESSION['reg_email'] = $email;
+    $_SESSION['reg_jelszo'] = $hashedPassword;
+    $_SESSION['reg_kod'] = $kod;
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'penzradar.hu@gmail.com';
+        $mail->Password = 'obvgamdjyxnqmwrv';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+    
+        $mail->setFrom('penzradar.hu@gmail.com', 'PénzRadar');
+        $mail->addAddress($email, $nev);
+        $mail->Subject = 'Regisztrációs kód';
+        $mail->CharSet = 'UTF-8';
+        $mail->Body = "Kedves $nev,\n\nA regisztráció befejezéséhez használd ezt a kódot: $kod\n\nÜdvözlettel, PénzRadar csapata";
+        $mail->send();
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "message" => "Hiba történt az email küldése során.", "type" => "error"]);
+        exit;
     }
+    
+
+    echo json_encode(["success" => true, "message" => "Kód elküldve!", "redirect" => "megerosites.php"]);
 }
-?>

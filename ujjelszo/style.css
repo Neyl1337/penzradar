@@ -15,10 +15,10 @@ body {
     text-decoration: none;
     text-align: center;
 }
-a:hover{
+.oldal a:hover{
     color: #63ffbe;
 }
-.bejelentkezo-doboz {
+.regisztracios-doboz {
     background-color: #2b2b2b;
     border-radius: 12px;
     padding: 20px;
@@ -26,13 +26,13 @@ a:hover{
     max-width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
-.bejelentkezo-doboz h1 {
+.regisztracios-doboz h1 {
     color: #63ffbe;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.bejelentkezo-doboz h5 {
+.regisztracios-doboz h5 {
     color: #ffffff;
     text-align: center;
     margin-bottom: 20px;
@@ -54,6 +54,11 @@ a:hover{
     border: none;
 }
 
+a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+
 .btn-zold:hover {
     background-color: #63ffbe;
     color: #ffffff;
@@ -66,6 +71,7 @@ a:hover{
     color: #63ffbe;
     text-decoration: none;
 }
+
 .almenet a:hover {
     text-decoration: underline;
 }

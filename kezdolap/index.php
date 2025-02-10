@@ -3,7 +3,6 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, p.egyenleg 
@@ -23,7 +22,6 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
@@ -73,25 +71,54 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <div class="row g-4">
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Eddigi költés</h5>
+                                <h5>Napi bevétel</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Átlagos költés</h5>
+                                <h5>Havi bevétel</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Maradék összeg</h5>
+                                <h5>Átlagos bevétel</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Legnagyobb költés</h5>
+                                <h5>Legnagyobb bevétel</h5>
+                                <b>0 Ft</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="kartya p-3 text-center">
+                                <h5>Napi kiadás</h5>
+                                <b>0 Ft</b>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="kartya p-3 text-center">
+                                <h5>Havi kiadás</h5>
+                                <b>0 Ft</b>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="kartya p-3 text-center">
+                                <h5>Átlagos kiadás</h5>
+                                <b>0 Ft</b>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="kartya p-3 text-center">
+                                <h5>Legnagyobb kiadás</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>

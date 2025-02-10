@@ -9,28 +9,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="bejelentkezo-doboz">
+    <div class="regisztracios-doboz">
         <h1>PénzRadar</h1>
-        <h5>Új jelszó kérése</h5>
+        <h5>Új jelszó</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
-        <form id="login-form">
+        <form id="regForm" method="POST" action="adatbazis_signup.php">
             <div class="mb-3">
                 <label for="email" class="form-label">Email cím</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email cím" required>
             </div>
-            <button type="submit" class="btn btn-zold w-100">Kód kérése</button> <br> <br>
-            <div class= "oldal">
-                <center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
-            </div>
-        </form>      
-        <div class="almenet">
+            <button type="submit" id="regisztracio" class="btn btn-zold w-100">Kód küldése</button>
+        </form>        
+        <div class= "oldal">
+            <br><center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
             <br>
-            <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>
-            <p>Nincs még fiókod? <a href="../regisztracio/">Regisztráció</a></p>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

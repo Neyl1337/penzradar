@@ -1,29 +1,30 @@
-const form = document.querySelector('form');
-const uzenetElem = document.getElementById('Uzenet');
-form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Ne töltse újra az oldalt
-    const formData = new FormData(form);
+document.getElementById('regForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const submitButton = document.querySelector('button[type="submit"]');
+    const uzenetElem = document.getElementById('Uzenet');
 
-    const response = await fetch(form.action, {
+    submitButton.disabled = true;
+    submitButton.innerText = "Kérlek várj...";
+
+    const response = await fetch('adatbazis_signup.php', {
         method: 'POST',
-        body: formData,
+        body: formData
     });
 
     const result = await response.json();
-    if (result.success) {
-        uzenetElem.style.display = 'block';
-        uzenetElem.querySelector('p').textContent = result.message;
-        uzenetElem.style.color = '#90EE90';
-        setTimeout(() => {
-            window.location.href = "../bejelentkezes/"; // Átirányítás
-        }, 1000);
-    } else {
-        uzenetElem.style.display = 'block';
-        uzenetElem.querySelector('p').textContent = result.message;
-        uzenetElem.style.color = '#FF7F7F';
 
-        setTimeout(() => {
+    uzenetElem.style.display = 'block';
+    uzenetElem.querySelector('p').textContent = result.message;
+    uzenetElem.style.color = result.success ? '#90EE90' : '#FF7F7F';
+
+    setTimeout(() => {
+        if (result.success) {
+            window.location.href = result.redirect;
+        } else {
+            submitButton.disabled = false;
+            submitButton.innerText = "Regisztráció";
             uzenetElem.style.display = 'none';
-        }, 3000);
-    }
+        }
+    }, 1500);
 });

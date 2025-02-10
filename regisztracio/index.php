@@ -15,7 +15,7 @@
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
-        <form action="adatbazis_signup.php" method="POST" id="regForm">
+        <form id="regForm" method="POST" action="adatbazis_signup.php">
             <div class="mb-3">
                 <label for="nev" class="form-label">Név</label>
                 <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
