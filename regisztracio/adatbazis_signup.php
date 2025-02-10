@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = password_hash($jelszo, PASSWORD_DEFAULT);
     $rang = "Felhasználó";
 
+    // Ellenőrizzük, hogy az email és a felhasználónév már létezik-e
     $stmtEmail = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE email = ?");
     $stmtEmail->execute([$email]);
     $emailExists = $stmtEmail->fetchColumn() > 0;
@@ -56,10 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $pdo->prepare("INSERT INTO felhasznalok (nev, email, jelszo, rang) VALUES (?, ?, ?, ?)");
     if ($stmt->execute([$nev, $email, $hashedPassword, $rang])) {
-        echo json_encode(["success" => true, "message" => "Sikeres regisztráció!", "type" => "success"]);
+        $felhasznaloId = $pdo->lastInsertId();
+        $stmtPersely = $pdo->prepare("INSERT INTO persely (felhasznalo_id, egyenleg) VALUES (?, ?)");
+        $alapertek = 0;
+        if ($stmtPersely->execute([$felhasznaloId, $alapertek])) {
+            echo json_encode(["success" => true, "message" => "Sikeres regisztráció", "type" => "success"]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Hiba történt", "type" => "error"]);
+        }
     } else {
         echo json_encode(["success" => false, "message" => "Hiba történt a regisztráció során.", "type" => "error"]);
     }
 }
-
 ?>

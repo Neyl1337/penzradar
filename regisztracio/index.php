@@ -5,72 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regisztráció - PénzRadar.hu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .regisztracios-doboz {
-            background-color: #2b2b2b;
-            border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-        }
-        .regisztracios-doboz h1 {
-            color: #63ffbe;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-control {
-            background-color: #ffffff;
-            color: #000000;
-            border: 1px solid #63ffbe;
-            border-radius: 8px;
-        }
-        .form-control:focus {
-            border-color: #63ffbe;
-            box-shadow: 0 0 5px #63ffbe;
-        }
-        .btn-zold {
-            background-color: #63ffbe;
-            color: #1a1a1a;
-            border-radius: 8px;
-            border: none;
-        }
-
-        a {
-            color: #63ffbe;
-            text-decoration: none;
-        }
-
-        .btn-zold:hover {
-            background-color: #63ffbe;
-            color: #ffffff;
-        }
-        .almenet {
-            text-align: center;
-            margin-top: 10px;
-        }
-        .almenet a {
-            color: #63ffbe;
-            text-decoration: none;
-        }
-        
-        .almenet a:hover {
-            text-decoration: underline;
-        }
-        #Uzenet {
-            color: #FF7F7F;
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="regisztracios-doboz">
@@ -105,38 +40,7 @@
             <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>
         </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
-
-<script>
-    const form = document.querySelector('form');
-    const uzenetElem = document.getElementById('Uzenet');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Ne töltse újra az oldalt
-        const formData = new FormData(form);
-
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            uzenetElem.style.display = 'block';
-            uzenetElem.querySelector('p').textContent = result.message;
-            uzenetElem.style.color = '#90EE90';
-            setTimeout(() => {
-                window.location.href = "../bejelentkezes/"; // Átirányítás
-            }, 1000);
-        } else {
-            uzenetElem.style.display = 'block';
-            uzenetElem.querySelector('p').textContent = result.message;
-            uzenetElem.style.color = '#FF7F7F';
-
-            setTimeout(() => {
-                uzenetElem.style.display = 'none';
-            }, 3000);
-        }
-    });
-</script>
-
 </html>

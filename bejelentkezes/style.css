@@ -1,0 +1,57 @@
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.bejelentkezo-doboz {
+    background-color: #2b2b2b;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+.bejelentkezo-doboz h1 {
+    color: #63ffbe;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-control {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #63ffbe;
+    border-radius: 8px;
+}
+.form-control:focus {
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+}
+.btn-zold {
+    background-color: #63ffbe;
+    color: #1a1a1a;
+    border-radius: 8px;
+    border: none;
+}
+.btn-zold:hover {
+    background-color: #63ffbe;
+    color: #ffffff;
+}
+.almenet {
+    text-align: center;
+    margin-top: 10px;
+}
+.almenet a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+.almenet a:hover {
+    text-decoration: underline;
+}
+#Uzenet {
+    color: #FF7F7F;
+    display: none;
+}
