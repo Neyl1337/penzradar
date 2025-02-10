@@ -11,7 +11,7 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "block";
         document.getElementById("perselyegyenleg").style.visibility = "visible";
         document.getElementById("szerepkor").style.visibility = "visible";
-        document.getElementById("jelszovaltoztatas").style.visibility = "visible";
+        document.getElementById("statisztika").style.visibility = "visible";
     } else {
         document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
@@ -19,6 +19,6 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "none";
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
-        document.getElementById("jelszovaltoztatas").style.visibility = "none";
+        document.getElementById("statisztika").style.visibility = "none";
     }
 };

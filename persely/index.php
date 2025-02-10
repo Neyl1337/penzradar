@@ -35,7 +35,8 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar</title>
+    <title>PénzRadar - Persely</title>
+    <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -44,12 +45,11 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <div class="container-fluid">
         <div class="row">
             <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-                <h2 class="text-center">PénzRadar.hu</h2>
+                <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
                 <li class="nav-item"><a class="nav-link" href="../kezdolap/">Kezdőlap</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/">Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/">Persely</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../beallitasok/">Beállítások</a></li>
                 </ul>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
@@ -63,7 +63,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="felhasznaloDropdownGomb">
                             <li id="bejelentkezesopcio"><a class="dropdown-item" href="../bejelentkezes/">Bejelentkezés</a></li>
-                            <li id="profilopcio" style="display:none;"><a class="dropdown-item" href="#">Profilom</a></li>
+                            <li id="profilopcio" style="display:none;"><a class="dropdown-item" href="../profilom/">Profilom</a></li>
                             <li id="beallitasopcio" style="display:none;"><a class="dropdown-item" href="../beallitasok/">Beállítások</a></li>
                             <li id="kijelentkezesopcio" style="display:none;"><a class="dropdown-item" href="../adatbazis_logout.php">Kijelentkezés</a></li>
                         </ul>

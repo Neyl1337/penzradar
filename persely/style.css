@@ -1,6 +1,7 @@
 body {
     background-color: #121212;
     color: white;
+    cursor: url("../kepek/cursor.ico"), default;
 }
 .oldalsav {
     background-color: #1e1e1e;
@@ -72,4 +73,16 @@ body {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+a {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+button {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+span {
+    cursor: url("../kepek/cursor.ico"), default;
 }

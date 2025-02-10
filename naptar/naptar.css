@@ -1,10 +1,8 @@
 body {
-    font-family: Arial, sans-serif;
     display: grid;
     place-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #333333;
     }
     .calendar {
     background-color: #111111;
@@ -45,11 +43,11 @@ body {
     transition: background-color 0.3s;
     }
     .days div:hover {
-    background-color: white;
-    color: orangered;
+    background-color: rgba(255, 255, 255, 0.452);
+    color: #60faba;
     }
     .days .today {
-    background-color: orangered;
+    background-color: #48b889;
     color: white;
     }
     .days  .fade {

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bejelentkezés - PénzRadar.hu</title>
+    <title>PénzRadar - Bejelentkezés</title>
+    <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="bejelentkezo-doboz">
-        <h1>PénzRadar.hu</h1>
+        <h1>PénzRadar</h1>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
