@@ -46,7 +46,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
             <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <h2 class="text-center">PénzRadar.hu</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
-                    <li class="nav-item"><a class="nav-link" href="../kezdolap/">Kezdőlap</a></li>
+                <li class="nav-item"><a class="nav-link" href="../kezdolap/">Kezdőlap</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/">Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/">Persely</a></li>
                     <li class="nav-item"><a class="nav-link" href="../beallitasok/">Beállítások</a></li>
@@ -69,38 +69,12 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
-                    <div class="row g-4">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Eddigi költés</h5>
-                                <b>1,234 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Átlagos költés</h5>
-                                <b>1,234 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Maradék összeg</h5>
-                                <b>1,234 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Legnagyobb költés</h5>
-                                <b>1,234 Ft</b>
-                            </div>
-                        </div>
-                    </div>
+                <div class="dashboard mt-4">
+                    <p>Beállítások.</p>
                 </div>
             </main>
         </div>
     </div>
-
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';

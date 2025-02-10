@@ -13,6 +13,7 @@ window.onload = () => {
         document.getElementById("szerepkor").style.visibility = "visible";
         document.getElementById("statisztika").style.visibility = "visible";
     } else {
+        document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
         document.getElementById("beallitasopcio").style.display = "none";
         document.getElementById("kijelentkezesopcio").style.display = "none";
