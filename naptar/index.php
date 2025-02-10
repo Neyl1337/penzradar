@@ -1,32 +1,32 @@
 <?php
-require_once '../adatbazis.php';
+ require_once '../adatbazis.php';
 
-session_start();
+ session_start();
 
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
-if (isset($_SESSION['felhasznalo_id'])) {
-    $stmt = $pdo->prepare("
-        SELECT f.rang, p.egyenleg 
-        FROM felhasznalok f
-        INNER JOIN persely p ON f.id = p.felhasznalo_id
-        WHERE f.id = ?
-    ");
-    $stmt->execute([$_SESSION['felhasznalo_id']]);
-    $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+ if (isset($_SESSION['felhasznalo_id'])) {
+     $stmt = $pdo->prepare("
+         SELECT f.rang, p.egyenleg
+         FROM felhasznalok f
+         INNER JOIN persely p ON f.id = p.felhasznalo_id
+         WHERE f.id = ?
+     ");
+     $stmt->execute([$_SESSION['felhasznalo_id']]);
+     $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($felhasznalo) {
-        $_SESSION['szerepkor'] = $felhasznalo['rang'];
-        $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
-    }
-} else {
-    $_SESSION['szerepkor'] = null;
-    $_SESSION['perselyegyenleg'] = null;
-}
+     if ($felhasznalo) {
+         $_SESSION['szerepkor'] = $felhasznalo['rang'];
+         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
+     }
+ } else {
+     $_SESSION['szerepkor'] = null;
+     $_SESSION['perselyegyenleg'] = null;
+ }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
-$formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
-    ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
-    : '0';
+ Perselyegyenleg formázása PHP-ban vesszővel
+ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
+     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',')
+ : '0';
 ?>
 
 
@@ -38,7 +38,11 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <title>PénzRadar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="sty.css">
+    <link rel="stylesheet" href="naptar.css">
+
+
 </head>
 <body>
     <div class="container-fluid">
@@ -58,7 +62,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         <span class="me-3" id="szerepkor" style="visibility: hidden;">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
-                            <i class="fas fa-user-circle"></i> 
+                            <i class="fas fa-user-circle"></i>
                             <span id="felhasznaloNev">Jelentkezz be!</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="felhasznaloDropdownGomb">
@@ -70,8 +74,27 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     </div>
                 </header>
                 <div class="dashboard mt-4">
-                    <p>Naptár.</p>
+
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+                    <div class="calendar">
+                        <div class="header">
+                        <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+                        <div id="month-year"></div>
+                        <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                    <div class="weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="days" id="days"></div>
+                    </div>
                 </div>
+
             </main>
         </div>
     </div>
@@ -80,6 +103,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+<script src="scr.js"></script>
+<script src="naptar.js"></script>
 </body>
 </html>
