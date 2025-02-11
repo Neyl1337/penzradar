@@ -3,6 +3,10 @@ body {
     color: white;
     cursor: url("../kepek/cursor.ico"), default;
 }
+p{
+    font-size: 150%;
+    margin: 0px;
+}
 .oldalsav {
     background-color: #1e1e1e;
     min-height: 100vh;

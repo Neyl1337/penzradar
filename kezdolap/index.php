@@ -27,6 +27,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     : '0';
 ?>
 
+<!-- HTML PROGRAM -->
 
 <!DOCTYPE html>
 <html lang="hu">
@@ -45,9 +46,28 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
             <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
-                    <li class="nav-item"><a class="nav-link" href="../kezdolap/">Kezdőlap</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../naptar/">Naptár</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../persely/">Persely</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../kezdolap/"><p><i class="fas fa-home"></i> Kezdőlap</p></a></li>
+                    <li class="nav-item"><a class="nav-link" href="../naptar/"><p><i class="fas fa-calendar-alt"></i> Naptár</p></a></li>
+                    <li class="nav-item"><a class="nav-link" href="../persely/"><p><i class="fas fa-piggy-bank"></i> Persely</p></a></li>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <div id="arfolyamok" class="text-center my-3">
+                        <ul id="arfolyam-lista" class="arfolyam-stilus">
+                            <!-- Az árfolyamok itt jelennek meg -->
+                        </ul>
+                    </div>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                        <div>
+                            <b id="frissites-ido" style="color: red;">
+                                <!-- A frissítés időpontja itt jelenik meg -->
+                            </b>
+                        </div>
+                    <?php endif; ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <div>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                    <?php endif; ?>
+                    </div>
                 </ul>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
@@ -143,5 +163,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <!-- <script src="../arfolyamjs/script.js"></script> -->
 </body>
 </html>

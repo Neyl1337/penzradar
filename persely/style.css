@@ -3,6 +3,23 @@ body {
     color: white;
     cursor: url("../kepek/cursor.ico"), default;
 }
+p{
+    font-size: 150%;
+    margin: 0px;
+}
+.arfolyam-stilus li {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+}
+
+.arfolyam-stilus li img {
+    width: 30px;
+    height: 20px;
+    margin-right: 10px;
+}
 .oldalsav {
     background-color: #1e1e1e;
     min-height: 100vh;

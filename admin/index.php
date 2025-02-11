@@ -3,7 +3,6 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, p.egyenleg 
@@ -23,7 +22,6 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
@@ -35,12 +33,11 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Naptár</title>
+    <title>PénzRadar - Kezdőlap</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="naptar.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -51,6 +48,18 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><p><i class="fas fa-home"></i> Kezdőlap</p></a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><p><i class="fas fa-calendar-alt"></i> Naptár</p></a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><p><i class="fas fa-piggy-bank"></i> Persely</p></a></li>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <div id="arfolyamok" class="text-center my-3">
+                        <ul id="arfolyam-lista" class="arfolyam-stilus">
+                            <!-- Az árfolyamok itt jelennek meg -->
+                        </ul>
+                    </div>
+                    <div>
+                        <b id="frissites-ido" style="color: red;">
+                            <!-- A frissítés időpontja itt jelenik meg -->
+                        </b>
+                    </div>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 </ul>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
@@ -70,33 +79,22 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div class="dashboard mt-4">
-                    <div class="calendar">
-                        <div class="header">
-                        <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-                        <div id="month-year"></div>
-                        <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
-                    </div>
-                    <div class="weekdays">
-                        <div>V</div>
-                        <div>H</div>
-                        <div>K</div>
-                        <div>Sz</div>
-                        <div>Cs</div>
-                        <div>P</div>
-                        <div>Szo</div>
-                    </div>
-                    <div class="days" id="days"></div>
-                    </div>
+                <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
+                        <center>
+                        <h3>Jelenleg az Admin felületen vagy!</h3>
+                        <h4>Kérlek várj a továbbiakért</h4>
+                        </center>
                 </div>
             </main>
         </div>
     </div>
+
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    
+    <script src="../kezdolap/script.js"></script>
 </body>
 </html>
