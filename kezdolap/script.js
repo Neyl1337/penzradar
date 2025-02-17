@@ -66,3 +66,97 @@ window.onload = () => {
     // setInterval(frissitArfolyamok, 3600000); // 3600000 ms = 1 óra
     setInterval(frissitArfolyamok, 300000); // 300000 ms = 5 perc
 }
+
+const napiKoltesek = [5000, 6000, 5500, 7000, 8000, 7500, 7200];
+const napiAtlag = napiKoltesek.map((_, i) => napiKoltesek.slice(0, i + 1).reduce((a, b) => a + b) / (i + 1));
+const haviKoltesek = [150000, 160000, 155000, 170000, 180000, 175000, 172000, 165000, 158000, 170500, 178000, 185000];
+const haviAtlag = haviKoltesek.map((_, i) => haviKoltesek.slice(0, i + 1).reduce((a, b) => a + b) / (i + 1));
+
+const napiBevetelek = [3250, 3000, 58500, 7000, 8000, 6500, 7200];
+const napiAtlagBevetel = napiKoltesek.map((_, i) => napiKoltesek.slice(0, i + 1).reduce((a, b) => a + b) / (i + 1));
+const haviBevetelek = [15000, 10000, 155000, 170000, 180000, 15000, 1720, 165000, 158000, 1500, 1000, 18000];
+const haviAtlagBevetel = haviKoltesek.map((_, i) => haviKoltesek.slice(0, i + 1).reduce((a, b) => a + b) / (i + 1));
+
+new Chart(document.getElementById('napiKoltesChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'],
+        datasets: [
+            { label: 'Napi költés (Ft)', data: napiKoltesek, borderColor: '#63FFBE', backgroundColor: '#1E1E1E', borderWidth: 2 },
+            { label: 'Átlagos költés (Ft)', data: napiAtlag, borderColor: 'darkgreen', backgroundColor: '#1E1E1E', borderWidth: 2, borderDash: [5, 5] }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false, // Deaktiválja az alapértelmezett arányt
+        aspectRatio: 2, // Arány beállítása (2:1 például)
+        scales: {
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('haviKoltesChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Márc', 'Ápr', 'Máj', 'Júni', 'Júli', 'Aug', 'Szept', 'Okt', 'Nov', 'Dec'],
+        datasets: [
+            { label: 'Havi költés (Ft)', data: haviKoltesek, borderColor: '#63FFBE', backgroundColor: '#1E1E1E', borderWidth: 2 },
+            { label: 'Átlagos havi költés (Ft)', data: haviAtlag, borderColor: 'darkgreen', backgroundColor: '#1E1E1E', borderWidth: 2, borderDash: [5, 5] }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false, 
+        aspectRatio: 2, // Arány beállítása
+        scales: {
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('napiBevetelChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'],
+        datasets: [
+            { label: 'Napi bevétel (Ft)', data: napiBevetelek, borderColor: '#63FFBE', backgroundColor: '#1E1E1E', borderWidth: 2 },
+            { label: 'Átlagos bevétel (Ft)', data: napiAtlagBevetel, borderColor: 'darkgreen', backgroundColor: '#1E1E1E', borderWidth: 2, borderDash: [5, 5] }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 2, // Arány beállítása
+        scales: {
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('haviBevetelChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Márc', 'Ápr', 'Máj', 'Júni', 'Júli', 'Aug', 'Szept', 'Okt', 'Nov', 'Dec'],
+        datasets: [
+            { label: 'Havi bevétel (Ft)', data: haviBevetelek, borderColor: '#63FFBE', backgroundColor: '#1E1E1E', borderWidth: 2 },
+            { label: 'Átlagos havi bevétel (Ft)', data: haviAtlagBevetel, borderColor: 'darkgreen', backgroundColor: '#1E1E1E', borderWidth: 2, borderDash: [5, 5] }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 2, // Arány beállítása
+        scales: {
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});

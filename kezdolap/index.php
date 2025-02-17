@@ -39,6 +39,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container-fluid">
@@ -88,6 +89,10 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
+                <!-- Bevételek szekció -->
+                <section id="bevetelek">
+                    <h3 class="text-center">Bevételek</h3>
+                    <br>
                     <div class="row g-4">
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
@@ -114,9 +119,28 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                             </div>
                         </div>
                     </div>
-
                     <br>
+                    <br>
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 grafikon-container">
+                                <canvas id="napiBevetelChart"></canvas>
+                            </div>
+                            <div class="col-md-6 grafikon-container">
+                                <canvas id="haviBevetelChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
+                <br><br>
+
+                <hr>
+                
+                <!-- Kiadások szekció -->
+                <section id="kiadasok">
+                    <h3 class="text-center">Kiadások</h3>
+                    <br>
                     <div class="row g-4">
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
@@ -143,7 +167,25 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                             </div>
                         </div>
                     </div>
-                </div>
+                    <br>
+                    <br>
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 grafikon-container">
+                                <canvas id="napiKoltesChart"></canvas>
+                            </div>
+                            <div class="col-md-6 grafikon-container">
+                                <canvas id="haviKoltesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <br><br>
+                <hr>
+            </div>
+
+                
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
                     <div class="card p-3 mt-3 kartya1">
                             <center>
