@@ -53,3 +53,40 @@ body {
     .days  .fade {
     color: #555;
     }
+
+#bevitel{
+        background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+    overflow: hidden;
+    width: 300px;
+    height: 352px;
+    padding: 20px;
+    margin-top: 25px;
+    font-size: medium;
+    }
+
+#kuld{
+    margin-top: 30%;
+    margin-left: 80%;
+}
+
+#kiiratas{
+    background-color: #1e1e1e;
+border-radius: 10px;
+box-shadow: 0 0 15px #63ffbe;
+overflow: hidden;
+width: 300px;
+height: 352px;
+padding: 20px;
+margin-top: -729px;
+margin-left: 325px;
+font-size: medium;
+}
+
+#B_K{
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    text-decoration: underline;
+}

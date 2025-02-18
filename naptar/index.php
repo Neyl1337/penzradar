@@ -27,6 +27,20 @@ if (isset($_SESSION['felhasznalo_id'])) {
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $adat1 = $_POST['PBevitel'];
+        $adat2 = $_POST['Comment'];
+    
+        // A lekérdezés
+        $stmt = $pdo->prepare("
+            INSERT INTO naptar (id, felhasznalo_id,NEgyneleg, K_B, Comment) 
+            VALUES (NULL, ? , NULL,  ?, ?);
+        ");
+        $stmt->execute([felhasznalo_id, $adat1, $adat2]);
+    }
+    
 ?>
 
 
@@ -107,6 +121,34 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     </div>
                     <div class="days" id="days"></div>
                     </div>
+
+                    <div id="bevitel">
+                        <form action="" method="POST">
+                            Írd be a költésed/bevételed:
+                            <input type="number" id="PBevitel" required>
+                            <br>
+                            <br>
+                            jelöld meg, mikor (fog) történt:
+                            <input type="date" id="datum" required>
+                            <br>
+                            <br>
+                            Írd be az indokot
+                            <br>
+                            <input type="text" id="Comment" required>
+                            <input type="submit" id="kuld">
+                        </form>
+
+                    </div> 
+
+                    <div id="kiiratas">   
+                        <div id="B_K">
+                        Bevétel/Kiadás
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
