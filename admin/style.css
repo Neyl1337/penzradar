@@ -116,3 +116,22 @@ button {
 span {
     cursor: url("../kepek/cursor.ico"), default;
 }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    padding: 10px;
+}
+
+.nav-link i {
+    font-size: 1.8rem;
+    min-width: 35px;
+    text-align: center;
+}
+
+#adminpanel {
+    font-size: 25px;
+    text-align: center;
+}
