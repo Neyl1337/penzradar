@@ -35,10 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if (!preg_match("/^[a-zA-Z0-9]+$/", $nev)) {
-        echo json_encode(["success" => false, "message" => "A név csak betűkből és számokból állhat.", "type" => "error"]);
+    if (!preg_match("/^[a-zA-Z0-9]{3,}$/", $nev)) {
+        echo json_encode(["success" => false, "message" => "A név legalább 3 karakter kell legyen betűkből és számokból!", "type" => "error"]);
         exit;
-    }
+    }    
 
     $hashedPassword = password_hash($jelszo, PASSWORD_DEFAULT);
     
