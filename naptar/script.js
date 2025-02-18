@@ -19,10 +19,10 @@ window.onload = () => {
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
         document.getElementById("statisztika").style.visibility = "none";
+        document.getElementById("nemvagybejelentkezve").style.visibility = "visible";
+        document.getElementById("statisztika").innerHTML = "";
     }
-};
-
-
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const monthYear = document.getElementById('month-year');

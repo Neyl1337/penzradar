@@ -89,7 +89,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div class="dashboard mt-4">
+                <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
                     <div class="calendar">
                         <div class="header">
                         <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
@@ -106,6 +106,16 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         <div>Szo</div>
                     </div>
                     <div class="days" id="days"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
+                    <div class="card p-3 mt-3 kartya1">
+                            <center>
+                            <h3>Jelenleg Nem vagy bejelentkezve!</h3>
+                            <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
+                            <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
+                            </center>
                     </div>
                 </div>
             </main>
