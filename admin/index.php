@@ -43,6 +43,7 @@ if ($stmt) {
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     if (isset($_POST['delete_id'])) {
         // Felhasználó törlése
         $delete_id = intval($_POST['delete_id']);
@@ -82,7 +83,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: index.php");
         exit();
+    } elseif (isset($_POST['update_user'])) {
+        $edit_id = intval($_POST['edit_id']);
+        $new_name = trim($_POST['new_name']);
+        $new_email = trim($_POST['new_email']);
+        $new_rank = trim($_POST['new_rank']);
+    
+        try {
+            $pdo->beginTransaction();
+    
+            $update_query = "UPDATE felhasznalok SET nev = ?, email = ?, rang = ? WHERE id = ?";
+            $stmt = $pdo->prepare($update_query);
+            $stmt->execute([$new_name, $new_email, $new_rank, $edit_id]);
+    
+            $pdo->commit();
+    
+            header("Location: index.php");
+            exit();
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo "Hiba történt a frissítés során: " . $e->getMessage();
+        }
     }
+    
 }
 
 // Szűrés rang alapján (GET kérésből)
@@ -101,7 +124,9 @@ if (!empty($filter_rank)) {
 
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
+// Statisztikák lekérdezése
+$osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
+$adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Admin'")->fetchColumn();
 
 
 ?>
@@ -127,14 +152,15 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b id="frissites-ido" style="color: red;"> 
-                                <!-- A frissítés időpontja itt jelenik meg -->
-                            </b>
-                        </div>
-                    <?php endif; ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <!-- Admin statisztikák -->
+                    <div class="admin-panel p-3 mt-4">
+                        <h4>Statisztikák</h4>
+                        <p>Összes felhasználó: <b><?php echo $osszes_felhasznalo; ?></b></p>
+                        <!-- <p>Online felhasználók: <b><?php echo $online_felhasznalok; ?></b></p> -->
+                        <p>Adminok száma: <b><?php echo $adminok_szama; ?></b></p>
+                    </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 </ul>
             </nav>
@@ -162,12 +188,13 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </center>
                 </div>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                    <table>
+                <?php endif; ?>
+                <table>
                     <tr>
                         <th colspan="4" class="text-center">
                             <h4 class="text-center m-0">Felhasználók kezelése</h4>
                         </th>
-                        <th colspan="3">
+                        <th colspan="4">
                             <div class="filter-container card p-3 mt-3 kartya1">
                                 <form method="GET" class="filter-form">
                                     <label for="rank">Szűrés rang szerint:</label>
@@ -190,6 +217,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th class="formaz">Regisztráció</th>
                         <th class="formaz">Rangkezelés</th>
                         <th class="formaz">Törlés</th>
+                        <th class="formaz">Módosítás</th>
                     </tr>
                         <?php foreach ($result as $row): ?>
                             <tr>
@@ -216,14 +244,74 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <button type="submit" class="button-delete">Törlés</button>
                                     </form>
                                 </td>
+                                <td class="formaz">
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
+                                        
+                                        <!-- Kacsacsőr gomb -->
+                                        <button type="button" class="btn btn-secondary" id="toggleKiegeszito<?= $row['id'] ?>">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <!-- Egyedi Módosítások -->
+                                <tr id="newRow<?= $row['id'] ?>" style="display: none;">
+                                    <form method="post">
+                                        <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
+                                        <input type="hidden" name="update_user" value="1">
+                                        
+                                        <td colspan="2">
+                                            <div class="form-group">
+                                                <label for="new_name<?= $row['id'] ?>">Név módosítása:</label>
+                                                <input type="text" id="new_name<?= $row['id'] ?>" name="new_name" value="<?= htmlspecialchars($row['nev']) ?>" class="form-control">
+                                            </div>
+                                        </td>
+
+                                        <td colspan="3">
+                                            <div class="form-group">
+                                                <label for="new_email<?= $row['id'] ?>">Email módosítása:</label>
+                                                <input type="text" id="new_email<?= $row['id'] ?>" name="new_email" value="<?= htmlspecialchars($row['email']) ?>" class="form-control">
+                                            </div>
+                                        </td>
+
+                                        <td colspan="2">
+                                            <div class="form-group">
+                                                <label for="new_rank<?= $row['id'] ?>">Egyedi rang:</label>
+                                                <input type="text" id="new_rank<?= $row['id'] ?>" name="new_rank" value="<?= htmlspecialchars($row['rang']) ?>" class="form-control">
+                                            </div>
+                                        </td>
+                                        <td class="form-group">
+                                            <button type="submit" class="btn btn-primary">Mentés</button>
+                                        </td>
+                                    </form>
+                                </tr>
+
+
+                                <script>
+                                    // Kacsacsőr gomb működtetése minden sorhoz
+                                    document.getElementById('toggleKiegeszito<?= $row['id'] ?>').addEventListener('click', function() {
+                                        const newRow = document.getElementById('newRow<?= $row['id'] ?>');
+                                        const icon = this.querySelector('i');
+                                        
+                                        if (newRow.style.display === 'none') {
+                                            newRow.style.display = 'table-row'; // Új sor megjelenítése
+                                            icon.classList.remove('fa-chevron-down');
+                                            icon.classList.add('fa-chevron-up');
+                                        } else {
+                                            newRow.style.display = 'none'; // Új sor eltüntetése
+                                            icon.classList.remove('fa-chevron-up');
+                                            icon.classList.add('fa-chevron-down');
+                                        }
+                                    });
+                                </script>
                             </tr>
                         <?php endforeach; ?>
                     </table>
+                    <?php endif; ?>
             </main>
-            <?php endif; ?>
         </div>
     </div>
-
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';

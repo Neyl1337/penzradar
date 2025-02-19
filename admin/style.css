@@ -179,7 +179,7 @@ th, td {
     border-bottom: 1px solid #444;
 }
 
-.formaz{
+.formaz {
     text-align: center;
 }
 
@@ -187,10 +187,9 @@ th {
     background-color: #63ffbe;
     color: #121212;
     text-transform: uppercase;
-    text-align: left; /* Középre igazítja a szöveget */
-    vertical-align: middle; /* Függőlegesen is középre helyezi */
+    text-align: left;
+    vertical-align: middle;
 }
-
 
 tr:hover {
     background-color: #2a2a2a;
@@ -230,6 +229,9 @@ form {
     background-color: #55daa2;
 }
 
+.text-center {
+    font-size: 170%;
+}
 
 /* Rang módosítás dropdown */
 select {
@@ -256,6 +258,7 @@ select {
         font-size: 12px;
     }
 }
+
 /* Szűrő űrlap */
 .filter-form {
     display: flex;
@@ -304,6 +307,7 @@ select {
         width: 100%;
     }
 }
+
 /* Szűrő űrlap középre igazítása */
 .filter-container {
     display: flex;
@@ -332,4 +336,94 @@ select {
     .filter-form select, .filter-form button {
         width: 100%;
     }
+}
+
+/* Admin statisztikák panel */
+.admin-panel {
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 15px #63ffbe;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+.admin-panel h4 {
+    color: #63ffbe;
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 2px solid #63ffbe;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.admin-panel p {
+    font-size: 1.2rem;
+    color: white;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.admin-panel b {
+    color: #63ffbe;
+}
+
+/* Reszponzivitás kisebb képernyőkre */
+@media (max-width: 768px) {
+    .admin-panel {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
+    .admin-panel p {
+        font-size: 1rem;
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Új sor (kiegészítők) */
+#newRow {
+    display: none;
+}
+
+/* Kacsacsőr gomb stílusa */
+#toggleKiegeszito {
+    background-color: #f8f9fa;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+/* Kacsacsőr gomb hover */
+#toggleKiegeszito:hover {
+    background-color: #e2e6ea;
+}
+
+/* Kiegészítő sor */
+.kiegeszito {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-group button {
+    color: #1e1e1e;
+    background-color: #63ffbe;
+    border-color: #7bebbc;
+    display: block;
+    margin: 10px auto;
+}
+
+.form-group button:hover {
+    color: #1e1e1e;
+    background-color: #4cc291;
+    border-color: #379970;
 }
