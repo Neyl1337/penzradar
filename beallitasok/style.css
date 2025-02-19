@@ -84,24 +84,36 @@ a {
     cursor: url("../kepek/cursor.ico"), default;
 }
 
-button {
+.button2 {
     cursor: url("../kepek/cursor.ico"), default;
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button3 {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #ff6969;
+    border-color: #ff6969;
+    box-shadow: 0 0 5px #ff6969;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
 }
 
 span {
     cursor: url("../kepek/cursor.ico"), default;
 }
 
-.btn-zold {
-    background-color: #63ffbe;
-    color: #1a1a1a;
-    border-radius: 8px;
-    border: none;
-}
-.btn-zold:hover {
-    background-color: #63ffbe;
-    color: #ffffff;
-}
 
 .form-control {
     background-color: #ffffff;
@@ -114,8 +126,8 @@ span {
     box-shadow: 0 0 5px #63ffbe;
 }
 
-.jelszovaltoztatas {
-    background-color: #2b2b2b;
+#modositas {
+    background-color: #1e1e1e;
     border-radius: 12px;
     padding: 20px;
     width: 100%;
@@ -123,7 +135,7 @@ span {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-.jelszovaltoztatas {
+#modositas {
     margin-top: 25px;
 }
 
@@ -158,4 +170,98 @@ span {
     width: 30px;
     height: 20px;
     margin-right: 10px;
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    cursor: url("../kepek/cursor.ico"), default;
+}
+.oldal a{
+    color: #ffffff;
+    border-radius: 8px;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+}
+.oldal a:hover{
+    color: #63ffbe;
+}
+.regisztracios-doboz {
+    background-color: #2b2b2b;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+.regisztracios-doboz h1 {
+    color: #63ffbe;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.regisztracios-doboz h5 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-control {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #63ffbe;
+    border-radius: 8px;
+}
+.form-control:focus {
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+}
+.btn-zold {
+    background-color: #63ffbe;
+    color: #1a1a1a;
+    border-radius: 8px;
+    border: none;
+}
+
+a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+
+.btn-zold:hover {
+    background-color: #63ffbe;
+    color: #ffffff;
+}
+.almenet {
+    text-align: center;
+    margin-top: 10px;
+}
+.almenet a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+
+.almenet a:hover {
+    text-decoration: underline;
+}
+#Uzenet {
+    color: #FF7F7F;
+    display: none;
+}
+
+a {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+button {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+span {
+    cursor: url("../kepek/cursor.ico"), default;
 }

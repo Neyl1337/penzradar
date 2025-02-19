@@ -88,11 +88,53 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div id="jelszovaltoztatas" style="visibility: hidden;">
-                    <div class="jelszovaltoztatas">
-                        <a href="../ujjelszo/"><button class="btn btn-zold w-100">Jelszóváltoztatás</button></a>
+                <div id="modositas" style="visibility: hidden;">
+                    <div class="container mt-4">
+                        <h3>Fiók beállításai</h3>
+                        <form id="felhasznalo-modositas-form" method="POST" action="felhasznalo_modositas.php">
+                            <div class="mb-3">
+                                <label class="form-label">Válaszd ki mit / miket szeretnél módosítani</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="nevValtoztatas" name="modositott_adatok[]" value="felhasznalo_nev">
+                                    <label class="form-check-label" for="nevValtoztatas">Felhasználónév</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="jelszoValtoztatas" name="modositott_adatok[]" value="jelszo">
+                                    <label class="form-check-label" for="jelszoValtoztatas">Jelszó</label>
+                                </div>
+                            </div>
+
+                            <div id="felhasznalo_nev_input" class="mb-3" style="display:none;">
+                                <label for="felhasznalo_nev" class="form-label">Felhasználónév</label>
+                                <input type="text" class="form-control" id="felhasznalo_nev" name="felhasznalo_nev" value="<?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?>">
+                            </div>
+                            <div id="jelszo_input" class="mb-3" style="display:none;">
+                                <label for="jelszo" class="form-label">Jelszó</label>
+                                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Új jelszó">
+                            </div>
+                            <button type="submit" class="button2" disabled>Módosítom</button>
+                        </form>
+
+                        <br><br>
+
+                        <h4>E-mail módosítása</h4>
+                        <p>Ha szeretnéd módosítani az e-mailedet, kattints az alábbi gombra</p>
+                        <form method="POST" action="email_valtoztatas.php">
+                            <button type="submit" class="button2" disabled>Módosítom</button>
+                        </form>
+
+                        <br><br>
+
+                        <h4>Fiók törlése</h4>
+                        <p>Ha szeretnéd törölni a fiókodat, kattints az alábbi gombra</p>
+                        <form method="POST" action="fiok_torles.php">
+                            <button type="submit" class="button3" disabled>Fiók törlése</button>
+                        </form>
                     </div>
                 </div>
+            </main>
+        </div>
+    </div>
             </main>
         </div>
     </div>

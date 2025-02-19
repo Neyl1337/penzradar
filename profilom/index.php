@@ -27,6 +27,24 @@ if (isset($_SESSION['felhasznalo_id'])) {
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
+
+    // Feltételezzük, hogy már van aktív session
+session_start();
+
+// Feltételezve, hogy a felhasználó azonosítója a session-ben van
+$felhasznaloId = $_SESSION["felhasznalo_id"] ?? null;
+
+if ($felhasznaloId) {
+    // SQL lekérdezés a regisztráció időpontjának lekérésére
+    $stmt = $pdo->prepare("SELECT regisztracio_idopont FROM felhasznalok WHERE id = :id");
+    $stmt->execute(['id' => $felhasznaloId]);
+    $regisztracioIdopont = $stmt->fetchColumn();
+
+    if ($regisztracioIdopont) {
+        // Sesssionbe tárolás
+        $_SESSION["regisztracio_idopont"] = $regisztracioIdopont;
+    }
+}
 ?>
 
 
@@ -88,8 +106,24 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div class="dashboard mt-4">
-                    Név: <?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>
+                    <div id="profil" style="visibility: hidden;">
+                    <div class="container mt-4">
+                        <h3>Profilod</h3>
+                        <form id="profilbox" method="POST" action="felhasznalo_modositas.php">
+                            <div class="mb-3">
+                                <label class="form-label">Név</label>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Regisztráció dátuma</label>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </main>
         </div>
