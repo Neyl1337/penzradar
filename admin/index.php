@@ -128,11 +128,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div id="arfolyamok" class="text-center my-3">
-                        <ul id="arfolyam-lista" class="arfolyam-stilus">
-                            <!-- Az árfolyamok itt jelennek meg -->
-                        </ul>
-                    </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
                             <b id="frissites-ido" style="color: red;"> 
@@ -160,22 +155,13 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </ul>
                     </div>
                 </header>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                 <div class="card p-3 mt-3 kartya1">
                         <center>
                         <h3>Jelenleg az Admin felületen vagy!</h3>
                         </center>
                 </div>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                <!-- <form method="GET" class="filter-form">
-                    <label for="rank">Szűrés rang szerint:</label>
-                    <select name="rank" id="rank">
-                        <option value="">-- Összes rang --</option>
-                        <option value="Felhasználó" <?= isset($_GET['rank']) && $_GET['rank'] == "Felhasználó" ? "selected" : "" ?>>Felhasználó</option>
-                        <option value="VIP" <?= isset($_GET['rank']) && $_GET['rank'] == "VIP" ? "selected" : "" ?>>VIP</option>
-                        <option value="Admin" <?= isset($_GET['rank']) && $_GET['rank'] == "Admin" ? "selected" : "" ?>>Admin</option>
-                    </select>
-                    <button type="submit">Szűrés</button>
-                </form> -->
                     <table>
                     <tr>
                         <th colspan="4" class="text-center">
@@ -234,6 +220,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endforeach; ?>
                     </table>
             </main>
+            <?php endif; ?>
         </div>
     </div>
 
