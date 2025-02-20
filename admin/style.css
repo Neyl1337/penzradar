@@ -213,6 +213,7 @@ form {
 
 .button-delete:hover {
     background-color: #c82333;
+    color: #ffffff;
 }
 
 .button-edit {
@@ -227,6 +228,7 @@ form {
 
 .button-edit:hover {
     background-color: #55daa2;
+    color: #ffffff;
 }
 
 .text-center {
@@ -294,6 +296,7 @@ select {
 
 .filter-form button:hover {
     background-color: #55daa2;
+    color: #ffffff;
 }
 
 /* Reszponzív nézet */
@@ -423,7 +426,7 @@ select {
 }
 
 .form-group button:hover {
-    color: #1e1e1e;
     background-color: #4cc291;
     border-color: #379970;
+    color: #ffffff;
 }

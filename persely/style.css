@@ -1,12 +1,59 @@
 body {
     background-color: #121212;
     color: white;
+    font-family: Arial, sans-serif;
     cursor: url("../kepek/cursor.ico"), default;
     position: hidden;
 }
-p{
+
+p {
     font-size: 150%;
     margin: 0px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+h3, h4, h5 {
+    color: #63ffbe;
+    text-align: center;
+}
+
+.form-label {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.form-control {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #63ffbe;
+}
+
+.form-control:focus {
+    background-color: #2a2a2a;
+    color: white;
+    border-color: #63ffbe;
+    box-shadow: 0 0 10px #63ffbe;
+}
+
+.btn-primary {
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    color: black;
+    width: 100%;
+    font-size: 1.2rem;
+}
+
+.btn-primary:hover {
+    background-color: #4fd9a6;
+    border-color: #4fd9a6;
 }
 
 .grafikon-container {
@@ -35,7 +82,6 @@ p{
     text-align: center;
 }
 
-
 .arfolyam-stilus li {
     font-size: 1.5rem;
     margin: 10px 0;
@@ -49,42 +95,52 @@ p{
     height: 20px;
     margin-right: 10px;
 }
+
 .kartya1 {
     background-color: #1e1e1e;
     color: white;
     border-radius: 10px;
 }
-.kartya1 a{
+
+.kartya1 a {
     color: rgb(255, 0, 0);
     text-decoration: none;
 }
+
 .kartya1 h3 {
     color: #ff0000;
 }
+
 .oldalsav {
     background-color: #1e1e1e;
     min-height: 100vh;
     padding: 20px;
 }
+
 .oldalsav h2 {
     color: #63ffbe;
 }
+
 .oldalsav a {
     color: white;
     text-decoration: none;
 }
+
 .oldalsav a:hover {
     color: #63ffbe;
 }
+
 .kartya {
     background-color: #1e1e1e;
     color: white;
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
 }
+
 .kartya b {
     color: #63ffbe;
 }
+
 @media (max-width: 1192px) {
     .oldalsav {
         min-height: auto;
@@ -97,21 +153,26 @@ p{
         display: none;
     }
 }
+
 .dropdown-menu {
     background-color: #1e1e1e;
     border: none;
 }
+
 .dropdown-item {
     color: white;
 }
+
 .dropdown-item:hover {
     color: #63ffbe;
     background-color: #1e1e1e;
 }
+
 .btn-secondary {
     background-color: #1e1e1e;
     border-color: #1e1e1e;
 }
+
 .btn-secondary:hover {
     background-color: #63ffbe;
     border-color: #63ffbe;
@@ -134,26 +195,19 @@ p{
     }
 }
 
-a {
+a, button, span {
     cursor: url("../kepek/cursor.ico"), default;
 }
 
-button {
-    cursor: url("../kepek/cursor.ico"), default;
+.grafikon-container {
+    width: 35%; 
+    margin: auto; 
+    padding: 10px;
 }
 
-span {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-.grafikon-container
-{
-    width: 35%; margin: auto; padding: 10px;
-}
-
-canvas
-{
-    background: #1E1E1E; border-radius: 8px;
+canvas {
+    background: #1E1E1E; 
+    border-radius: 8px;
     box-shadow: 0 0 15px #63ffbe;
 }
 

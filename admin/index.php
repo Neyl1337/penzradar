@@ -287,7 +287,6 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                     </form>
                                 </tr>
 
-
                                 <script>
                                     // Kacsacsőr gomb működtetése minden sorhoz
                                     document.getElementById('toggleKiegeszito<?= $row['id'] ?>').addEventListener('click', function() {
