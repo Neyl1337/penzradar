@@ -27,8 +27,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     : '0';
 ?>
 
-<!-- HTML PROGRAM -->
-
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -53,20 +51,17 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div id="arfolyamok" class="text-center my-3">
                         <ul id="arfolyam-lista" class="arfolyam-stilus">
-                            <!-- Az árfolyamok itt jelennek meg -->
                         </ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
-                            <b id="frissites-ido" style="color: red;"> 
-                                <!-- A frissítés időpontja itt jelenik meg -->
-                            </b>
+                            <b id="frissites-ido" style="color: red;"></b>
                         </div>
                     <?php endif; ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i>  Admin Panel</p></a></li>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
                     <?php endif; ?>
                     </div>
                 </ul>
@@ -89,7 +84,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
-                <!-- Bevételek szekció -->
                 <section id="bevetelek">
                     <h3 class="text-center">Bevételek</h3>
                     <br>
@@ -123,10 +117,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <br>
                     <div class="container text-center">
                         <div class="row justify-content-center">
-                            <div class="col-md-6 grafikon-container">
-                                <canvas id="napiBevetelChart"></canvas>
-                            </div>
-                            <div class="col-md-6 grafikon-container">
+                            <div class="col-12 col-md-6 grafikon-container">
                                 <canvas id="haviBevetelChart"></canvas>
                             </div>
                         </div>
@@ -137,32 +128,31 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 
                 <hr>
                 
-                <!-- Kiadások szekció -->
                 <section id="kiadasok">
-                    <h3 class="text-center">Kiadások</h3>
+                    <h3 class="text-center">Költések</h3>
                     <br>
                     <div class="row g-4">
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Napi kiadás</h5>
+                                <h5>Napi költés</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Havi kiadás</h5>
+                                <h5>Havi költés</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Átlagos kiadás</h5>
+                                <h5>Átlagos költés</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="kartya p-3 text-center">
-                                <h5>Legnagyobb kiadás</h5>
+                                <h5>Legnagyobb költés</h5>
                                 <b>0 Ft</b>
                             </div>
                         </div>
@@ -171,10 +161,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <br>
                     <div class="container text-center">
                         <div class="row justify-content-center">
-                            <div class="col-md-6 grafikon-container">
-                                <canvas id="napiKoltesChart"></canvas>
-                            </div>
-                            <div class="col-md-6 grafikon-container">
+                            <div class="col-12 col-md-6 grafikon-container">
                                 <canvas id="haviKoltesChart"></canvas>
                             </div>
                         </div>
@@ -184,8 +171,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                 <br><br>
                 <hr>
             </div>
-
-                
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
                     <div class="card p-3 mt-3 kartya1">
                             <center>
@@ -205,6 +190,5 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
-    <!-- <script src="../arfolyamjs/script.js"></script> -->
 </body>
 </html>

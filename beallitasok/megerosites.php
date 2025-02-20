@@ -1,8 +1,3 @@
-<?php
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -16,7 +11,7 @@
 <body>
     <div class="regisztracios-doboz">
         <h1>PénzRadar</h1>
-        <h5>Új jelszó</h5>
+        <h5>Módosítás véglegesítése</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>

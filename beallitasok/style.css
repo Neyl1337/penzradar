@@ -172,16 +172,6 @@ span {
     margin-right: 10px;
 }
 
-body {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    cursor: url("../kepek/cursor.ico"), default;
-}
 .oldal a{
     color: #ffffff;
     border-radius: 8px;
