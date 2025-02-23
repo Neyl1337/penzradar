@@ -256,3 +256,13 @@ button {
 span {
     cursor: url("../kepek/cursor.ico"), default;
 }
+
+#nevmodosit {
+    color: #63ffbe;
+    font-weight: bold;
+}
+
+#jelszomodosit {
+    color: #63ffbe;
+    font-weight: bold;
+}

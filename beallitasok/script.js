@@ -13,6 +13,7 @@ window.onload = () => {
         document.getElementById("szerepkor").style.visibility = "visible";
         document.getElementById("modositas").style.visibility = "visible";
         document.getElementById("modositas2").style.visibility = "visible";
+        document.getElementById("modositas3").style.visibility = "visible";
     } else {
         document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
@@ -22,6 +23,7 @@ window.onload = () => {
         document.getElementById("szerepkor").style.visibility = "none";
         document.getElementById("modositas").style.visibility = "none";
         document.getElementById("modositas2").style.visibility = "none";
+        document.getElementById("modositas3").style.visibility = "none";
     }
 };
 

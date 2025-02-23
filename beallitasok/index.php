@@ -142,6 +142,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <div class="row">
                         <div class="col-md-4" id="modositas" style="visibility: hidden;">
                             <div>
+                                <h2 id="nevmodosit">Név módosítása</h2>
                                 <form action="" method="POST">
                                     <div class="mb-3">
                                         <label for="regi_jelszo_nev" class="form-label">Jelenlegi jelszó</label>
@@ -161,12 +162,13 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                                             A név sikeresen módosítva!
                                         </div>
                                     <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary">Módosítások mentése</button>
+                                    <button type="submit" class="button2 btn-primary">Mentés</button>
                                 </form>
                             </div>
                         </div>
                         <div class="col-md-4" id="modositas2" style="visibility: hidden;">
                             <div>
+                                <h2 id="jelszomodosit">Jelszó módosítása</h2>
                                 <form action="" method="POST">
                                     <div class="mb-3">
                                         <label for="regi_jelszo_jelszo" class="form-label">Jelenlegi jelszó</label>
@@ -190,10 +192,16 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                                             A jelszó sikeresen módosítva! Kijelentkezés után újra be kell jelentkeznie.
                                         </div>
                                     <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary">Módosítások mentése</button>
+                                    <button type="submit" class="button2 btn-primary">Mentés</button>
                                 </form>
                             </div>
                         </div>
+
+                        <!-- <div class="col-md-4" id="modositas3" style="visibility: hidden;">
+                            <div>
+                                <button type="submit" class="button2 btn-danger">Fiók törlése</button>
+                            </div>
+                        </div> -->
                     </div>
                 </div>
             </main>
