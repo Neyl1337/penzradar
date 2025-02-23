@@ -133,9 +133,19 @@ span {
     width: 100%;
     max-width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    margin-top: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+    margin-right: 50px;
 }
 
-#modositas {
+#modositas2 {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     margin-top: 25px;
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
@@ -191,17 +201,6 @@ span {
     width: 100%;
     max-width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-}
-.regisztracios-doboz h1 {
-    color: #63ffbe;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.regisztracios-doboz h5 {
-    color: #ffffff;
-    text-align: center;
-    margin-bottom: 20px;
 }
 .form-control {
     background-color: #ffffff;

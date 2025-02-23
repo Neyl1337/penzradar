@@ -3,7 +3,6 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, p.egyenleg 
@@ -23,7 +22,6 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
@@ -35,7 +33,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Persely</title>
+    <title>PénzRadar - Beállítások</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -89,47 +87,11 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div id="egyenlegkezeles" style="visibility: hidden;">
-                    <div class="dashboard mt-4">
-                        <div class="card p-3 mt-3 kartya">
-                            <h3>Persely egyenleg: <b id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</h3>
-                        </div>
-                        <div class="container mt-4">
-                            <h4>Bankkártya kiválasztása vagy létrehozása</h4>
-                            <form action="bankkartya_kezeles.php" method="post">
-                                <div class="mb-3">  
-                                    <label for="bankkartya" class="form-label">Válassz bankkártyát</label>
-                                    <select class="form-control" id="bankkartya" name="bankkartya_id">
-                                        <option value="">-- Válassz --</option>
-                                        <?php foreach ($bankkartyak as $kartya): ?>
-                                            <option value="<?php echo $kartya['id']; ?>"> <?php echo htmlspecialchars($kartya['megnevezes']); ?> </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <h5>Vagy hozz létre új bankkártyát</h5>
-                                <div class="mb-3">
-                                    <label for="megnevezes" class="form-label">Megnevezés</label>
-                                    <input type="text" class="form-control" id="megnevezes" name="megnevezes" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="leiras" class="form-label">Leírás</label>
-                                    <textarea class="form-control" id="leiras" name="leiras" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Mentés</button>
-                            </form>
-                            <h4>Pénz hozzáadása a perselyhez</h4>
-                            <form action="persely_hozzaadas.php" method="post">
-                                <div class="mb-3">
-                                    <label for="osszeg" class="form-label">Összeg</label>
-                                    <input type="number" class="form-control" id="osszeg" name="osszeg" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="gomb">Hozzáadás</button>
-                            </form>
-                        </div>
+                    <div id="tervezo">
+                        
                     </div>
-                </div>
 
-                <div id="bejelentkez" style="visibility: hidden;">
+                    <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
                     <div class="card p-3 mt-3 kartya1">
                             <center>
                             <h3>Jelenleg Nem vagy bejelentkezve!</h3>
@@ -137,6 +99,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                             <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
                             </center>
                     </div>
+                </div>
                 </div>
             </main>
         </div>

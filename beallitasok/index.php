@@ -3,7 +3,6 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, p.egyenleg 
@@ -23,12 +22,65 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
-?>
 
+
+    $hiba_nev = false;
+    $hiba_jelszo = false;
+    $siker_nev = false;
+    $siker_jelszo = false;
+
+                    if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jelszo'])) {
+                        $felhasznalo_id = $_SESSION['felhasznalo_id'];
+                        $felhasznalo_jelszo = $_POST['regi_jelszo_nev'];
+
+                        // Név módosítása
+                        if (isset($_POST['uj_nev'])) {
+                            $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
+                            $stmt->execute([$felhasznalo_id]);
+                            $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                            if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
+                                $uj_nev = $_POST['uj_nev'];
+                                $stmt = $pdo->prepare("UPDATE felhasznalok SET nev = ? WHERE id = ?");
+                                $stmt->execute([$uj_nev, $felhasznalo_id]);
+                                $_SESSION['felhasznalo_nev'] = $uj_nev;
+                                $siker_nev = true;
+                            } else {
+                                $hiba_nev = true;
+                            }
+                        }
+
+                        // Jelszó módosítása
+                        if (isset($_POST['uj_jelszo'])) {
+                            $felhasznalo_jelszo = $_POST['regi_jelszo_jelszo'];
+
+                            $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
+                            $stmt->execute([$felhasznalo_id]);
+                            $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                            if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
+                                if ($_POST['uj_jelszo'] === $_POST['uj_jelszo_meg']) {
+                                    $uj_jelszo = $_POST['uj_jelszo'];
+                                    $uj_jelszo_hash = password_hash($uj_jelszo, PASSWORD_DEFAULT);
+                                    $stmt = $pdo->prepare("UPDATE felhasznalok SET jelszo = ? WHERE id = ?");
+                                    $stmt->execute([$uj_jelszo_hash, $felhasznalo_id]);
+
+                                    // Jelszó módosítása után kijelentkeztetés
+                                    session_destroy();
+                                    header('Location: ../adatbazis_logout.php');
+                                    exit;
+                                } else {
+                                    $hiba_jelszo = true;
+                                }
+                            } else {
+                                $hiba_jelszo = true;
+                            }
+                        }
+                    }
+?>
 
 <!DOCTYPE html>
 <html lang="hu">
@@ -44,30 +96,27 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 <body>
     <div class="container-fluid">
         <div class="row">
-        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div id="arfolyamok" class="text-center my-3">
-                        <ul id="arfolyam-lista" class="arfolyam-stilus">
-                            <!-- Az árfolyamok itt jelennek meg -->
-                        </ul>
+                        <ul id="arfolyam-lista" class="arfolyam-stilus"></ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
-                            <b id="frissites-ido" style="color: red;"> 
-                                <!-- A frissítés időpontja itt jelenik meg -->
-                            </b>
+                            <b id="frissites-ido" style="color: red;"></b>
                         </div>
                     <?php endif; ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i>  Admin Panel</p></a></li>
-                    <?php endif; ?>
+                        <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                            <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                        <?php endif; ?>
                     </div>
                 </ul>
             </nav>
@@ -88,53 +137,65 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <div id="modositas" style="visibility: hidden;">
-                    <div class="container mt-4">
-                        <h3>Fiók beállításai</h3>
-                        <form id="felhasznalo-modositas-form" method="POST" action="felhasznalo_modositas.php">
-                            <div class="mb-3">
-                                <label class="form-label">Válaszd ki mit / miket szeretnél módosítani</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="nevValtoztatas" name="modositott_adatok[]" value="felhasznalo_nev">
-                                    <label class="form-check-label" for="nevValtoztatas">Felhasználónév</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="jelszoValtoztatas" name="modositott_adatok[]" value="jelszo">
-                                    <label class="form-check-label" for="jelszoValtoztatas">Jelszó</label>
-                                </div>
+                <!-- HTML kód -->
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4" id="modositas" style="visibility: hidden;">
+                            <div>
+                                <form action="" method="POST">
+                                    <div class="mb-3">
+                                        <label for="regi_jelszo_nev" class="form-label">Jelenlegi jelszó</label>
+                                        <input type="password" class="form-control" id="regi_jelszo_nev" name="regi_jelszo_nev" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="uj_nev" class="form-label">Új név</label>
+                                        <input type="text" class="form-control" id="uj_nev" name="uj_nev">
+                                    </div>
+                                    <?php if ($hiba_nev): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            A jelenlegi jelszó nem megfelelő a név módosításához!
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($siker_nev): ?>
+                                        <div class="alert alert-success" role="alert">
+                                            A név sikeresen módosítva!
+                                        </div>
+                                    <?php endif; ?>
+                                    <button type="submit" class="button2 btn-primary">Módosítások mentése</button>
+                                </form>
                             </div>
-
-                            <div id="felhasznalo_nev_input" class="mb-3" style="display:none;">
-                                <label for="felhasznalo_nev" class="form-label">Felhasználónév</label>
-                                <input type="text" class="form-control" id="felhasznalo_nev" name="felhasznalo_nev" value="<?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?>">
+                        </div>
+                        <div class="col-md-4" id="modositas2" style="visibility: hidden;">
+                            <div>
+                                <form action="" method="POST">
+                                    <div class="mb-3">
+                                        <label for="regi_jelszo_jelszo" class="form-label">Jelenlegi jelszó</label>
+                                        <input type="password" class="form-control" id="regi_jelszo_jelszo" name="regi_jelszo_jelszo" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="uj_jelszo" class="form-label">Új jelszó</label>
+                                        <input type="password" class="form-control" id="uj_jelszo" name="uj_jelszo">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="uj_jelszo_meg" class="form-label">Új jelszó megerősítése</label>
+                                        <input type="password" class="form-control" id="uj_jelszo_meg" name="uj_jelszo_meg">
+                                    </div>
+                                    <?php if ($hiba_jelszo): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            A jelenlegi jelszó nem megfelelő vagy a két új jelszó nem egyezik!
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($siker_jelszo): ?>
+                                        <div class="alert alert-success" role="alert">
+                                            A jelszó sikeresen módosítva! Kijelentkezés után újra be kell jelentkeznie.
+                                        </div>
+                                    <?php endif; ?>
+                                    <button type="submit" class="button2 btn-primary">Módosítások mentése</button>
+                                </form>
                             </div>
-                            <div id="jelszo_input" class="mb-3" style="display:none;">
-                                <label for="jelszo" class="form-label">Jelszó</label>
-                                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Új jelszó">
-                            </div>
-                            <button type="submit" class="button2" disabled>Módosítom</button>
-                        </form>
-
-                        <br><br>
-
-                        <h4>E-mail módosítása</h4>
-                        <p>Ha szeretnéd módosítani az e-mailedet, kattints az alábbi gombra</p>
-                        <form method="POST" action="email_valtoztatas.php">
-                            <button type="submit" class="button2" disabled>Módosítom</button>
-                        </form>
-
-                        <br><br>
-
-                        <h4>Fiók törlése</h4>
-                        <p>Ha szeretnéd törölni a fiókodat, kattints az alábbi gombra</p>
-                        <form method="POST" action="fiok_torles.php">
-                            <button type="submit" class="button3" disabled>Fiók törlése</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
             </main>
         </div>
     </div>
