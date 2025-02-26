@@ -90,3 +90,7 @@ font-size: medium;
     padding: 10px;
     text-decoration: underline;
 }
+
+.fade:not(.show) {
+    opacity: 100;
+}
