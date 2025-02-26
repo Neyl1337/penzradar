@@ -5,12 +5,7 @@ session_start();
 
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
-    $stmt = $pdo->prepare("
-        SELECT f.rang, p.egyenleg 
-        FROM felhasznalok f
-        INNER JOIN persely p ON f.id = p.felhasznalo_id
-        WHERE f.id = ?
-    ");
+    $stmt = $pdo->prepare("SELECT f.rang, p.egyenleg FROM felhasznalok f INNER JOIN persely p ON f.id = p.felhasznalo_id WHERE f.id = ?");
     $stmt->execute([$_SESSION['felhasznalo_id']]);
     $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -23,24 +18,30 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
-$formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
-    ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
-    : '0';
-
+$formatalt_egyenleg = isset($_SESSION['perselyegyenleg']) ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') : '0';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['PBevitel'], $_POST['Comment'], $_POST['datum'])) {
         $adat1 = $_POST['PBevitel'];
         $adat2 = $_POST['Comment'];
-    
-        // A lekérdezés
-        $stmt = $pdo->prepare("
-            INSERT INTO naptar (id, felhasznalo_id,NEgyneleg, K_B, Comment) 
-            VALUES (NULL, ? , NULL,  ?, ?);
-        ");
-        $stmt->execute([felhasznalo_id, $adat1, $adat2]);
+        $datum = $_POST['datum'];
+        $felhasznalo_id = $_SESSION['felhasznalo_id'] ?? null;
+
+        if ($felhasznalo_id) {
+            if($adat1 > 0)
+            {
+                $stmt = $pdo->prepare("INSERT INTO naptar (felhasznalo_id, ind, datum,NBevetel,NKiadas) VALUES (?, ?, ?, ?, null)");
+                $stmt->execute([$felhasznalo_id, $adat2, $datum, $adat1]);
+            }
+            else if($adat1 < 0)
+            {
+                $stmt = $pdo->prepare("INSERT INTO naptar (felhasznalo_id, ind, datum,NBevetel,NKiadas) VALUES (?, ?, ?,null,?)");
+                $stmt->execute([$felhasznalo_id, $adat2, $datum,$adat1]);
+            
+            }
+        }
     }
-    
+}
 ?>
 
 
@@ -124,20 +125,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div id="bevitel">
-                        <form action="" method="POST">
-                            Írd be a költésed/bevételed:
-                            <input type="number" id="PBevitel" required>
-                            <br>
-                            <br>
-                            jelöld meg, mikor (fog) történt:
-                            <input type="date" id="datum" required>
-                            <br>
-                            <br>
-                            Írd be az indokot
-                            <br>
-                            <input type="text" id="Comment" required>
-                            <input type="submit" id="kuld">
-                        </form>
+                    <form action="" method="POST">
+                        <label for="PBevitel">Írd be a költésed/bevételed:</label>
+                        <input type="number" name="PBevitel" required>
+                        <br>
+                        <label for="datum">Jelöld meg a dátumot:</label>
+                        <input type="date" name="datum" required>
+                        <br>
+                        <label for="Comment">Írd be az indokot:</label>
+                        <input type="text" name="Comment" required>
+                        <br>
+                        <input type="submit" value="Mentés">
+                    </form>
 
                     </div> 
 
