@@ -5,7 +5,12 @@ session_start();
 
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
-    $stmt = $pdo->prepare("SELECT f.rang, p.egyenleg FROM felhasznalok f INNER JOIN persely p ON f.id = p.felhasznalo_id WHERE f.id = ?");
+    $stmt = $pdo->prepare("
+        SELECT f.rang, p.egyenleg 
+        FROM felhasznalok f
+        INNER JOIN persely p ON f.id = p.felhasznalo_id
+        WHERE f.id = ?
+    ");
     $stmt->execute([$_SESSION['felhasznalo_id']]);
     $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -18,30 +23,47 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-$formatalt_egyenleg = isset($_SESSION['perselyegyenleg']) ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') : '0';
+// Perselyegyenleg formázása PHP-ban vesszővel
+$formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
+    ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
+    : '0';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['PBevitel'], $_POST['Comment'], $_POST['datum'])) {
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") 
+    {
         $adat1 = $_POST['PBevitel'];
-        $adat2 = $_POST['Comment'];
-        $datum = $_POST['datum'];
-        $felhasznalo_id = $_SESSION['felhasznalo_id'] ?? null;
+        $com = $_POST['ind'];
+        $date = $_POST['datum'];
+    
 
-        if ($felhasznalo_id) {
-            if($adat1 > 0)
+        if($adat1 > 0)
+        {
+            // A feltöltés
+            $stmt = $pdo->prepare("
+            INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
+            VALUES (?, ?, ?, ?, null);
+                            ");
+            $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
+
+        }  
+        else
+        {
+            if($adat1 < 0)
             {
-                $stmt = $pdo->prepare("INSERT INTO naptar (felhasznalo_id, ind, datum,NBevetel,NKiadas) VALUES (?, ?, ?, ?, null)");
-                $stmt->execute([$felhasznalo_id, $adat2, $datum, $adat1]);
-            }
-            else if($adat1 < 0)
-            {
-                $stmt = $pdo->prepare("INSERT INTO naptar (felhasznalo_id, ind, datum,NBevetel,NKiadas) VALUES (?, ?, ?,null,?)");
-                $stmt->execute([$felhasznalo_id, $adat2, $datum,$adat1]);
-            
+                    //feltöltés
+                    $stmt = $pdo->prepare("
+                    INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
+                    VALUES (?, ?, ?, null, ?);
+                        ");
+                $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
             }
         }
+
+       
+    
+
     }
-}
+    
 ?>
 
 
@@ -64,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
@@ -126,17 +147,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <div id="bevitel">
                     <form action="" method="POST">
-                        <label for="PBevitel">Írd be a költésed/bevételed:</label>
-                        <input type="number" name="PBevitel" required>
-                        <br>
-                        <label for="datum">Jelöld meg a dátumot:</label>
-                        <input type="date" name="datum" required>
-                        <br>
-                        <label for="Comment">Írd be az indokot:</label>
-                        <input type="text" name="Comment" required>
-                        <br>
-                        <input type="submit" value="Mentés">
-                    </form>
+                    Írd be a költésed/bevételed:
+                    <input type="number" id="PBevitel" name="PBevitel" required>
+                    <br>
+                    <br>
+                    jelöld meg, mikor (fog) történt:
+                    <input type="date" name="datum" required>
+                    <br>
+                    <br>
+                    Írd be az indokot
+                    <br>
+                    <input type="text" id="ind" name="ind" required>
+                    <input type="submit" id="kuld">
+                </form>
+
 
                     </div> 
 

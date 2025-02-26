@@ -17,7 +17,7 @@
         </div>
         <form id="login-form">
             <div class="mb-3">
-                <label for="nev" class="form-label">Név</label>
+                <label for="nev" class="form-label">Felhasználónév</label>
                 <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
             </div>
             <div class="mb-3">
