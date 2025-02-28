@@ -91,40 +91,13 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                 </header>
                 <div id="egyenlegkezeles" style="visibility: hidden;">
                     <div class="dashboard mt-4">
-                        <div class="card p-3 mt-3 kartya">
-                            <h3>Persely egyenleg: <b id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</h3>
-                        </div>
-                        <div class="container mt-4">
-                            <h4>Bankkártya kiválasztása vagy létrehozása</h4>
-                            <form action="bankkartya_kezeles.php" method="post">
-                                <div class="mb-3">  
-                                    <label for="bankkartya" class="form-label">Válassz bankkártyát</label>
-                                    <select class="form-control" id="bankkartya" name="bankkartya_id">
-                                        <option value="">-- Válassz --</option>
-                                        <?php foreach ($bankkartyak as $kartya): ?>
-                                            <option value="<?php echo $kartya['id']; ?>"> <?php echo htmlspecialchars($kartya['megnevezes']); ?> </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <h5>Vagy hozz létre új bankkártyát</h5>
-                                <div class="mb-3">
-                                    <label for="megnevezes" class="form-label">Megnevezés</label>
-                                    <input type="text" class="form-control" id="megnevezes" name="megnevezes" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="leiras" class="form-label">Leírás</label>
-                                    <textarea class="form-control" id="leiras" name="leiras" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Mentés</button>
-                            </form>
-                            <h4>Pénz hozzáadása a perselyhez</h4>
-                            <form action="persely_hozzaadas.php" method="post">
-                                <div class="mb-3">
-                                    <label for="osszeg" class="form-label">Összeg</label>
-                                    <input type="number" class="form-control" id="osszeg" name="osszeg" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="gomb">Hozzáadás</button>
-                            </form>
+                        <div class="card p-3 mt-3 kartya1">
+                            <!-- <h3>Persely egyenleg: <b id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</h3> -->
+                            <center>
+                            <h3>Az oldal még fejlesztés alatt!</h3>
+                            <h4>látogasd meg a <a href="../kezdolap/">kezdőlapot!</a></h4>
+                            <h5>vagy látogasd meg a <a href="../naptar/">naptár</a> oldalt.</h5>
+                            </center>
                         </div>
                     </div>
                 </div>

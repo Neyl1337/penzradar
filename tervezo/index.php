@@ -87,7 +87,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                    <div id="tervezo">
+                    <!-- <div id="tervezo">
                         
                     </div>
 
@@ -100,6 +100,28 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                             </center>
                     </div>
                 </div>
+                </div> -->
+                <div id="egyenlegkezeles" style="visibility: hidden;">
+                    <div class="dashboard mt-4">
+                        <div class="card p-3 mt-3 kartya1">
+                            <!-- <h3>Persely egyenleg: <b id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</h3> -->
+                            <center>
+                            <h3>Az oldal még fejlesztés alatt!</h3>
+                            <h4>látogasd meg a <a href="../kezdolap/">kezdőlapot!</a></h4>
+                            <h5>vagy látogasd meg a <a href="../naptar/">naptár</a> oldalt.</h5>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bejelentkez" style="visibility: hidden;">
+                    <div class="card p-3 mt-3 kartya1">
+                            <center>
+                            <h3>Jelenleg Nem vagy bejelentkezve!</h3>
+                            <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
+                            <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
+                            </center>
+                    </div>
                 </div>
             </main>
         </div>

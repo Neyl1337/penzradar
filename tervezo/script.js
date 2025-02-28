@@ -11,6 +11,7 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "block";
         document.getElementById("perselyegyenleg").style.visibility = "visible";
         document.getElementById("szerepkor").style.visibility = "visible";
+        document.getElementById("egyenlegkezeles").style.visibility = "visible";
         document.getElementById("nemvagybejelentkezve").innerHTML = "";
     } else {
         document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
@@ -20,7 +21,8 @@ window.onload = () => {
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
         document.getElementById("profil").style.visibility = "none";
-        document.getElementById("nemvagybejelentkezve").style.visibility = "visible";
+        document.getElementById("bejelentkez").style.visibility = "visible";
+        document.getElementById("egyenlegkezeles").innerHTML = "";
     }
 };
 
