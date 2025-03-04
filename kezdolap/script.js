@@ -114,3 +114,40 @@ new Chart(document.getElementById('haviBevetelChart').getContext('2d'), {
         }
     }
 });
+
+
+// Kamatszámítás függvény
+function szamitKamat() {
+    const alapOsszeg = parseFloat(document.getElementById('alapOsszeg').value);
+    const kamatSzazalek = parseFloat(document.getElementById('kamatSzazalek').value);
+    const idotartam = parseInt(document.getElementById('idotartam').value);
+
+    if (isNaN(alapOsszeg) || isNaN(kamatSzazalek) || isNaN(idotartam)) {
+        document.getElementById('kamatEredmeny').innerText = "Kérlek, adj meg érvényes számokat!";
+        return;
+    }
+
+    // Egyszerű kamatszámítás: Összeg = Alapösszeg * (1 + Kamat * Időtartam)
+    const vegOsszeg = alapOsszeg * (1 + (kamatSzazalek / 100) * idotartam);
+    const formataltVegOsszeg = vegOsszeg.toLocaleString('hu-HU', { maximumFractionDigits: 0 });
+
+    document.getElementById('kamatEredmeny').innerText = `Végösszeg: ${formataltVegOsszeg} Ft`;
+}
+
+// Alapértelmezett viselkedés beállítása
+document.addEventListener('DOMContentLoaded', function () {
+    if (userName) {
+        document.getElementById('felhasznaloNev').innerText = userName;
+        document.getElementById('bejelentkezesopcio').style.display = 'none';
+        document.getElementById('profilopcio').style.display = 'block';
+        document.getElementById('beallitasopcio').style.display = 'block';
+        document.getElementById('kijelentkezesopcio').style.display = 'block';
+        document.getElementById('szerepkor').style.visibility = 'visible';
+        document.getElementById('perselyegyenleg').style.visibility = 'visible';
+        document.getElementById('statisztika').style.visibility = 'visible';
+        document.getElementById('nemvagybejelentkezve').style.visibility = 'hidden';
+    } else {
+        document.getElementById('statisztika').style.visibility = 'hidden';
+        document.getElementById('nemvagybejelentkezve').style.visibility = 'visible';
+    }
+});

@@ -1,3 +1,4 @@
+/* style.css */
 body {
     background-color: #121212;
     color: white;
@@ -136,4 +137,44 @@ canvas {
 #adminpanel {
     font-size: 25px;
     text-align: center;
+}
+
+/* Kamatszámító űrlap minimális stílusa */
+.kamat-container {
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+.kamat-container h4 {
+    color: #63ffbe;
+    font-size: 1.2rem;
+}
+
+.kamat-container label {
+    color: white;
+    font-size: 1rem;
+}
+
+.kamat-container .form-control {
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #63ffbe;
+    border-radius: 5px;
+}
+
+.kamat-container .btn-primary {
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+}
+
+.kamat-container .btn-primary:hover {
+    background-color: #63ffbe;
+    color: #1e1e1e;
+}
+
+#kamatEredmeny {
+    color: #63ffbe;
 }

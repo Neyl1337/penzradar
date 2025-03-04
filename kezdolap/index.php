@@ -37,10 +37,43 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../hirdetes/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #introModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none;
+        }
+        #introModal.fade-out {
+            opacity: 0;
+        }
+        #introModal video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+        #mainContent {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
+    <!-- Intro videó modális ablak -->
+    <div id="introModal">
+        <video id="introVideo" autoplay muted>
+            <source src="../videok/intro.mp4" type="video/mp4">
+            A böngésződ nem támogatja a videó lejátszását.
+        </video>
+    </div>
+
+    <div class="container-fluid" id="mainContent">
         <div class="row">
             <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <h2 class="text-center">PénzRadar</h2>
@@ -51,8 +84,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div id="arfolyamok" class="text-center my-3">
-                        <ul id="arfolyam-lista" class="arfolyam-stilus">
-                        </ul>
+                        <ul id="arfolyam-lista" class="arfolyam-stilus"></ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
@@ -60,11 +92,34 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </div>
                     <?php endif; ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
-                    <?php endif; ?>
+                    <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban -->
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                    <div class="kamat-container my-3">
+                        <h4>Kamatszámítás</h4>
+                        <form id="kamatSzamitasForm">
+                            <div class="mb-2">
+                                <label for="alapOsszeg">Tőke (Ft):</label>
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>">
+                            </div>
+                            <div class="mb-2">
+                                <label for="kamatSzazalek">Kamatláb (%):</label>
+                                <input type="number" id="kamatSzazalek" class="form-control" min="0" step="0.1" value="5">
+                            </div>
+                            <div class="mb-2">
+                                <label for="idotartam">Futamidő (év):</label>
+                                <input type="number" id="idotartam" class="form-control" min="1" value="1">
+                            </div>
+                            <button type="button" class="btn btn-primary w-100" onclick="szamitKamat()">Számítás</button>
+                        </form>
+                        <p id="kamatEredmeny" class="mt-2"></p>
                     </div>
+                    <?php endif; ?>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                    </div>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
@@ -85,101 +140,130 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
-                <section id="bevetelek">
-                    <h3 class="text-center">Bevételek</h3>
-                    <br>
-                    <div class="row g-4">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Napi bevétel</h5>
-                                <b>0 Ft</b>
+                    <section id="bevetelek">
+                        <h3 class="text-center">Bevételek</h3>
+                        <br>
+                        <div class="row g-4">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Napi bevétel</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Havi bevétel</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Átlagos bevétel</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Legnagyobb bevétel</h5>
+                                    <b>0 Ft</b>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Havi bevétel</h5>
-                                <b>0 Ft</b>
+                        <br><br>
+                        <div class="container text-center">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-6 grafikon-container">
+                                    <canvas id="haviBevetelChart"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Átlagos bevétel</h5>
-                                <b>0 Ft</b>
+                    </section>
+                    <br><br>
+                    <hr>
+                    <section id="kiadasok">
+                        <h3 class="text-center">Költések</h3>
+                        <br>
+                        <div class="row g-4">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Napi költés</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Havi költés</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Átlagos költés</h5>
+                                    <b>0 Ft</b>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="kartya p-3 text-center">
+                                    <h5>Legnagyobb költés</h5>
+                                    <b>0 Ft</b>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Legnagyobb bevétel</h5>
-                                <b>0 Ft</b>
+                        <br><br>
+                        <div class="container text-center">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-6 grafikon-container">
+                                    <canvas id="haviKoltesChart"></canvas>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="container text-center">
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-md-6 grafikon-container">
-                                <canvas id="haviBevetelChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <br><br>
-
-                <hr>
-                
-                <section id="kiadasok">
-                    <h3 class="text-center">Költések</h3>
-                    <br>
-                    <div class="row g-4">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Napi költés</h5>
-                                <b>0 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Havi költés</h5>
-                                <b>0 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Átlagos költés</h5>
-                                <b>0 Ft</b>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <div class="kartya p-3 text-center">
-                                <h5>Legnagyobb költés</h5>
-                                <b>0 Ft</b>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="container text-center">
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-md-6 grafikon-container">
-                                <canvas id="haviKoltesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                
-                <br><br>
-                <hr>
-            </div>
+                    </section>
+                    <br><br>
+                    <hr>
+                </div>
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
                     <div class="card p-3 mt-3 kartya1">
-                            <center>
+                        <center>
                             <h3>Jelenleg Nem vagy bejelentkezve!</h3>
                             <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
                             <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
-                            </center>
+                        </center>
                     </div>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <div class="ad-container">
+                        <h1 id="title"></h1>
+                        <div class="subtitle" id="subtitle"></div>
+                        <div class="calculator">
+                            <div class="circle"></div>
+                            <div class="counter" id="counter"></div>
+                        </div>
+                        <a href="../regisztracio/" class="cta-button" id="cta"></a>
+                    </div>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <!-- Jobb oldali kalkulátor - csak kijelentkezett állapotban -->
+                    <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                    <div class="card p-3 mt-3 kartya1">
+                        <div class="kamat-container my-3">
+                            <h4>Kamatszámítás</h4>
+                            <form id="kamatSzamitasForm">
+                                <div class="mb-2">
+                                    <label for="alapOsszeg">Tőke (Ft):</label>
+                                    <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="kamatSzazalek">Kamatláb (%):</label>
+                                    <input type="number" id="kamatSzazalek" class="form-control" min="0" step="0.1" value="5">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="idotartam">Futamidő (év):</label>
+                                    <input type="number" id="idotartam" class="form-control" min="1" value="1">
+                                </div>
+                                <button type="button" class="btn btn-primary w-100" onclick="szamitKamat()">Számítás</button>
+                            </form>
+                            <p id="kamatEredmeny" class="mt-2"></p>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </main>
         </div>
@@ -188,8 +272,48 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+
+        // Videó lejátszás kezelése
+        document.addEventListener('DOMContentLoaded', function() {
+            const introVideo = document.getElementById('introVideo');
+            const introModal = document.getElementById('introModal');
+            const mainContent = document.getElementById('mainContent');
+
+            const isFirstVisitInTab = !sessionStorage.getItem('hasVisitedInTab');
+            const isLoggedIn = '<?php echo isset($_SESSION["felhasznalo_id"]) ? "true" : "false"; ?>';
+
+            if (!isFirstVisitInTab || isLoggedIn !== "true") {
+                introModal.style.display = 'none';
+                return;
+            }
+
+            introVideo.play().then(() => {
+                sessionStorage.setItem('hasVisitedInTab', 'true');
+            }).catch(function(error) {
+                console.log("A videó automatikus lejátszása nem sikerült: ", error);
+                introModal.classList.add('fade-out');
+                setTimeout(() => {
+                    introModal.style.display = 'none';
+                }, 1000);
+            });
+
+            introVideo.onended = function() {
+                introModal.classList.add('fade-out');
+                setTimeout(() => {
+                    introModal.style.display = 'none';
+                }, 1000);
+            };
+
+            introVideo.onerror = function() {
+                introModal.classList.add('fade-out');
+                setTimeout(() => {
+                    introModal.style.display = 'none';
+                }, 1000);
+            };
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <script src="../hirdetes/js.js"></script>
 </body>
 </html>
