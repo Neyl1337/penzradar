@@ -139,3 +139,8 @@ span {
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
 }
+
+#profilod {
+    color: #63ffbe;
+    font-weight: bold;
+}

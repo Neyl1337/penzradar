@@ -109,7 +109,7 @@ if ($felhasznaloId) {
                 </header>
                     <div id="profil" style="visibility: hidden;">
                     <div class="container mt-4">
-                        <h3>Profilod</h3>
+                    <h2 id="profilod">Profilod</h2>
                         <form id="profilbox" method="POST" action="felhasznalo_modositas.php">
                             <div class="mb-3">
                                 <label class="form-label">Név</label>
