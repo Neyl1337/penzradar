@@ -1,7 +1,16 @@
 <?php
 require_once '../adatbazis.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../PHPMailer/Exception.php';
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
 
 session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
@@ -22,64 +31,145 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-$formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
+$formatalt_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
+$hiba_nev = false;
+$hiba_jelszo = false;
+$siker_nev = false;
+$siker_jelszo = false;
+$hiba_email = false;
+$siker_email = false;
 
-    $hiba_nev = false;
-    $hiba_jelszo = false;
-    $siker_nev = false;
-    $siker_jelszo = false;
+if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jelszo']) || isset($_POST['fiok_torles'])) {
+    $felhasznalo_id = $_SESSION['felhasznalo_id'];
+    $felhasznalo_jelszo = $_POST['regi_jelszo_nev'] ?? '';
 
-                    if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jelszo'])) {
-                        $felhasznalo_id = $_SESSION['felhasznalo_id'];
-                        $felhasznalo_jelszo = $_POST['regi_jelszo_nev'];
+    if (isset($_POST['uj_nev'])) {
+        $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
+        $stmt->execute([$felhasznalo_id]);
+        $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                        // Név módosítása
-                        if (isset($_POST['uj_nev'])) {
-                            $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
-                            $stmt->execute([$felhasznalo_id]);
-                            $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
+            $uj_nev = trim($_POST['uj_nev']);
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE nev = ? AND id != ?");
+            $stmt->execute([$uj_nev, $felhasznalo_id]);
+            $nev_letezik = $stmt->fetchColumn();
 
-                            if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
-                                $uj_nev = $_POST['uj_nev'];
-                                $stmt = $pdo->prepare("UPDATE felhasznalok SET nev = ? WHERE id = ?");
-                                $stmt->execute([$uj_nev, $felhasznalo_id]);
-                                $_SESSION['felhasznalo_nev'] = $uj_nev;
-                                $siker_nev = true;
-                            } else {
-                                $hiba_nev = true;
-                            }
-                        }
+            if ($nev_letezik > 0) {
+                $hiba_nev = "ilyen_nev_mar_van";
+            } else {
+                $stmt = $pdo->prepare("UPDATE felhasznalok SET nev = ? WHERE id = ?");
+                $stmt->execute([$uj_nev, $felhasznalo_id]);
+                $_SESSION['felhasznalo_nev'] = $uj_nev;
+                $siker_nev = true;
+            }
+        } else {
+            $hiba_nev = true;
+        }
+    }
 
-                        // Jelszó módosítása
-                        if (isset($_POST['uj_jelszo'])) {
-                            $felhasznalo_jelszo = $_POST['regi_jelszo_jelszo'];
+    if (isset($_POST['uj_jelszo'])) {
+        $felhasznalo_jelszo = $_POST['regi_jelszo_jelszo'] ?? '';
 
-                            $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
-                            $stmt->execute([$felhasznalo_id]);
-                            $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare("SELECT jelszo FROM felhasznalok WHERE id = ?");
+        $stmt->execute([$felhasznalo_id]);
+        $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                            if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
-                                if ($_POST['uj_jelszo'] === $_POST['uj_jelszo_meg']) {
-                                    $uj_jelszo = $_POST['uj_jelszo'];
-                                    $uj_jelszo_hash = password_hash($uj_jelszo, PASSWORD_DEFAULT);
-                                    $stmt = $pdo->prepare("UPDATE felhasznalok SET jelszo = ? WHERE id = ?");
-                                    $stmt->execute([$uj_jelszo_hash, $felhasznalo_id]);
+        if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
+            if ($_POST['uj_jelszo'] === $_POST['uj_jelszo_meg']) {
+                $uj_jelszo = $_POST['uj_jelszo'];
+                $uj_jelszo_hash = password_hash($uj_jelszo, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("UPDATE felhasznalok SET jelszo = ? WHERE id = ?");
+                $stmt->execute([$uj_jelszo_hash, $felhasznalo_id]);
 
-                                    // Jelszó módosítása után kijelentkeztetés
-                                    session_destroy();
-                                    header('Location: ../adatbazis_logout.php');
-                                    exit;
-                                } else {
-                                    $hiba_jelszo = true;
-                                }
-                            } else {
-                                $hiba_jelszo = true;
-                            }
-                        }
-                    }
+                session_destroy();
+                header('Location: ../adatbazis_logout.php');
+                exit;
+            } else {
+                $hiba_jelszo = true;
+            }
+        } else {
+            $hiba_jelszo = true;
+        }
+    }
+
+    if (isset($_POST['uj_email'])) {
+        $uj_email = trim($_POST['uj_email']);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE email = ? AND id != ?");
+        $stmt->execute([$uj_email, $felhasznalo_id]);
+        $email_letezik = $stmt->fetchColumn();
+
+        if ($email_letezik > 0) {
+            $hiba_email = "ilyen_email_mar_van";
+        } else {
+            $kod = rand(100000, 999999);
+            $stmt = $pdo->prepare("SELECT nev FROM felhasznalok WHERE id = ?");
+            $stmt->execute([$felhasznalo_id]);
+            $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nev = $felhasznalo['nev'];
+            $_SESSION['email_kod'] = $kod;
+            $_SESSION['uj_email'] = $uj_email;
+            $_SESSION['action'] = 'email';
+
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'penzradar.hu@gmail.com';
+                $mail->Password = 'obvgamdjyxnqmwrv';
+                $mail->SMTPSecure = 'ssl';
+                $mail->Port = 465;
+                $mail->setFrom('penzradar.hu@gmail.com', 'PénzRadar');
+                $mail->addAddress($uj_email, $nev);
+                $mail->Subject = 'Módosító kód';
+                $mail->CharSet = 'UTF-8';
+                $mail->Body = "Kedves $nev,\n\nA módosítás befejezéséhez használd ezt a kódot: $kod\n\nÜdvözlettel, PénzRadar csapata";
+                $mail->send();
+                $siker_email = true;
+                header('Location: megerosites.php');
+                exit;
+            } catch (Exception $e) {
+                $hiba_email = true;
+            }
+        }
+    }
+
+    if (isset($_POST['fiok_torles'])) {
+        $stmt = $pdo->prepare("SELECT email, nev FROM felhasznalok WHERE id = ?");
+        $stmt->execute([$felhasznalo_id]);
+        $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $email = $felhasznalo['email'];
+        $nev = $felhasznalo['nev'];
+        $kod = rand(100000, 999999);
+        $_SESSION['torles_kod'] = $kod;
+        $_SESSION['action'] = 'torles';
+
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'penzradar.hu@gmail.com';
+            $mail->Password = 'obvgamdjyxnqmwrv';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port = 465;
+            $mail->setFrom('penzradar.hu@gmail.com', 'PénzRadar');
+            $mail->addAddress($email, $nev);
+            $mail->Subject = 'Törlés kód';
+            $mail->CharSet = 'UTF-8';
+            $mail->Body = "Kedves $nev,\n\nA törlés befejezéséhez használd ezt a kódot: $kod\n\nÜdvözlettel, PénzRadar csapata";
+            $mail->send();
+            header('Location: megerosites.php');
+            exit;
+        } catch (Exception $e) {
+            $hiba_email = true;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -124,7 +214,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
                         <span class="me-3" id="szerepkor" style="visibility: hidden;">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
-                        <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
+                        <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatalt_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                             <i class="fas fa-user-circle"></i> 
                             <span id="felhasznaloNev">Jelentkezz be!</span>
@@ -137,10 +227,9 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </ul>
                     </div>
                 </header>
-                <!-- HTML kód -->
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-4" id="modositas" style="visibility: hidden;">
+                        <div id="modositas" style="visibility: hidden;">
                             <div>
                                 <h2 id="nevmodosit">Név módosítása</h2>
                                 <form action="" method="POST">
@@ -152,9 +241,13 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                                         <label for="uj_nev" class="form-label">Új név</label>
                                         <input type="text" class="form-control" id="uj_nev" name="uj_nev">
                                     </div>
-                                    <?php if ($hiba_nev): ?>
+                                    <?php if ($hiba_nev === true): ?>
                                         <div class="alert alert-danger" role="alert">
                                             A jelenlegi jelszó nem megfelelő a név módosításához!
+                                        </div>
+                                    <?php elseif ($hiba_nev === "ilyen_nev_mar_van"): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            Ez a név már foglalt, kérlek válassz másikat!
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($siker_nev): ?>
@@ -166,7 +259,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                                 </form>
                             </div>
                         </div>
-                        <div class="col-md-4" id="modositas2" style="visibility: hidden;">
+                        <div id="modositas2" style="visibility: hidden;">
                             <div>
                                 <h2 id="jelszomodosit">Jelszó módosítása</h2>
                                 <form action="" method="POST">
@@ -189,7 +282,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                                     <?php endif; ?>
                                     <?php if ($siker_jelszo): ?>
                                         <div class="alert alert-success" role="alert">
-                                            A jelszó sikeresen módosítva! Kijelentkezés után újra be kell jelentkeznie.
+                                            A jelszó sikeresen módosítva!
                                         </div>
                                     <?php endif; ?>
                                     <button type="submit" class="button2 btn-primary">Mentés</button>
@@ -197,16 +290,63 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                             </div>
                         </div>
 
-                        <!-- <div class="col-md-4" id="modositas3" style="visibility: hidden;">
+                        <div id="modositas3" style="visibility: hidden;">
                             <div>
-                                <button type="submit" class="button2 btn-danger">Fiók törlése</button>
+                                <h2 id="emailmodositas">Email módosítása</h2>
+                                <form action="" method="POST">
+                                    <label for="uj_email" class="form-label">Új email</label>
+                                    <input type="text" class="form-control" id="uj_email" name="uj_email"><br>
+                                    <?php if ($hiba_email === true): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            Az email küldése sikertelen!
+                                        </div>
+                                    <?php elseif ($hiba_email === "ilyen_email_mar_van"): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            Ez az email cím már foglalt, kérlek válassz másikat!
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($siker_email): ?>
+                                        <div class="alert alert-success" role="alert">
+                                            A megerősítő kód elküldve az új email címre.
+                                        </div>
+                                    <?php endif; ?>
+                                    <button type="submit" class="button2 btn-primary">Mentés</button>
+                                </form>
                             </div>
-                        </div> -->
+                        </div>
+
+                        <div id="modositas4" style="visibility: hidden;">
+                            <div>
+                                <h2 id="fioktorles">Fiók törlése</h2>
+                                <button type="button" class="button3 btn-danger" data-bs-toggle="modal" data-bs-target="#fioktorlesModal">Törlés</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
+
+    <div id="fioktorlesModal" class="modal fade" tabindex="-1" aria-labelledby="fioktorlesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fioktorlesModalLabel">Fiók törlése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretné a fiókját? Ez a művelet nem visszafordítható.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <form action="" method="POST">
+                        <button type="submit" name="fiok_torles" class="btn btn-danger">Fiók törlése</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';

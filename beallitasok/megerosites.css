@@ -1,0 +1,22 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+.btn-zold {
+    background-color: #63ffbe;
+    color: #1a1a1a;
+    border-radius: 8px;
+    border: none;
+}
+
+.btn-zold:hover {
+    background-color: #63ffbe;
+    color: #ffffff;
+}

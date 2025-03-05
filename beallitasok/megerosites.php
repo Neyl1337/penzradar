@@ -1,6 +1,62 @@
 <?php
+session_start();
+require_once '../adatbazis.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $kod = $_POST['kod'];
+    $action = $_SESSION['action'] ?? '';
 
+    if ($action === 'email' && $kod == $_SESSION['email_kod']) {
+        $uj_email = $_SESSION['uj_email'];
+        $felhasznalo_id = $_SESSION['felhasznalo_id'];
+
+        $stmt = $pdo->prepare("UPDATE felhasznalok SET email = ? WHERE id = ?");
+        $stmt->execute([$uj_email, $felhasznalo_id]);
+
+        unset($_SESSION['email_kod']);
+        unset($_SESSION['uj_email']);
+        unset($_SESSION['action']);
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Az email cím sikeresen módosítva!', 'redirect' => '../beallitasok/']);
+        exit;
+    } elseif ($action === 'torles' && $kod == $_SESSION['torles_kod']) {
+        $felhasznalo_id = $_SESSION['felhasznalo_id'];
+
+        $pdo->beginTransaction();
+
+        try {
+            $stmt1 = $pdo->prepare("DELETE FROM naptar WHERE felhasznalo_id = ?");
+            $stmt1->execute([$felhasznalo_id]);
+
+            $stmt2 = $pdo->prepare("DELETE FROM persely WHERE felhasznalo_id = ?");
+            $stmt2->execute([$felhasznalo_id]);
+
+            $stmt3 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt3->execute([$felhasznalo_id]);
+
+            $pdo->commit();
+
+            unset($_SESSION['torles_kod']);
+            unset($_SESSION['action']);
+            session_destroy();
+
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => 'A fiók és minden hozzátartozó adat sikeresen törölve!', 'redirect' => '../adatbazis_logout.php']);
+            exit;
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Hiba történt a törlés során: ' . $e->getMessage()]);
+            exit;
+        }
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Helytelen kód!']);
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -8,15 +64,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Új jelszó</title>
+    <title>PénzRadar - Megerősítés</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="megerosites.css">
 </head>
 <body>
     <div class="regisztracios-doboz">
         <h1>PénzRadar</h1>
-        <h5>Új jelszó</h5>
+        <h5><?php echo ($_SESSION['action'] ?? '') === 'torles' ? 'Fiók törlés megerősítése' : 'Email megerősítés'; ?></h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
         </div>
