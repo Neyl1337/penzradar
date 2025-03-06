@@ -137,3 +137,179 @@ canvas {
     font-size: 25px;
     text-align: center;
 }
+
+.tervezo-form {
+    max-width: 500px;
+    margin: 20px 0;
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 5px;
+    color: #ffffff;
+    box-shadow: 0 0 10px #63ffbe;
+}
+.tervezo-form label {
+    color: #ffffff;
+}
+.tervezo-form .form-control,
+.tervezo-form .form-select {
+    background-color: #ffffff;
+    color: #000000;
+}
+.tranzakcio-tabla {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0 0 10px #63ffbe;
+}
+.tranzakcio-tabla th,
+.tranzakcio-tabla td {
+    color: #ffffff;
+}
+.felfuggesztett {
+    opacity: 0.4;
+}
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+h1 {
+    color: #63ffbe;
+    font-weight: bold;
+}
+.modal-title {
+    color: #63ffbe;
+    font-weight: bold;
+}
+.tervezett-koltseg {
+    margin-bottom: 10px;
+    color: #63ffbe;
+    font-weight: bold;
+}
+.maxkoltes-gomb {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+.modal-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0 0 10px #63ffbe;
+}
+@media (max-width: 768px) {
+    .oldalsav {
+        min-height: auto;
+    }
+    .tranzakcio-tabla {
+        font-size: 14px;
+    }
+    .tervezo-form {
+        max-width: 100%;
+    }
+}
+
+#h2mennyit {
+    font-weight: bold;
+}
+
+.button2 {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button3 {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #ff6969;
+    border-color: #ff6969;
+    box-shadow: 0 0 5px #ff6969;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button4 {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #ffa51f;
+    border-color: #ffa51f;
+    box-shadow: 0 0 5px #ffa51f;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button2:hover {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button3:hover {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #d40000;
+    border-color: #d40000;
+    box-shadow: 0 0 5px #d40000;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.button4:hover {
+    cursor: url("../kepek/cursor.ico"), default;
+    background-color: #c27400;
+    border-color: #c27400;
+    box-shadow: 0 0 5px #c27400;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 14px;
+}
+
+.tranzakcio-tabla th, .tranzakcio-tabla td {
+    color: #ffffff;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: var(--bs-table-striped-bg);
+    color: white;
+}

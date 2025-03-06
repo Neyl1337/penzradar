@@ -11,8 +11,8 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "block";
         document.getElementById("perselyegyenleg").style.visibility = "visible";
         document.getElementById("szerepkor").style.visibility = "visible";
-        document.getElementById("egyenlegkezeles").style.visibility = "visible";
-        document.getElementById("nemvagybejelentkezve").innerHTML = "";
+        document.getElementById("tervezoablakok").style.visibility = "visible";
+        document.getElementById("nemvagybejelentkezve22").innerHTML = "";
     } else {
         document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
@@ -20,9 +20,8 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "none";
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
-        document.getElementById("profil").style.visibility = "none";
-        document.getElementById("bejelentkez").style.visibility = "visible";
-        document.getElementById("egyenlegkezeles").innerHTML = "";
+        document.getElementById("tervezoablakok").innerHTML = "";
+        document.getElementById("nemvagybejelentkezve22").style.visibility = "visible";
     }
 };
 
@@ -60,7 +59,6 @@ window.onload = () => {
             const lastUpdate = new Date(data.time_last_updated * 1000);
             frissitesIdo.textContent = `Utolsó frissítés: ${lastUpdate.toLocaleString()}`;
         } catch (error) {
-            console.error('Hiba az árfolyamok lekérése során:', error);
         }
     }
     
