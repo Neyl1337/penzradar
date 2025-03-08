@@ -18,7 +18,7 @@
         <form id="login-form">
             <div class="mb-3">
                 <label for="nev" class="form-label">Felhasználónév</label>
-                <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
+                <input type="text" class="form-control" id="nev" name="nev" placeholder="Felhasználónév" required>
             </div>
             <div class="mb-3">
                 <label for="jelszo" class="form-label">Jelszó</label>

@@ -32,8 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2 = $pdo->prepare("DELETE FROM persely WHERE felhasznalo_id = ?");
             $stmt2->execute([$felhasznalo_id]);
 
-            $stmt3 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt3 = $pdo->prepare("DELETE FROM tervezo WHERE felhasznalo_nev = ?");
             $stmt3->execute([$felhasznalo_id]);
+
+            $stmt4 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt4->execute([$felhasznalo_id]);
 
             $pdo->commit();
 

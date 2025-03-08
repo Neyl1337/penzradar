@@ -148,11 +148,12 @@ $tranzakciok = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </header>
                 <div id="tervezoablakok" style="visibility: hidden;">
                 <br>
-                <h2 id="h2mennyit">Mennyit szeretne költeni?</h2>
-
-                <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#maxkoltesModal">
-                    Tervezett havi költés megadása
-                </button>
+                <div class="mennyit-container">
+                    <center><h2 id="h2mennyit">Mennyit szeretne költeni?</h2></center>
+                    <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#maxkoltesModal">
+                        Tervezett havi költés megadása
+                    </button>
+                </div>
 
                 <form method="POST" class="tervezo-form">
                 <div class="tervezett-koltseg">

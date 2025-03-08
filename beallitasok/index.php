@@ -53,17 +53,23 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
 
         if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
             $uj_nev = trim($_POST['uj_nev']);
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE nev = ? AND id != ?");
-            $stmt->execute([$uj_nev, $felhasznalo_id]);
-            $nev_letezik = $stmt->fetchColumn();
 
-            if ($nev_letezik > 0) {
-                $hiba_nev = "ilyen_nev_mar_van";
+            // Ellenőrzés: 3-20 karakter, csak betűk és számok
+            if (!preg_match("/^[\p{L}0-9]{3,20}$/u", $uj_nev)) {
+                $hiba_nev = "ervenytelen_nev";
             } else {
-                $stmt = $pdo->prepare("UPDATE felhasznalok SET nev = ? WHERE id = ?");
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM felhasznalok WHERE nev = ? AND id != ?");
                 $stmt->execute([$uj_nev, $felhasznalo_id]);
-                $_SESSION['felhasznalo_nev'] = $uj_nev;
-                $siker_nev = true;
+                $nev_letezik = $stmt->fetchColumn();
+
+                if ($nev_letezik > 0) {
+                    $hiba_nev = "ilyen_nev_mar_van";
+                } else {
+                    $stmt = $pdo->prepare("UPDATE felhasznalok SET nev = ? WHERE id = ?");
+                    $stmt->execute([$uj_nev, $felhasznalo_id]);
+                    $_SESSION['felhasznalo_nev'] = $uj_nev;
+                    $siker_nev = true;
+                }
             }
         } else {
             $hiba_nev = true;
@@ -249,6 +255,10 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                                         <div class="alert alert-danger" role="alert">
                                             Ez a név már foglalt, kérlek válassz másikat!
                                         </div>
+                                    <?php elseif ($hiba_nev === "ervenytelen_nev"): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            A név 3-20 karakter hosszú lehet, és csak betűket meg számokat tartalmazhat!
+                                        </div>
                                     <?php endif; ?>
                                     <?php if ($siker_nev): ?>
                                         <div class="alert alert-success" role="alert">
@@ -293,7 +303,7 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                         <div id="modositas3" style="visibility: hidden;">
                             <div>
                                 <h2 id="emailmodositas">Email módosítása</h2>
-                                <form action="" method="POST">
+                                <form action="" method="POST" id="emailModositasForm">
                                     <label for="uj_email" class="form-label">Új email</label>
                                     <input type="text" class="form-control" id="uj_email" name="uj_email"><br>
                                     <?php if ($hiba_email === true): ?>
@@ -310,7 +320,7 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                                             A megerősítő kód elküldve az új email címre.
                                         </div>
                                     <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary">Mentés</button>
+                                    <button type="submit" class="button2 btn-primary" id="emailMentesGomb">Mentés</button>
                                 </form>
                             </div>
                         </div>
@@ -338,9 +348,9 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                     Biztosan törölni szeretné a fiókját? Ez a művelet nem visszafordítható.
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-secondary button2" data-bs-dismiss="modal">Mégse</button>
                     <form action="" method="POST">
-                        <button type="submit" name="fiok_torles" class="btn btn-danger">Fiók törlése</button>
+                        <button type="submit" name="fiok_torles" class="btn btn-danger button3">Fiók törlése</button>
                     </form>
                 </div>
             </div>
@@ -348,8 +358,15 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
     </div>
 
     <script>
-        const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
-        const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+    const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
+    const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+
+    // Email módosítás gomb letiltása és szöveg változtatása
+    document.getElementById('emailModositasForm').addEventListener('submit', function(event) {
+        const gomb = document.getElementById('emailMentesGomb');
+        gomb.disabled = true; // Gomb letiltása
+        gomb.textContent = 'Kérlek várj...'; // Szöveg módosítása
+    });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
