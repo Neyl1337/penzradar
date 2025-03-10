@@ -34,7 +34,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_id'])) {
         $delete_id = intval($_POST['delete_id']);
-
         try {
             $pdo->beginTransaction();
 
@@ -48,16 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
 
-            // Cache frissítése: Session törlése, ha a felhasználó saját magát törli
             if (isset($_SESSION['felhasznalo_id']) && $_SESSION['felhasznalo_id'] == $delete_id) {
-                // Session törlése
                 session_unset();
                 session_destroy();
-                // Átirányítás a bejelentkezési oldalra
                 header("Location: ../bejelentkezes/");
                 exit();
             } else {
-                // Normál esetben csak az oldal frissítése
                 header("Location: index.php");
                 exit();
             }
@@ -68,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     elseif (isset($_POST['edit_id']) && !isset($_POST['update_user'])) {
         $edit_id = intval($_POST['edit_id']);
-        $new_rank = trim($_POST['new_rank']);
+        $new_rank = isset($_POST['new_rank']) ? trim($_POST['new_rank']) : '';
 
         if (!empty($new_rank) && $new_rank !== "valassz") {
             try {
@@ -113,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 } else {
                     $pdo->commit();
-                    echo '<script>alert("Nincs változás a mezőkben!"); window.location.href = "index.php";</script>';
+                    header("Location: index.php");
                     exit();
                 }
             } catch (PDOException $e) {
@@ -134,7 +129,7 @@ $params = [];
 $where_clauses = [];
 
 if (!empty($filter_rank)) {
-    $where_clauses[] = "rang = ?";
+    $where_clauses[] = "UPPER(rang) = UPPER(?)";
     $params[] = $filter_rank;
 }
 
@@ -166,6 +161,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -178,12 +174,10 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                        <div class="admin-panel p-3 mt-4">
-                            <h4>Statisztikák</h4>
-                            <p>Összes felhasználó: <b><?php echo $osszes_felhasznalo; ?></b></p>
-                            <p>Adminok száma: <b><?php echo $adminok_szama; ?></b></p>
-                        </div>
+                        <br>
+                        <h4>Statisztikák</h4>
+                        <p>Összes felhasználó: <b><?php echo $osszes_felhasznalo; ?></b></p>
+                        <p>Adminok száma: <b><?php echo $adminok_szama; ?></b></p>
                         <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     </ul>
                 </nav>
@@ -222,7 +216,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                     <form id="filterForm" method="GET" class="filter-form">
                                         <div>
                                             <label for="rank">Szűrés rang szerint:</label>
-                                            <select name="rank" id="rank">
+                                            <select name="rank" id="rank" onchange="this.form.submit()">
                                                 <option value="">-- Összes rang --</option>
                                                 <option value="Felhasználó" <?= isset($_GET['rank']) && $_GET['rank'] == "Felhasználó" ? "selected" : "" ?>>Felhasználó</option>
                                                 <option value="VIP" <?= isset($_GET['rank']) && $_GET['rank'] == "VIP" ? "selected" : "" ?>>VIP</option>
@@ -256,34 +250,19 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                 <td><?= htmlspecialchars($row['rang']) ?></td>
                                 <td class="formaz"><?= htmlspecialchars($row['regisztracio_idopont']) ?></td>
                                 <td class="formaz">
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
-                                        <select name="new_rank">
-                                            <option value="valassz" disabled selected>Válassz rangot</option>
-                                            <option value="Felhasználó">Felhasználó</option>
-                                            <option value="VIP">VIP</option>
-                                            <option value="Admin">Admin</option>
-                                        </select>
-                                        <button type="submit" class="button-edit">Módosítás</button>
-                                    </form>
+                                    <button type="button" class="button-edit" data-bs-toggle="modal" data-bs-target="#rankModal<?= $row['id'] ?>">Rang módosítás</button>
                                 </td>
                                 <td class="formaz">
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="delete_id" value="<?= $row['id'] ?>">
-                                        <button type="submit" class="button-delete">Törlés</button>
-                                    </form>
+                                    <button type="button" class="button-delete" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $row['id'] ?>">Törlés</button>
                                 </td>
                                 <td class="formaz">
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
-                                        <button type="button" class="btn btn-secondary" id="toggleKiegeszito<?= $row['id'] ?>">
-                                            <i class="fas fa-chevron-down"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-secondary" id="toggleKiegeszito<?= $row['id'] ?>">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
                                 </td>
                             </tr>
                             <tr id="newRow<?= $row['id'] ?>" style="display: none;">
-                                <form method="post">
+                                <form method="post" id="updateForm<?= $row['id'] ?>">
                                     <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
                                     <input type="hidden" name="update_user" value="1">
                                     <td colspan="2">
@@ -305,10 +284,83 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                         </div>
                                     </td>
                                     <td class="form-group">
-                                        <button type="submit" class="btn btn-primary">Mentés</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal<?= $row['id'] ?>">Mentés</button>
                                     </td>
                                 </form>
                             </tr>
+
+                            <!-- Törlés megerősítő modal -->
+                            <div class="modal fade" id="deleteModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?= $row['id'] ?>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content custom-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel<?= $row['id'] ?>">Felhasználó törlése</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Biztosan törölni szeretnéd a(z) "<?= htmlspecialchars($row['nev']) ?>" nevű felhasználót?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form method="post">
+                                                <input type="hidden" name="delete_id" value="<?= $row['id'] ?>">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                                                <button type="submit" class="btn btn-danger">Törlés</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Módosítás megerősítő modal -->
+                            <div class="modal fade" id="updateModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="updateModalLabel<?= $row['id'] ?>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content custom-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="updateModalLabel<?= $row['id'] ?>">Módosítás megerősítése</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Biztosan menteni szeretnéd a módosításokat a(z) "<?= htmlspecialchars($row['nev']) ?>" nevű felhasználónál?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                                            <button type="submit" form="updateForm<?= $row['id'] ?>" class="btn btn-primary">Megerősítés</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rang módosítás megerősítő modal -->
+                            <div class="modal fade" id="rankModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="rankModalLabel<?= $row['id'] ?>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content custom-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="rankModalLabel<?= $row['id'] ?>">Rang módosítása</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" id="rankForm<?= $row['id'] ?>">
+                                                <input type="hidden" name="edit_id" value="<?= $row['id'] ?>">
+                                                <div class="mb-3">
+                                                    <label for="new_rank<?= $row['id'] ?>" class="form-label">Új rang:</label>
+                                                    <select name="new_rank" id="new_rank<?= $row['id'] ?>" class="form-control">
+                                                        <option value="valassz" disabled <?= $row['rang'] == "valassz" ? "selected" : "" ?>>Válassz rangot</option>
+                                                        <option value="Felhasználó" <?= $row['rang'] == "Felhasználó" ? "selected" : "" ?>>Felhasználó</option>
+                                                        <option value="VIP" <?= $row['rang'] == "VIP" ? "selected" : "" ?>>VIP</option>
+                                                        <option value="Admin" <?= $row['rang'] == "Admin" ? "selected" : "" ?>>Admin</option>
+                                                    </select>
+                                                </div>
+                                            </form>
+                                            Biztosan módosítani szeretnéd a(z) "<?= htmlspecialchars($row['nev']) ?>" rangját?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                                            <button type="submit" form="rankForm<?= $row['id'] ?>" class="btn btn-primary">Megerősítés</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <script>
                                 document.getElementById('toggleKiegeszito<?= $row['id'] ?>').addEventListener('click', function() {
                                     const newRow = document.getElementById('newRow<?= $row['id'] ?>');
@@ -333,24 +385,6 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
-
-        // Rang szűrés automatikusan a kiválasztáskor
-        document.getElementById('rank').addEventListener('change', function() {
-            const selectedRank = this.value;
-            const nameFilter = document.getElementById('name_filter').value;
-            let url = 'index.php';
-            const params = [];
-            if (selectedRank) {
-                params.push('rank=' + encodeURIComponent(selectedRank));
-            }
-            if (nameFilter) {
-                params.push('name=' + encodeURIComponent(nameFilter));
-            }
-            if (params.length > 0) {
-                url += '?' + params.join('&');
-            }
-            window.location.href = url;
-        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../kezdolap/script.js"></script>

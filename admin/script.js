@@ -23,3 +23,21 @@ window.onload = () => {
         document.getElementById("statisztika").innerHTML = "";
     }
 };
+
+        // Rang szűrés automatikusan a kiválasztáskor
+        document.getElementById('rank').addEventListener('change', function() {
+            const selectedRank = this.value;
+            const nameFilter = document.getElementById('name_filter').value;
+            let url = 'index.php';
+            const params = [];
+            if (selectedRank) {
+                params.push('rank=' + encodeURIComponent(selectedRank));
+            }
+            if (nameFilter) {
+                params.push('name=' + encodeURIComponent(nameFilter));
+            }
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            window.location.href = url;
+        });

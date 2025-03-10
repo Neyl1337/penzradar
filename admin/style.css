@@ -1,159 +1,3 @@
-/* Alap beállítások */
-body {
-    background-color: #121212;
-    color: white;
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-p {
-    font-size: 150%;
-    margin: 0px;
-}
-
-/* Árfolyam lista */
-.arfolyam-stilus li {
-    font-size: 1.5rem;
-    margin: 10px 0;
-    list-style-type: none;
-    display: flex;
-    align-items: center;
-}
-
-.arfolyam-stilus li img {
-    width: 30px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-/* Kártyák */
-.kartya1, .kartya {
-    background-color: #1e1e1e;
-    color: white;
-    border-radius: 10px;
-}
-
-.kartya1 a {
-    color: rgb(255, 0, 0);
-    text-decoration: none;
-}
-
-.kartya1 h3 {
-    color: #ff0000;
-}
-
-.kartya {
-    box-shadow: 0 0 15px #63ffbe;
-}
-
-.kartya b {
-    color: #63ffbe;
-}
-
-/* Oldalsáv */
-.oldalsav {
-    background-color: #1e1e1e;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.oldalsav h2 {
-    color: #63ffbe;
-}
-
-.oldalsav a {
-    color: white;
-    text-decoration: none;
-}
-
-.oldalsav a:hover {
-    color: #63ffbe;
-}
-
-/* Reszponzivitás */
-@media (max-width: 768px) {
-    .oldalsav {
-        min-height: auto;
-        padding: 10px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-    }
-    
-    .oldalsav h2 {
-        display: none;
-    }
-}
-
-/* Dropdown menü */
-.dropdown-menu {
-    background-color: #1e1e1e;
-    border: none;
-}
-
-.dropdown-item {
-    color: white;
-}
-
-.dropdown-item:hover {
-    color: #63ffbe;
-    background-color: #1e1e1e;
-}
-
-/* Gombok és kurzor */
-.btn-secondary {
-    background-color: #1e1e1e;
-    border-color: #1e1e1e;
-}
-
-.btn-secondary:hover {
-    background-color: #63ffbe;
-    border-color: #63ffbe;
-}
-
-/* Szerepkör és egyenleg */
-#role, #balance {
-    color: #63ffbe;
-    font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-    #szerepkor, #perselyegyenleg {
-        font-size: 0.875rem;
-        display: block;
-        margin: 0;
-    }
-    .dropdown {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-/* Egyedi kurzor */
-a, button, span {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-/* Navigáció */
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4rem;
-    padding: 10px;
-}
-
-.nav-link i {
-    font-size: 1.8rem;
-    min-width: 35px;
-    text-align: center;
-}
-
-#adminpanel {
-    font-size: 25px;
-    text-align: center;
-}
-
-/* Felhasználók kezelése - új stílusok */
 .main-content {
     padding: 20px;
 }
@@ -173,7 +17,8 @@ table {
     overflow: hidden;
 }
 
-th, td {
+th,
+td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #444;
@@ -202,7 +47,7 @@ form {
 }
 
 .button-delete {
-    background-color: #dc3545; 
+    background-color: #dc3545;
     color: #1e1e1e;
     border: none;
     padding: 6px 10px;
@@ -250,8 +95,9 @@ select {
     table {
         font-size: 12px;
     }
-    
-    th, td {
+
+    th,
+    td {
         padding: 8px;
     }
 
@@ -306,7 +152,8 @@ select {
         align-items: flex-start;
     }
 
-    .filter-form select, .filter-form button {
+    .filter-form select,
+    .filter-form button {
         width: 100%;
     }
 }
@@ -325,8 +172,58 @@ select {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.filter-form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-form label {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.filter-form select,
+.filter-form input[type="text"] {
+    padding: 10px;
+    border: 2px solid #63ffbe;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #1e1e1e;
+    color: white;
+    width: 200px;
+}
+
+.filter-form select:focus,
+.filter-form input[type="text"]:focus {
+    outline: none;
+    border-color: #55daa2;
+}
+
+.filter-form input[type="text"]::placeholder {
+    color: #888;
+}
+
+.filter-button {
+    background-color: #63ffbe;
+    color: #121212;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    font-size: 1.1rem;
+    margin-left: auto;
+    align-self: flex-end;
+}
+
+.filter-button:hover {
+    background-color: #55daa2;
+    color: #ffffff;
 }
 
 /* Reszponzivitás kisebb képernyőkre */
@@ -336,23 +233,17 @@ select {
         align-items: center;
     }
 
-    .filter-form select, .filter-form button {
+    .filter-form select,
+    .filter-form input[type="text"],
+    .filter-button {
         width: 100%;
+        max-width: 300px;
+        margin-left: 0;
     }
 }
 
-/* Admin statisztikák panel */
-.admin-panel {
-    background-color: #1e1e1e;
-    border: 1px solid #63ffbe;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 15px #63ffbe;
-    max-width: 400px;
-    margin-top: 20px;
-}
-
-.admin-panel h4 {
+/* Admin statisztikák stílusa (div nélkül) */
+h4 {
     color: #63ffbe;
     margin-bottom: 15px;
     font-size: 20px;
@@ -361,7 +252,7 @@ select {
     text-align: center;
 }
 
-.admin-panel p {
+p {
     font-size: 1.2rem;
     color: white;
     margin: 10px 0;
@@ -369,18 +260,17 @@ select {
     justify-content: space-between;
 }
 
-.admin-panel b {
+p b {
     color: #63ffbe;
 }
 
 /* Reszponzivitás kisebb képernyőkre */
 @media (max-width: 768px) {
-    .admin-panel {
-        max-width: 100%;
-        padding: 15px;
+    h4 {
+        font-size: 18px;
     }
-    
-    .admin-panel p {
+
+    p {
         font-size: 1rem;
         flex-direction: column;
         text-align: center;
@@ -401,11 +291,26 @@ select {
     font-size: 16px;
     border-radius: 4px;
     transition: background-color 0.3s ease;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
 }
 
-/* Kacsacsőr gomb hover */
 #toggleKiegeszito:hover {
     background-color: #e2e6ea;
+}
+
+/* Zöld keret a nyíl körül */
+#toggleKiegeszito i {
+    border: 2px solid #63ffbe;
+    padding: 4px;
+    border-radius: 50%;
+    color: #63ffbe;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
 }
 
 /* Kiegészítő sor */
@@ -431,108 +336,127 @@ select {
     color: #ffffff;
 }
 
-/* Szűrő űrlap */
-.filter-form {
-    display: flex;
-    align-items: center;
-    gap: 30px; /* Nagyobb távolság a szűrések között */
-    flex-wrap: wrap; /* Reszponzivitás érdekében */
-    justify-content: flex-start; /* Balra igazítás */
-}
-
-.filter-form > div {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.filter-form label {
-    font-size: 1.2rem;
-    color: white;
-}
-
-.filter-form select,
-.filter-form input[type="text"] {
-    padding: 10px; /* Növelt padding */
-    border: 2px solid #63ffbe;
-    border-radius: 5px;
-    font-size: 1rem;
+/* Modal stílusok */
+.custom-modal {
     background-color: #1e1e1e;
     color: white;
-    width: 200px; /* Egységes szélesség */
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
 }
 
-.filter-form select:focus,
-.filter-form input[type="text"]:focus {
-    outline: none;
-    border-color: #55daa2;
-}
-
-.filter-form input[type="text"]::placeholder {
-    color: #888;
-}
-
-.filter-button {
+.custom-modal .modal-header {
     background-color: #63ffbe;
     color: #121212;
-    border: none;
-    padding: 12px 25px; /* Nagyobb gomb méret */
-    border-radius: 5px;
-    cursor: url("../kepek/cursor.ico"), default;
-    font-size: 1.1rem;
-    margin-left: auto; /* Jobb oldalra húzás */
-    align-self: flex-end; /* Vízszintes igazítás a szűrőkhöz */
+    border-bottom: 1px solid #55daa2;
 }
 
-.filter-button:hover {
-    background-color: #55daa2;
-    color: #ffffff;
+.custom-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
-/* Reszponzivitás kisebb képernyőkre */
-@media (max-width: 768px) {
-    .filter-form {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .filter-form select,
-    .filter-form input[type="text"],
-    .filter-button {
-        width: 100%;
-        max-width: 300px; /* Maximális szélesség kisebb képernyőkön */
-        margin-left: 0; /* Gomb balra igazítás mobil nézetben */
-    }
+.custom-modal .btn-close {
+    filter: invert(1);
 }
 
-/* Egyedi alert stílus */
-.custom-alert {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1e1e1e;
-    color: #63ffbe;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #63ffbe;
-    z-index: 1000;
+.custom-modal .modal-body {
     font-size: 1.2rem;
+    padding: 20px;
     text-align: center;
 }
 
-.custom-alert button {
-    background-color: #63ffbe;
-    color: #121212;
-    border: none;
+.custom-modal .modal-footer {
+    border-top: 1px solid #63ffbe;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal .btn-secondary,
+.custom-modal .btn-primary,
+.custom-modal .btn-danger {
+    min-width: 100px;
     padding: 8px 15px;
     border-radius: 5px;
     cursor: url("../kepek/cursor.ico"), default;
-    margin-top: 10px;
+    text-align: center;
+}
+
+.custom-modal .btn-secondary {
+    background-color: #444;
+    border: none;
+    color: white;
+}
+
+.custom-modal .btn-secondary:hover {
+    background-color: #555;
+    color: #ffffff;
+}
+
+.custom-modal .btn-primary {
+    background-color: #63ffbe;
+    border: none;
+    color: #121212;
+}
+
+.custom-modal .btn-primary:hover {
+    background-color: #55daa2;
+    color: #ffffff;
+}
+
+.custom-modal .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #1e1e1e;
+}
+
+.custom-modal .btn-danger:hover {
+    background-color: #c82333;
+    color: #ffffff;
+}
+
+/* Sötét input mezők a modal ablakokban és máshol */
+.form-control {
+    background-color: #1e1e1e;
+    color: white;
+    border: 2px solid #63ffbe;
+    border-radius: 5px;
+    padding: 10px;
     font-size: 1rem;
 }
 
-.custom-alert button:hover {
-    background-color: #55daa2;
-    color: #ffffff;
+.form-control:focus {
+    background-color: #1e1e1e;
+    color: white;
+    border-color: #55daa2;
+    outline: none;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: #888;
+}
+
+/* Reszponzivitás */
+@media (max-width: 768px) {
+    .custom-modal .modal-body {
+        font-size: 1rem;
+        padding: 15px;
+    }
+
+    .custom-modal .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .custom-modal .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .custom-modal .btn:last-child {
+        margin-bottom: 0;
+    }
 }
