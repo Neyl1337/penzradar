@@ -348,9 +348,9 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                     Biztosan törölni szeretné a fiókját? Ez a művelet nem visszafordítható.
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary button2" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-secondary button2" data-bs-dismiss="modal">Mégsem</button>
                     <form action="" method="POST">
-                        <button type="submit" name="fiok_torles" class="btn btn-danger button3">Fiók törlése</button>
+                        <button type="submit" name="fiok_torles" class="btn btn-danger button3">Törlöm!</button>
                     </form>
                 </div>
             </div>
