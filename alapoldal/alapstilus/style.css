@@ -1,0 +1,165 @@
+body {
+    background-color: #121212;
+    color: white;
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+p {
+    font-size: 150%;
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    padding: 10px;
+}
+
+.nav-link i {
+    font-size: 1.8rem;
+    min-width: 35px;
+    text-align: center;
+}
+
+.kartya1 {
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 10px;
+}
+
+.kartya1 a {
+    color: rgb(255, 0, 0);
+    text-decoration: none;
+}
+
+.kartya1 h3 {
+    color: #ff0000;
+}
+
+.oldalsav {
+    background-color: #1e1e1e;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.oldalsav h2 {
+    color: #63ffbe;
+}
+
+.oldalsav a {
+    color: white;
+    text-decoration: none;
+}
+
+.oldalsav a:hover {
+    color: #63ffbe;
+}
+
+.kartya {
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+.kartya b {
+    color: #63ffbe;
+}
+
+.dropdown-menu {
+    background-color: #63ffbe !important;
+    border: none !important;
+    border-radius: 0 0 20px 20px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    padding: 0 !important;
+    margin-top: -1px !important;
+    position: absolute !important;
+    min-width: 150px !important;
+}
+
+.dropdown-item {
+    color: #1e1e1e !important;
+    padding: 10px 20px !important;
+    font-weight: normal !important;
+    background-color: #63ffbe !important;
+    border: none !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+.dropdown-item:hover {
+    background-color: #4acda3 !important;
+    color: #1e1e1e !important;
+    border-radius: 0 !important;
+}
+
+.btn-secondary {
+    background-color: #1e1e1e;
+    border-color: #1e1e1e;
+}
+
+.btn-secondary:hover {
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    color: #1e1e1e;
+}
+
+#role, #balance {
+    color: #63ffbe;
+    font-size: 1rem;
+}
+
+a, button, span {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+canvas {
+    background: #1E1E1E;
+    border-radius: 8px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+#adminpanel {
+    font-size: 25px;
+    text-align: center;
+}
+
+#mainContent {
+    opacity: 1;
+}
+
+/* Egyedi stílus a bejelentkezés/kijelentkezés gombhoz */
+#felhasznaloDropdownGomb {
+    background-color: #63ffbe !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 5px 15px !important;
+    color: #1e1e1e !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    min-width: 150px !important;
+    text-align: center !important;
+}
+
+#felhasznaloDropdownGomb:hover {
+    background-color: #4acda3 !important;
+    color: #1e1e1e !important;
+}
+
+#felhasznaloDropdownGomb i {
+    margin-right: 5px !important;
+}
+
+/* Biztosítja, hogy a legördülő a gomb szélességéhez igazodjon */
+.dropdown-menu[data-bs-popper] {
+    left: auto !important;
+    right: 0 !important;
+    min-width: 150px !important;
+}

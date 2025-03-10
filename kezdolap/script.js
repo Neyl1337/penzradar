@@ -22,49 +22,6 @@ window.onload = () => {
         document.getElementById("statisztika").innerHTML = "";
         document.getElementById("nemvagybejelentkezve").style.visibility = "visible";
     }
-
-    // Árfolyamok lekérése és frissítése
-    async function frissitArfolyamok() {
-        try {
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/HUF');
-            const data = await response.json();
-            const arfolyamLista = document.getElementById('arfolyam-lista');
-            const frissitesIdo = document.getElementById('frissites-ido');
-    
-            // Töröld a meglévő listát
-            arfolyamLista.innerHTML = '';
-    
-            // Csak az adott árfolyamok hozzáadása a listához, ikonokkal
-            const currencies = ['EUR', 'USD', 'GBP', 'CHF', 'RUB', 'RON', 'AUD', 'PLN'];
-    
-            currencies.forEach(currency => {
-                if (data.rates[currency]) {
-                    const li = document.createElement('li');
-                    const arfolyam = (1 / data.rates[currency]).toFixed(2); // Árfolyam forintban
-    
-                    // Ikon kép hozzáadása
-                    const icon = document.createElement('img');
-                    icon.src = `../kepek/${currency}.png`;
-                    icon.alt = `${currency} flag`;
-    
-                    li.appendChild(icon);
-                    li.innerHTML += ` ${currency}: ${arfolyam} HUF`;
-                    arfolyamLista.appendChild(li);
-                }
-            });
-    
-            // Utolsó frissítés időpontjának megjelenítése
-            const lastUpdate = new Date(data.time_last_updated * 1000);
-            frissitesIdo.textContent = `Utolsó frissítés: ${lastUpdate.toLocaleString()}`;
-        } catch (error) {
-            console.error('Hiba az árfolyamok lekérése során:', error);
-        }
-    }
-    
-    // Az árfolyamok frissítése az oldal betöltésekor és minden órában
-    frissitArfolyamok();
-    // setInterval(frissitArfolyamok, 3600000); // 3600000 ms = 1 óra
-    setInterval(frissitArfolyamok, 300000); // 300000 ms = 5 perc
 }
 
 const haviKoltesek = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -115,24 +72,6 @@ new Chart(document.getElementById('haviBevetelChart').getContext('2d'), {
     }
 });
 
-
-// Kamatszámítás függvény
-function szamitKamat() {
-    const alapOsszeg = parseFloat(document.getElementById('alapOsszeg').value);
-    const kamatSzazalek = parseFloat(document.getElementById('kamatSzazalek').value);
-    const idotartam = parseInt(document.getElementById('idotartam').value);
-
-    if (isNaN(alapOsszeg) || isNaN(kamatSzazalek) || isNaN(idotartam)) {
-        document.getElementById('kamatEredmeny').innerText = "Kérlek, adj meg érvényes számokat!";
-        return;
-    }
-
-    // Egyszerű kamatszámítás: Összeg = Alapösszeg * (1 + Kamat * Időtartam)
-    const vegOsszeg = alapOsszeg * (1 + (kamatSzazalek / 100) * idotartam);
-    const formataltVegOsszeg = vegOsszeg.toLocaleString('hu-HU', { maximumFractionDigits: 0 });
-
-    document.getElementById('kamatEredmeny').innerText = `Végösszeg: ${formataltVegOsszeg} Ft`;
-}
 
 // Alapértelmezett viselkedés beállítása
 document.addEventListener('DOMContentLoaded', function () {

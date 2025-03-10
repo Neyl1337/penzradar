@@ -36,33 +36,12 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../alapoldal/kamat/style.css">
+    <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="../hirdetes/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        #introModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
-            pointer-events: none;
-        }
-        #introModal.fade-out {
-            opacity: 0;
-        }
-        #introModal video {
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-        }
-        #mainContent {
-            opacity: 1;
-        }
-    </style>
 </head>
 <body>
     <!-- Intro videó modális ablak -->
@@ -83,36 +62,35 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div id="arfolyamok" class="text-center my-3">
-                        <ul id="arfolyam-lista" class="arfolyam-stilus"></ul>
+                    <div id="arfolyamok" class="my-3">
+                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
-                            <b id="frissites-ido" style="color: red;"></b>
+                            <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                         </div>
                     <?php endif; ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban -->
+                    <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
-                    <div class="kamat-container my-3">
-                        <h4>Kamatszámítás</h4>
+                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
                         <form id="kamatSzamitasForm">
                             <div class="mb-2">
-                                <label for="alapOsszeg">Tőke (Ft):</label>
-                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>">
+                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                             </div>
                             <div class="mb-2">
-                                <label for="kamatSzazalek">Kamatláb (%):</label>
-                                <input type="number" id="kamatSzazalek" class="form-control" min="0" step="0.1" value="5">
+                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                             </div>
                             <div class="mb-2">
-                                <label for="idotartam">Futamidő (év):</label>
-                                <input type="number" id="idotartam" class="form-control" min="1" value="1">
+                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                             </div>
-                            <button type="button" class="btn btn-primary w-100" onclick="szamitKamat()">Számítás</button>
+                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
                         </form>
-                        <p id="kamatEredmeny" class="mt-2"></p>
-                    </div>
+                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
                     <?php endif; ?>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                     <div>
@@ -129,13 +107,13 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                             <i class="fas fa-user-circle"></i> 
-                            <span id="felhasznaloNev">Jelentkezz be!</span>
+                            <span id="felhasznaloNev"><?php echo htmlspecialchars($_SESSION['felhasznalo_nev'] ?? "Jelentkezz be!"); ?></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="felhasznaloDropdownGomb">
-                            <li id="bejelentkezesopcio"><a class="dropdown-item" href="../bejelentkezes/">Bejelentkezés</a></li>
-                            <li id="profilopcio" style="display:none;"><a class="dropdown-item" href="../profilom/">Profilom</a></li>
-                            <li id="beallitasopcio" style="display:none;"><a class="dropdown-item" href="../beallitasok/">Beállítások</a></li>
-                            <li id="kijelentkezesopcio" style="display:none;"><a class="dropdown-item" href="../adatbazis_logout.php">Kijelentkezés</a></li>
+                            <li id="bejelentkezesopcio" style="display: <?php echo isset($_SESSION['felhasznalo_id']) ? 'none' : 'block'; ?>;"><a class="dropdown-item" href="../bejelentkezes/">Bejelentkezés</a></li>
+                            <li id="profilopcio" style="display: <?php echo isset($_SESSION['felhasznalo_id']) ? 'block' : 'none'; ?>;"><a class="dropdown-item" href="../profilom/">Profilom</a></li>
+                            <li id="beallitasopcio" style="display: <?php echo isset($_SESSION['felhasznalo_id']) ? 'block' : 'none'; ?>;"><a class="dropdown-item" href="../beallitasok/">Beállítások</a></li>
+                            <li id="kijelentkezesopcio" style="display: <?php echo isset($_SESSION['felhasznalo_id']) ? 'block' : 'none'; ?>;"><a class="dropdown-item" href="../adatbazis_logout.php">Kijelentkezés</a></li>
                         </ul>
                     </div>
                 </header>
@@ -230,40 +208,44 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         </center>
                     </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                    <div class="ad-container">
-                        <h1 id="title"></h1>
-                        <div class="subtitle" id="subtitle"></div>
-                        <div class="calculator">
-                            <div class="circle"></div>
-                            <div class="counter" id="counter"></div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="ad-container">
+                                <h1 id="title"></h1>
+                                <div class="subtitle" id="subtitle"></div>
+                                <div class="calculator">
+                                    <div class="circle"></div>
+                                    <div class="counter" id="counter"></div>
+                                </div>
+                                <a href="../regisztracio/" class="cta-button" id="cta"></a>
+                            </div>
                         </div>
-                        <a href="../regisztracio/" class="cta-button" id="cta"></a>
+                        <!-- Jobb oldali kalkulátor - csak kijelentkezett állapotban -->
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                        <div class="col-12 col-md-6">
+                            <div class="kamat-container my-3">
+                                <h4>Kamatszámítás</h4>
+                                <form id="kamatSzamitasFormLoggedOut">
+                                    <div class="mb-2">
+                                        <label for="alapOsszegLoggedOut">Tőke (Ft):</label>
+                                        <input type="number" id="alapOsszegLoggedOut" class="form-control" min="0" value="0" oninput="validateInput(this)">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="kamatSzazalekLoggedOut">Kamatláb (%):</label>
+                                        <input type="number" id="kamatSzazalekLoggedOut" class="form-control" min="0" max="100" step="0.1" value="5" oninput="validateInput(this)">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="idotartamLoggedOut">Futamidő (év):</label>
+                                        <input type="number" id="idotartamLoggedOut" class="form-control" min="1" max="99" value="1" oninput="validateInput(this)">
+                                    </div>
+                                    <button type="button" class="btn btn-primary w-100" onclick="szamitKamatLoggedOut()">Számítás</button>
+                                </form>
+                                <p id="kamatEredmenyLoggedOut" class="mt-2"></p>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                    <!-- Jobb oldali kalkulátor - csak kijelentkezett állapotban -->
-                    <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                    <div class="card p-3 mt-3 kartya1">
-                        <div class="kamat-container my-3">
-                            <h4>Kamatszámítás</h4>
-                            <form id="kamatSzamitasForm">
-                                <div class="mb-2">
-                                    <label for="alapOsszeg">Tőke (Ft):</label>
-                                    <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>">
-                                </div>
-                                <div class="mb-2">
-                                    <label for="kamatSzazalek">Kamatláb (%):</label>
-                                    <input type="number" id="kamatSzazalek" class="form-control" min="0" step="0.1" value="5">
-                                </div>
-                                <div class="mb-2">
-                                    <label for="idotartam">Futamidő (év):</label>
-                                    <input type="number" id="idotartam" class="form-control" min="1" value="1">
-                                </div>
-                                <button type="button" class="btn btn-primary w-100" onclick="szamitKamat()">Számítás</button>
-                            </form>
-                            <p id="kamatEredmeny" class="mt-2"></p>
-                        </div>
-                    </div>
-                    <?php endif; ?>
                 </div>
             </main>
         </div>
@@ -314,6 +296,8 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <script src="../alapoldal/arfolyam/js.js"></script>
+    <script src="../alapoldal/kamat/js.js"></script>
     <script src="../hirdetes/js.js"></script>
 </body>
 </html>

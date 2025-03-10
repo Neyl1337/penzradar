@@ -76,13 +76,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
+    <link rel="stylesheet" href="../alapoldal/kamat/style.css">
+    <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="naptar.css">
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
@@ -91,9 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <div id="arfolyamok" class="text-center my-3">
-                        <ul id="arfolyam-lista" class="arfolyam-stilus">
-                            <!-- Az árfolyamok itt jelennek meg -->
-                        </ul>
+                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
@@ -103,11 +104,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                         </div>
                     <?php endif; ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i>  Admin Panel</p></a></li>
+                    <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
+                        <form id="kamatSzamitasForm">
+                            <div class="mb-2">
+                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
+                        </form>
+                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
                     <?php endif; ?>
-                    </div>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                        <div>
+                            <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                            <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                        </div>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
@@ -124,6 +146,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                             <li id="profilopcio" style="display:none;"><a class="dropdown-item" href="../profilom/">Profilom</a></li>
                             <li id="beallitasopcio" style="display:none;"><a class="dropdown-item" href="../beallitasok/">Beállítások</a></li>
                             <li id="kijelentkezesopcio" style="display:none;"><a class="dropdown-item" href="../adatbazis_logout.php">Kijelentkezés</a></li>
+                            <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                            <div id="arfolyamok" class="my-3">
+                                <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                                <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+                            </div>
+                            <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                                <div>
+                                    <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
+                                </div>
+                            <?php endif; ?>
+                            <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                            <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
+                            <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                                <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
+                                <form id="kamatSzamitasForm">
+                                    <div class="mb-2">
+                                        <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                                        <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                                        <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                                        <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                                    </div>
+                                    <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
+                                </form>
+                                <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </header>
@@ -194,5 +247,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    <script src="../alapoldal/arfolyam/js.js"></script>
+    <script src="../alapoldal/kamat/js.js"></script>
 </body>
 </html>

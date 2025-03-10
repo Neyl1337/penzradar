@@ -1,0 +1,94 @@
+/* Árfolyamok konténer */
+#arfolyamok {
+    width: 100%;
+    padding: 10px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(99, 255, 190, 0.3);
+    overflow-y: auto;
+    max-height: 200px;
+    margin: 10px 0;
+}
+
+/* Árfolyam lista */
+.arfolyam-stilus {
+    padding: 0;
+    margin: 0;
+}
+
+.arfolyam-stilus li {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #252525;
+    border-radius: 8px;
+    color: #ffffff;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.arfolyam-stilus li:hover {
+    background-color: #4acda3;
+    color: #1e1e1e;
+    transform: translateX(5px);
+}
+
+.arfolyam-stilus li img {
+    width: clamp(20px, 4vw, 30px);
+    height: auto;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+/* Görgetősáv testreszabása */
+#arfolyamok::-webkit-scrollbar {
+    width: 8px;
+}
+
+#arfolyamok::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+#arfolyamok::-webkit-scrollbar-thumb {
+    background: #63ffbe;
+    border-radius: 10px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+#arfolyamok::-webkit-scrollbar-thumb:hover {
+    background: #4acda3;
+}
+
+#arfolyamok {
+    scrollbar-width: thin;
+    scrollbar-color: #63ffbe #1e1e1e;
+}
+
+/* Reszponzív média lekérdezések */
+@media (max-width: 767.98px) {
+    #arfolyamok {
+        max-height: 150px;
+        padding: 5px;
+    }
+
+    .arfolyam-stilus li {
+        font-size: clamp(0.9rem, 2vw, 1.2rem);
+        padding: 6px 8px;
+        margin: 5px 0;
+    }
+
+    .arfolyam-stilus li img {
+        width: clamp(15px, 3vw, 20px);
+        margin-right: 8px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .arfolyam-stilus li {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+    }
+}
