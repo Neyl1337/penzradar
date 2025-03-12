@@ -17,7 +17,6 @@
 }
 
 .arfolyam-stilus li {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
     margin: 8px 0;
     display: flex;
     align-items: center;
@@ -69,14 +68,13 @@
 }
 
 /* Reszponzív média lekérdezések */
-@media (max-width: 767.98px) {
+@media (max-width: 1700px) {
     #arfolyamok {
         max-height: 150px;
         padding: 5px;
     }
 
     .arfolyam-stilus li {
-        font-size: clamp(0.9rem, 2vw, 1.2rem);
         padding: 6px 8px;
         margin: 5px 0;
     }
@@ -87,8 +85,30 @@
     }
 }
 
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 1360px) {
     .arfolyam-stilus li {
-        font-size: clamp(1rem, 2vw, 1.3rem);
+        font-size: clamp(0.8rem, 2,5vw, 1,2rem);
+    }
+}
+
+@media (min-width: 990) and (min-width: 1360) {
+    .arfolyam-stilus li {
+        font-size: clamp(0.5rem, 1,5vw, 0.6rem);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 990px) {
+    .arfolyam-stilus li {
+        font-size: clamp(0.7rem, 2vw, 1rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .arfolyam-stilus li {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+    .arfolyam-stilus li img {
+        width: clamp(1.5rem, 3vw, 2rem);
+        margin-right: 8px;
     }
 }

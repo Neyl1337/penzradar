@@ -144,8 +144,8 @@ canvas {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
     position: relative !important;
     z-index: 1000 !important;
-    min-width: 150px !important;
     text-align: center !important;
+    /* Eltávolítva a min-width: 150px, hogy dinamikus legyen */
 }
 
 #felhasznaloDropdownGomb:hover {
