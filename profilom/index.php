@@ -3,10 +3,9 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
-        SELECT f.rang, p.egyenleg 
+        SELECT f.rang, f.email, p.egyenleg 
         FROM felhasznalok f
         INNER JOIN persely p ON f.id = p.felhasznalo_id
         WHERE f.id = ?
@@ -16,32 +15,29 @@ if (isset($_SESSION['felhasznalo_id'])) {
 
     if ($felhasznalo) {
         $_SESSION['szerepkor'] = $felhasznalo['rang'];
+        $_SESSION['email'] = $felhasznalo['email'];
         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
     }
 } else {
     $_SESSION['szerepkor'] = null;
+    $_SESSION['email'] = null;
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
-    // Feltételezzük, hogy már van aktív session
 session_start();
 
-// Feltételezve, hogy a felhasználó azonosítója a session-ben van
 $felhasznaloId = $_SESSION["felhasznalo_id"] ?? null;
 
 if ($felhasznaloId) {
-    // SQL lekérdezés a regisztráció időpontjának lekérésére
     $stmt = $pdo->prepare("SELECT regisztracio_idopont FROM felhasznalok WHERE id = :id");
     $stmt->execute(['id' => $felhasznaloId]);
     $regisztracioIdopont = $stmt->fetchColumn();
 
     if ($regisztracioIdopont) {
-        // Sesssionbe tárolás
         $_SESSION["regisztracio_idopont"] = $regisztracioIdopont;
     }
 }
@@ -66,27 +62,55 @@ if ($felhasznaloId) {
     <div class="container-fluid">
         <div class="row">
         <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-                <h2 class="text-center">PénzRadar</h2>
-                <ul class="nav flex-column flex-md-column mt-4">
-                    <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div id="arfolyamok" class="text-center my-3">
-                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
-                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+            <h2 class="text-center">PénzRadar</h2>
+            <ul class="nav flex-column flex-md-column mt-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="../kezdolap/">
+                        <i class="fas fa-home"></i> Kezdőlap
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Tervező
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Naptár
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Persely
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <br>
+                <div id="arfolyamok" class="my-3">
+                    <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                    <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+                </div>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                     </div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b id="frissites-ido" style="color: red;"> 
-                                <!-- A frissítés időpontja itt jelenik meg -->
-                            </b>
-                        </div>
-                    <?php endif; ?>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <?php endif; ?>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <br>
                         <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
                         <form id="kamatSzamitasForm">
                             <div class="mb-2">
@@ -106,13 +130,13 @@ if ($felhasznaloId) {
                         <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
                     <?php endif; ?>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                            <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
-                        </div>
+                    <div>
+                        <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                    </div>
                     <?php endif; ?>
-                </ul>
-            </nav>
+            </ul>
+        </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
@@ -130,20 +154,26 @@ if ($felhasznaloId) {
                         </ul>
                     </div>
                 </header>
-                    <div id="profil" style="visibility: hidden;">
+                <div id="profil" style="visibility: hidden;">
                     <div class="container mt-4">
-                    <h2 id="profilod">Profilod</h2>
+                        <h2 id="profilod">Profilod</h2>
                         <form id="profilbox" method="POST" action="felhasznalo_modositas.php">
                             <div class="mb-3">
                                 <label class="form-label">Név</label>
                                 <div class="form-check">
-                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
+                                    <label style="color: #63ffbe;" class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <div class="form-check">
+                                    <label style="color: #63ffbe;" class="form-check-label" for="emailValtoztatas"><?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></label>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Regisztráció dátuma</label>
                                 <div class="form-check">
-                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
+                                    <label style="color: #63ffbe;" class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
                                 </div>
                             </div>
                         </form>

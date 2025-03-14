@@ -54,26 +54,56 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 
     <div class="container-fluid" id="mainContent">
         <div class="row">
-            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-                <h2 class="text-center">PénzRadar</h2>
-                <ul class="nav flex-column flex-md-column mt-4">
-                    <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <div id="arfolyamok" class="my-3">
-                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
-                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+            <h2 class="text-center">PénzRadar</h2>
+            <ul class="nav flex-column flex-md-column mt-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="../kezdolap/">
+                        <i class="fas fa-home"></i> Kezdőlap
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Tervező
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Naptár
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        Persely
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock ms-2"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <br>
+                <div id="arfolyamok" class="my-3">
+                    <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                    <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+                </div>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                     </div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
-                        </div>
-                    <?php endif; ?>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <?php endif; ?>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <br>
                         <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
                         <form id="kamatSzamitasForm">
                             <div class="mb-2">
@@ -98,8 +128,8 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                         <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
                     </div>
                     <?php endif; ?>
-                </ul>
-            </nav>
+            </ul>
+        </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
@@ -159,30 +189,30 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                     <br><br>
                     <hr>
                     <section id="kiadasok">
-                        <h3 class="text-center">Költések</h3>
+                        <h3 class="text-center">Kiadások</h3>
                         <br>
                         <div class="row g-4">
                             <div class="col-12 col-sm-6 col-lg-3">
                                 <div class="kartya p-3 text-center">
-                                    <h5>Napi költés</h5>
+                                    <h5>Napi kiadás</h5>
                                     <b>0 Ft</b>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-lg-3">
                                 <div class="kartya p-3 text-center">
-                                    <h5>Havi költés</h5>
+                                    <h5>Havi kiadás</h5>
                                     <b>0 Ft</b>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-lg-3">
                                 <div class="kartya p-3 text-center">
-                                    <h5>Átlagos költés</h5>
+                                    <h5>Átlagos kiadás</h5>
                                     <b>0 Ft</b>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-lg-3">
                                 <div class="kartya p-3 text-center">
-                                    <h5>Legnagyobb költés</h5>
+                                    <h5>Legnagyobb kiadás</h5>
                                     <b>0 Ft</b>
                                 </div>
                             </div>
@@ -202,7 +232,7 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
                     <div class="card p-3 mt-3 kartya1">
                         <center>
-                            <h3>Jelenleg Nem vagy bejelentkezve!</h3>
+                            <h3>Jelenleg nem vagy bejelentkezve!</h3>
                             <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
                             <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
                         </center>

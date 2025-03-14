@@ -1,7 +1,11 @@
 body {
     background-color: #121212;
     color: white;
-    cursor: url("../kepek/cursor.ico"), default;
+    cursor: url("../../kepek/cursor.ico"), default !important;
+}
+
+button, a, select, input {
+    cursor: url("../../kepek/cursor.ico"), default !important;
 }
 
 p {
@@ -30,12 +34,12 @@ p {
 }
 
 .kartya1 a {
-    color: rgb(255, 0, 0);
+    color: #63ffbe;
     text-decoration: none;
 }
 
 .kartya1 h3 {
-    color: #ff0000;
+    color: #ff073a;
 }
 
 .oldalsav {
@@ -70,8 +74,7 @@ p {
 
 .dropdown-menu {
     background-color: #63ffbe !important;
-    border: none !important;
-    border-radius: 0 0 20px 20px !important;
+    border-radius: 10px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
     padding: 0 !important;
     margin-top: -1px !important;
@@ -87,12 +90,13 @@ p {
     border: none !important;
     text-align: center !important;
     width: 100% !important;
+    border-radius: 60px !important;
 }
 
 .dropdown-item:hover {
     background-color: #4acda3 !important;
     color: #1e1e1e !important;
-    border-radius: 0 !important;
+    border-radius: 60px !important;
 }
 
 .btn-secondary {
@@ -162,4 +166,20 @@ canvas {
     left: auto !important;
     right: 0 !important;
     min-width: 150px !important;
+}
+
+.letiltott-link {
+    opacity: 0.7;
+    pointer-events: none;
+    color: #a9a9a9 !important;
+}
+
+.felattetszo {
+    opacity: 0.5;
+}
+
+.nav-link .fa-lock {
+    color: #ff4444;
+    font-size: 1.3rem;
+    opacity: 1;
 }

@@ -319,3 +319,29 @@ h1 {
     -moz-appearance: none;
     appearance: none;
 }
+
+.sporoasi-ablak {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px #63ffbe;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+.celok-ablak {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px #63ffbe;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+.teljesitve {
+    opacity: 0.5;
+}
+
+.table {
+    color: white;
+}
