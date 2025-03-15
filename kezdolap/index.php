@@ -580,6 +580,7 @@ for ($i = 0; $i < 7; $i++) {
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="<?php echo isset($_SESSION['felhasznalo_id']) ? 'visibility: visible;' : 'visibility: hidden;'; ?>">
                 <center>
+                <br>
                 <div class="het-tartalom">
                     <center><h2 id="aktualishet">Aktuális hét:</h2></center>
                     <div id="heti-tartalom" class="het-tartalma"></div>
@@ -589,6 +590,8 @@ for ($i = 0; $i < 7; $i++) {
                 </div>
                 </center>
                 <br><br>
+                <hr>
+                <br>
                     <section id="bevetelek">
                         <h3 class="text-center">Bevételek</h3>
                         <br>
@@ -808,8 +811,8 @@ for ($i = 0; $i < 7; $i++) {
                         datasets: [{
                             label: 'Heti kiadás (Ft)',
                             data: hetiKiadasok,
-                            backgroundColor: '#ff6b6b',
-                            borderColor: '#ff6b6b',
+                            backgroundColor: '#63ffbe',
+                            borderColor: '#63ffbe',
                             borderWidth: 1
                         }]
                     },

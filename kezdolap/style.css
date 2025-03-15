@@ -35,10 +35,12 @@
 .het-tartalom {
     padding: 20px;
     display: inline-block;
-    background-color: #1e1e1e;
+    background-color: #1e1e1e73;
     color: white;
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
+    border-color: #63ffbe;
+    border-style: solid;
 }
 .het-tartalma {
     margin: 10px 0;
