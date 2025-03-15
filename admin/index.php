@@ -167,7 +167,10 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
     <div class="container-fluid">
         <div class="row">
             <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-                <h2 class="text-center">PénzRadar</h2>
+                <div class="text-center">
+                    <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+                </div>
+                <h2 class="text-center">PénzRadar ADMIN</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
                     <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>

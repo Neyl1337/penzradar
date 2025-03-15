@@ -10,6 +10,9 @@
 </head>
 <body>
     <div class="bejelentkezo-doboz">
+        <div class="text-center">
+            <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+        </div>
         <h1>PénzRadar</h1>
         <h5>Bejelentkezés</h5>
         <div class="mb-3" id="Uzenet">

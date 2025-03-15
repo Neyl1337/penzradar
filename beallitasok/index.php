@@ -196,6 +196,9 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
     <div class="container-fluid">
         <div class="row">
         <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+            <div class="text-center">
+                <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+            </div>
             <h2 class="text-center">PénzRadar</h2>
             <ul class="nav flex-column flex-md-column mt-4">
                 <li class="nav-item">

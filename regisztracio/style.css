@@ -151,3 +151,11 @@ span {
 .form-label {
     color: #ffffff;
 }
+
+.logo {
+    max-width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    pointer-events: none;
+}
