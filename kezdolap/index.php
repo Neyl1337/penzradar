@@ -579,6 +579,16 @@ for ($i = 0; $i < 7; $i++) {
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="<?php echo isset($_SESSION['felhasznalo_id']) ? 'visibility: visible;' : 'visibility: hidden;'; ?>">
+                <center>
+                <div class="het-tartalom">
+                    <center><h2 id="aktualishet">Aktuális hét:</h2></center>
+                    <div id="heti-tartalom" class="het-tartalma"></div>
+                    <div id="mai-nap" class="ma"></div>
+                    <br>
+                    <p id="aktualis-ido"></p>
+                </div>
+                </center>
+                <br><br>
                     <section id="bevetelek">
                         <h3 class="text-center">Bevételek</h3>
                         <br>
@@ -615,6 +625,9 @@ for ($i = 0; $i < 7; $i++) {
                     </section>
                     <br><br>
                     <hr>
+                    <p id="heti-tartalom"></p>
+                    <p id="mai-nap"></p>
+                    <br>
                     <section id="kiadasok">
                         <h3 class="text-center">Kiadások</h3>
                         <br>

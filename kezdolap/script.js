@@ -52,3 +52,64 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+
+function hetTartalma() {
+    const maiDatum = new Date();
+    const jelenlegiNap = maiDatum.getDay();
+    const kulonbsegHetfoig = jelenlegiNap === 0 ? -6 : 1 - jelenlegiNap;
+
+    const hetfo = new Date(maiDatum);
+    hetfo.setDate(maiDatum.getDate() + kulonbsegHetfoig);
+
+    const vasarnap = new Date(hetfo);
+    vasarnap.setDate(hetfo.getDate() + 6);
+
+    const hetfoDatum = hetfo.toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const vasarnapDatum = vasarnap.toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    return `${hetfoDatum} - ${vasarnapDatum}`;
+}
+
+function maiNap() {
+    const maiDatum = new Date();
+    const napNevek = ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'];
+    const maiNapNeve = napNevek[maiDatum.getDay()];
+    const formazottDatum = maiDatum.toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    return `Ma <span class="zold-nap">${maiNapNeve}</span> van: ${formazottDatum}`;
+}
+
+function frissitIdo() {
+    const most = new Date();
+    const ido = most.toLocaleTimeString('hu-HU', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    return `Jelenlegi idő: <span class="zold-nap">${ido}</span>`;
+}
+
+const hetiTartalomP = document.getElementById('heti-tartalom');
+const maiNapP = document.getElementById('mai-nap');
+const aktualisIdoP = document.getElementById('aktualis-ido');
+
+hetiTartalomP.textContent = hetTartalma();
+maiNapP.innerHTML = maiNap();
+
+aktualisIdoP.innerHTML = frissitIdo();
+setInterval(() => {
+    aktualisIdoP.innerHTML = frissitIdo();
+}, 1000);
