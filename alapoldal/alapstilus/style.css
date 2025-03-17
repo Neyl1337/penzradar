@@ -3,6 +3,28 @@ body {
     color: white;
     cursor: url("../../kepek/cursor.ico"), default !important;
     font-family: Arial, sans-serif; /* Alapértelmezett betűtípus */
+    scrollbar-width: thin;
+    scrollbar-color: #63ffbe #1e1e1e;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #63ffbe;
+    border-radius: 10px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4acda3;
 }
 
 button, a, select, input {
@@ -318,39 +340,51 @@ canvas {
     color: #1e1e1e;
 }
 
-/* Reszponzív betűméret beállítások */
-@media (max-width: 768px) {
-    .nav-link {
-        font-size: 1.2rem;
-    }
+.nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 
-    .nav-link i {
-        font-size: 1.6rem;
-    }
+.lakat-jobb {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 
+.nav-link {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link::after {
+    content: attr(data-text); /* A szöveg a data-text attribútumból jön */
+    margin-left: 5px; /* Távolság az ikon és a szöveg között, ha látható */
+}
+
+@media only screen and (max-width: 1570px) {
     .oldalsav h2 {
-        font-size: 1.8rem;
+        font-size: 1rem;
     }
 
-    .toggle-nav-btn i {
-        font-size: 1.3rem;
+    .nav-link::after {
+        display: none; /* A szöveg eltűnik, és nem foglal helyet */
     }
 }
 
-@media (max-width: 576px) {
-    .nav-link {
-        font-size: 1.0rem;
-    }
-
-    .nav-link i {
-        font-size: 1.4rem;
-    }
-
-    .oldalsav h2 {
-        font-size: 1.5rem;
-    }
-
-    .toggle-nav-btn i {
-        font-size: 1.1rem;
+@media only screen and (max-width: 1330px) {
+    .link-szoveg {
+        display: none;
     }
 }
+
+  @media only screen and (max-width: 767px) {
+    .oldalsav h2 {
+        font-size: 2rem;
+    }
+
+    .link-szoveg {
+        display: block;
+    }
+  }

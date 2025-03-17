@@ -466,12 +466,6 @@ for ($i = 0; $i < 7; $i++) {
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="../hirdetes/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .grafikon-container {
-            max-width: 600px; /* Fix szélesség a grafikonoknak */
-            margin: 0 auto; /* Középre igazítás */
-        }
-    </style>
 </head>
 <body>
     <div id="introModal">
@@ -483,84 +477,85 @@ for ($i = 0; $i < 7; $i++) {
 
     <div class="container-fluid" id="mainContent">
         <div class="row">
-            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-                <div class="text-center">
-                    <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+            <div class="text-center">
+                <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+            </div>
+            <h2 class="text-center">PénzRadar</h2>
+            <ul class="nav flex-column flex-md-column mt-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="../kezdolap/">
+                        <i class="fas fa-home"></i>
+                        <span class="link-szoveg">Kezdőlap</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Tervező</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Naptár</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Persely</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <br>
+                <div id="arfolyamok" class="my-3">
+                    <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                    <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                 </div>
-                <h2 class="text-center">PénzRadar</h2>
-                <ul class="nav flex-column flex-md-column mt-4">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../kezdolap/">
-                            <i class="fas fa-home"></i> Kezdőlap
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
-                            <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            Tervező
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
-                            <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            Naptár
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
-                            <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            Persely
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <br>
-                    <div id="arfolyamok" class="my-3">
-                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
-                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                     </div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
+                <?php endif; ?>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                    <br>
+                    <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
+                    <form id="kamatSzamitasForm">
+                        <div class="mb-2">
+                            <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                            <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                         </div>
-                    <?php endif; ?>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
-                        <br>
-                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
-                        <form id="kamatSzamitasForm">
-                            <div class="mb-2">
-                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
-                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <div class="mb-2">
-                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
-                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <div class="mb-2">
-                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
-                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
-                        </form>
-                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
-                    <?php endif; ?>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                            <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                        <div class="mb-2">
+                            <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                            <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                         </div>
-                    <?php endif; ?>
-                </ul>
-            </nav>
+                        <div class="mb-2">
+                            <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                            <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                        </div>
+                        <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
+                    </form>
+                    <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                <?php endif; ?>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                    </div>
+                <?php endif; ?>
+            </ul>
+        </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
