@@ -14,6 +14,7 @@
                 <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
             </div>
         <h1>PénzRadar</h1>
+        <b class="d-flex justify-content-end border-bottom"></b><br>
         <h5>Regisztráció</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
@@ -43,7 +44,7 @@
         </form>        
         <div class= "oldal">
             <br><center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
-            <br>
+            <br><b class="d-flex justify-content-end border-bottom"></b><br>
         </div>
         <div class="almenet">
             <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>
