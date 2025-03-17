@@ -119,7 +119,7 @@ p {
 }
 
 .oldalsav a:hover {
-    color: #1e1e1e;
+    color: #ffffff;
 }
 
 /* Collapsed sidebar styles */
@@ -365,17 +365,19 @@ canvas {
 
 @media only screen and (max-width: 1570px) {
     .oldalsav h2 {
-        font-size: 1rem;
-    }
-
-    .nav-link::after {
-        display: none; /* A szöveg eltűnik, és nem foglal helyet */
+        font-size: 1.3rem;
     }
 }
 
-@media only screen and (max-width: 1330px) {
+@media only screen and (max-width: 1135px) {
+    .oldalsav h2 {
+        font-size: 1.0rem;
+    }
+}
+
+@media only screen and (max-width: 1165px) {
     .link-szoveg {
-        display: none;
+        font-size: 15px;
     }
 }
 
@@ -385,6 +387,6 @@ canvas {
     }
 
     .link-szoveg {
-        display: block;
+        font-size: 22.4px;
     }
   }
