@@ -186,48 +186,50 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                 </div>
                 <h2 class="text-center">PénzRadar</h2>
                 <ul class="nav flex-column flex-md-column mt-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="../kezdolap/">
+                        <i class="fas fa-home"></i>
+                        <span class="link-szoveg">Kezdőlap</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Tervező</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Naptár</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                        <span class="link-szoveg">Persely</span>
+                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                            <i class="fas fa-lock lakat-jobb"></i>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="../kezdolap/">
-                            <i class="fas fa-home"></i> <span>Kezdőlap</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
-                            <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span>Tervező</span>
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
-                            <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span>Naptár</span>
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
-                            <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span>Persely</span>
-                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link_kapcsolat <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                        <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
                             <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span>Kapcsolat</span>
+                            <span class="link-szoveg">Kapcsolat</span>
                             <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
+                                <i class="fas fa-lock lakat-jobb"></i>
                             <?php endif; ?>
                         </a>
                     </li>
-                </ul>
+                <?php endif; ?>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 <div id="arfolyamok" class="my-3">
                     <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>

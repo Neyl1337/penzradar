@@ -518,15 +518,15 @@ for ($i = 0; $i < 7; $i++) {
                     </a>
                 </li>
                 <?php if (isset($_SESSION['felhasznalo_id'])): ?>
-                <li class="nav-item">
-                        <a class="nav-link_kapcsolat <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                    <li class="nav-item">
+                        <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
                             <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span>Kapcsolat</span>
+                            <span class="link-szoveg">Kapcsolat</span>
                             <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock ms-2"></i>
+                                <i class="fas fa-lock lakat-jobb"></i>
                             <?php endif; ?>
                         </a>
-                </li>
+                    </li>
                 <?php endif; ?>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 <br>

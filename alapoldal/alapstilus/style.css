@@ -49,19 +49,6 @@ p {
     transition: background-color 0.3s ease;
 }
 
-.nav-link_kapcsolat{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4rem; /* Alapértelmezett betűméret */
-    padding: 10px 15px;
-    background-color: #2e2e2e;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    color: #ffffff;
-    transition: background-color 0.3s ease;
-}
-
 .nav-link i {
     font-size: 1.8rem;
     min-width: 35px;
@@ -75,6 +62,11 @@ p {
 }
 
 .nav-link_kapcsolat:hover {
+    background-color: #cd894a;
+    color: #1e1e1e;
+}
+
+.kapcsolat-link:hover {
     background-color: #cd894a;
     color: #1e1e1e;
 }
@@ -366,12 +358,9 @@ canvas {
     align-items: center;
 }
 
-.nav-link_kapcsolat{
-    position: relative;
-    display: flex;
-    align-items: center;
-    display: flex;
-    align-items: center;
+.kapcsolat-link {
+    font-size: 1.4rem;
+    padding: 10px 15px;
 }
 
 .lakat-jobb {
@@ -382,11 +371,6 @@ canvas {
 }
 
 .nav-link::after {
-    content: attr(data-text);
-    margin-left: 5px;
-}
-
-.nav-link_kapcsolat::after {
     content: attr(data-text);
     margin-left: 5px;
 }

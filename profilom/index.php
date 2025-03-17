@@ -53,6 +53,7 @@ if ($felhasznaloId) {
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
@@ -69,36 +70,48 @@ if ($felhasznaloId) {
             <ul class="nav flex-column flex-md-column mt-4">
                 <li class="nav-item">
                     <a class="nav-link" href="../kezdolap/">
-                        <i class="fas fa-home"></i> Kezdőlap
+                        <i class="fas fa-home"></i>
+                        <span class="link-szoveg">Kezdőlap</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
                         <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        Tervező
+                        <span class="link-szoveg">Tervező</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
                         <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        Naptár
+                        <span class="link-szoveg">Naptár</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
                         <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        Persely
+                        <span class="link-szoveg">Persely</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
+                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                            <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Kapcsolat</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock lakat-jobb"></i>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 <br>
                 <div id="arfolyamok" class="my-3">
@@ -164,19 +177,19 @@ if ($felhasznaloId) {
                             <div class="mb-3">
                                 <label class="form-label">Név</label>
                                 <div class="form-check">
-                                    <label style="color: #63ffbe;" class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
+                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
                                 <div class="form-check">
-                                    <label style="color: #63ffbe;" class="form-check-label" for="emailValtoztatas"><?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></label>
+                                    <label class="form-check-label" for="emailValtoztatas"><?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></label>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Regisztráció dátuma</label>
                                 <div class="form-check">
-                                    <label style="color: #63ffbe;" class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
+                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
                                 </div>
                             </div>
                         </form>
