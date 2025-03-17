@@ -175,9 +175,9 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button type="button" class="toggle-nav-btn" onclick="toggleNav()" id="toggleKiegeszito<?= $row['id'] ?>">
+    <!-- <button type="button" class="toggle-nav-btn" onclick="toggleNav()" id="toggleKiegeszito<?= $row['id'] ?>">
         <i class="fas fa-chevron-left"></i>
-    </button>
+    </button> -->
     <div class="container-fluid">
         <div class="row">
         <nav class="col-12 col-md-3 col-lg-2 oldalsav">
@@ -230,6 +230,7 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                         </a>
                     </li>
                 <?php endif; ?>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                 </ul>
                 <div id="arfolyamok" class="my-3">
                     <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
@@ -260,6 +261,12 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                     </form>
                     <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
                 <?php endif; ?>
+                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                    <div>
+                        <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                    </div>
+                <?php endif; ?>
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
@@ -281,7 +288,26 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                 <div id="egyenlegkezeles" style="visibility: hidden;">
                 <div id="egyenlegkezeles">
                 <div class="dashboard mt-4">
-
+                <div class="kartya">
+                <h3>Kapcsolat</h3>
+                <form id="supportForm">
+                    <div>
+                        <label for="messageType">Típus:</label>
+                        <select id="messageType" name="messageType" required>
+                            <option value="">Válassz típust</option>
+                            <option value="bug">Hibabejelentés</option>
+                            <option value="idea">Ötlet</option>
+                            <option value="complaint">Panasz</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label for="message">Üzenet:</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Írd ide az üzeneted..." required></textarea>
+                    </div>
+                    <button type="submit" style="margin-top: 20px;">Küldés</button>
+                </form>
+                <p id="responseMessage"></p>
+                </div>
                 </div>
                 </div>
                 </div>

@@ -226,7 +226,6 @@ select {
     color: #ffffff;
 }
 
-/* Reszponzivitás kisebb képernyőkre */
 @media (max-width: 768px) {
     .filter-form {
         flex-direction: column;
@@ -242,7 +241,17 @@ select {
     }
 }
 
-/* Admin statisztikák stílusa (div nélkül) */
+#Adminszoveg {
+    color: #63ffbe;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-size: 2rem;
+    text-align: center;
+    padding: 10px 0;
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
 h4 {
     color: #63ffbe;
     margin-bottom: 15px;
@@ -250,6 +259,13 @@ h4 {
     border-bottom: 2px solid #63ffbe;
     padding-bottom: 5px;
     text-align: center;
+}
+
+h3 {
+    color: #121212;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: "Arial Black", Impact, sans-serif;
 }
 
 p {
@@ -264,7 +280,6 @@ p b {
     color: #63ffbe;
 }
 
-/* Reszponzivitás kisebb képernyőkre */
 @media (max-width: 768px) {
     h4 {
         font-size: 18px;
@@ -277,12 +292,10 @@ p b {
     }
 }
 
-/* Új sor (kiegészítők) */
 #newRow {
     display: none;
 }
 
-/* Kacsacsőr gomb stílusa */
 #toggleKiegeszito {
     background-color: #f8f9fa;
     border: none;

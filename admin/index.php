@@ -171,13 +171,13 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                 <div class="text-center">
                     <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
                 </div>
-                <h2 class="text-center">PénzRadar ADMIN</h2>
+                <p id="Adminszoveg">PénzRadar ADMIN</p>
                 <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item"><a class="nav-link" href="../kezdolap/"><i class="fas fa-home"></i> Kezdőlap</a></li>
                     <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
-                    <li class="nav-item"><a class="nav-link_kapcsolat" href="../kapcsolat/"><i class="bi bi-envelope-at-fill"></i> Kapcsolat</a></li>
+                    <li class="nav-item"><a class="nav-link kapcsolat-link" href="../kapcsolat/"><i class="bi bi-envelope-at-fill"></i> Kapcsolat</a></li>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <br>
                         <h4>Statisztikák</h4>
@@ -214,7 +214,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                     <table>
                         <tr>
                             <th colspan="4" class="text-center">
-                                <h4 class="text-center m-0">Felhasználók kezelése</h4>
+                                <h3 class="text-center m-0">Felhasználók kezelése</h3>
                             </th>
                             <th colspan="4">
                                 <div class="filter-container card p-3 mt-3 kartya1">
