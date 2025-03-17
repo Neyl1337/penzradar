@@ -159,6 +159,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
     <title>PénzRadar - Kezdőlap</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
@@ -176,6 +177,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                     <li class="nav-item"><a class="nav-link" href="../tervezo/"><i class="fas fa-tasks"></i> Tervező</a></li>
                     <li class="nav-item"><a class="nav-link" href="../naptar/"><i class="fas fa-calendar-alt"></i> Naptár</a></li>
                     <li class="nav-item"><a class="nav-link" href="../persely/"><i class="fas fa-piggy-bank"></i> Persely</a></li>
+                    <li class="nav-item"><a class="nav-link_kapcsolat" href="../kapcsolat/"><i class="bi bi-envelope-at-fill"></i> Kapcsolat</a></li>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <br>
                         <h4>Statisztikák</h4>

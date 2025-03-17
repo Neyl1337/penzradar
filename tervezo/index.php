@@ -178,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])
     <title>PénzRadar - Tervező</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
@@ -224,6 +225,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])
                             <i class="fas fa-lock ms-2"></i>
                         <?php endif; ?>
                     </a>
+                </li>
+                <li class="nav-item">
+                        <a class="nav-link_kapcsolat <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                            <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span>Kapcsolat</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock ms-2"></i>
+                            <?php endif; ?>
+                        </a>
                 </li>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 <br>

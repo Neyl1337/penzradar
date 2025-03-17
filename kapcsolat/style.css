@@ -1,0 +1,231 @@
+/* Alapértelmezett stílusok az oldalhoz */
+body {
+    background-color: #121212;
+    color: white;
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+p {
+    font-size: 150%;
+    margin: 0;
+}
+
+/* Persely kártya stílusa */
+.piggy-bank-card {
+    background-color: #1e1e1e;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(99, 255, 190, 0.5);
+}
+
+.piggy-bank-card::before {
+    content: "\f4c0"; /* Piggy bank ikon Font Awesome-ból */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 40px;
+    color: #63ffbe;
+    opacity: 0.2;
+}
+
+.piggy-bank-title {
+    color: #ff0000;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.piggy-bank-body {
+    padding: 20px;
+    background-color: rgba(30, 30, 30, 0.9);
+    border-radius: 15px;
+}
+
+.piggy-bank-selected-balance {
+    color: #63ffbe;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #121212;
+    border-radius: 10px;
+}
+
+.piggy-bank-balance {
+    color: #63ffbe;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #121212;
+    border-radius: 10px;
+}
+
+.piggy-bank-last-action {
+    color: #63ffbe;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #121212;
+    border-radius: 10px;
+}
+
+.piggy-bank-empty {
+    color: #ff0000;
+    font-size: 1.3rem;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Űrlapok és beviteli mezők stílusa */
+.form-label {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.form-select, .form-control {
+    background-color: #1e1e1e;
+    color: white;
+    border: 2px solid #63ffbe;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #4acda3;
+    box-shadow: 0 0 10px #63ffbe;
+    outline: none;
+}
+
+/* Gombok stílusa (perselyhez igazítva) */
+.piggy-bank-btn {
+    background-color: #1e1e1e;
+    border: 2px solid #63ffbe;
+    color: white;
+    border-radius: 15px;
+    padding: 12px 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.piggy-bank-btn:hover {
+    background-color: #63ffbe;
+    color: #1e1e1e;
+    border-color: #4acda3;
+}
+
+.btn-primary.piggy-bank-btn { background-color: #1e1e1e; }
+.btn-danger.piggy-bank-btn { background-color: #ff0000; }
+.btn-danger.piggy-bank-btn:hover { background-color: #cc0000; }
+.btn-success.piggy-bank-btn { background-color: #1e1e1e; }
+.btn-success.piggy-bank-btn:hover { background-color: #63ffbe; }
+
+/* Modal stílusa */
+.modal-content {
+    background-color: #1e1e1e;
+    color: white;
+    border: 2px solid #63ffbe;
+    border-radius: 15px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #63ffbe;
+}
+
+.modal-title {
+    color: #ff0000;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.btn-close {
+    filter: invert(1) hue-rotate(180deg); /* Fehér záró ikon sötét háttéren */
+}
+
+.btn-primary.button2 {
+    background-color: #1e1e1e;
+    border: 2px solid #63ffbe;
+    color: white;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-primary.button2:hover {
+    background-color: #63ffbe;
+    color: #1e1e1e;
+    border-color: #4acda3;
+}
+
+.maxkoltes-gomb.button2 {
+    background-color: #1e1e1e;
+    border: 2px solid #63ffbe;
+    color: white;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.maxkoltes-gomb.button2:hover {
+    background-color: #63ffbe;
+    color: #1e1e1e;
+    border-color: #4acda3;
+}
+
+/* Reszponzivitás */
+@media (max-width: 768px) {
+    .piggy-bank-card {
+        padding: 15px;
+    }
+
+    .piggy-bank-title {
+        font-size: 1.5rem;
+    }
+
+    .piggy-bank-selected-balance, .piggy-bank-balance, .piggy-bank-last-action {
+        font-size: 1.2rem;
+    }
+
+    .piggy-bank-btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .btn-primary.button2, .maxkoltes-gomb.button2 {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+}
+
+/* Egyedi kurzor minden interaktív elemre */
+button, a, select, input {
+    cursor: url("../kepek/cursor.ico"), default;
+}

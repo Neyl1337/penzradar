@@ -228,7 +228,6 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                         </a>
                     </li>
                 </ul>
-                <b class="d-flex justify-content-end py-3 border-bottom"></b>
                 <div id="arfolyamok" class="my-3">
                     <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
                     <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
@@ -277,11 +276,11 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                     </div>
                 </header>
                 <div id="egyenlegkezeles" style="visibility: hidden;">
-                    <div id="egyenlegkezeles">
-                    <div class="dashboard mt-4">
-                        
-                    </div>
-                    </div>
+                <div id="egyenlegkezeles">
+                <div class="dashboard mt-4">
+
+                </div>
+                </div>
                 </div>
             </main>
         </div>
