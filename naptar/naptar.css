@@ -9,8 +9,10 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
     overflow: hidden;
-    width: 300px;
-    padding: 20px;
+    width: 500px;
+    padding-bottom: 50px;
+    padding-top: 10px;
+    margin-left: 250px;
     }
     .header {
     display: flex;
@@ -60,37 +62,28 @@ body {
     box-shadow: 0 0 15px #63ffbe;
     overflow: hidden;
     width: 300px;
-    height: 352px;
+    height: 372px;
     padding: 20px;
-    margin-top: 25px;
     font-size: medium;
+    margin-left: 800px;
+    margin-top: -370px;
     }
 
-#kuld{
-    margin-top: 30%;
-    margin-left: 80%;
-}
 
-#kiiratas{
-    background-color: #1e1e1e;
-border-radius: 10px;
-box-shadow: 0 0 15px #63ffbe;
-overflow: hidden;
-width: 300px;
-height: 352px;
-padding: 20px;
-margin-top: -729px;
-margin-left: 325px;
-font-size: medium;
-}
-
-#B_K{
-    text-align: center;
-    font-weight: bold;
-    padding: 10px;
-    text-decoration: underline;
-}
 
 .fade:not(.show) {
     opacity: 100;
+}
+
+@media (max-width: 768px)
+{
+    #bevitel{
+       margin-top: 20px;
+       margin-left: 25%;
+    }   
+
+    .calendar{
+        margin-left: 5px;
+
+    }
 }

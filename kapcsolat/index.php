@@ -3,10 +3,9 @@ require_once '../adatbazis.php';
 
 session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
-        SELECT f.rang, p.egyenleg 
+        SELECT f.rang, f.email, p.egyenleg 
         FROM felhasznalok f
         INNER JOIN persely p ON f.id = p.felhasznalo_id
         WHERE f.id = ?
@@ -16,10 +15,12 @@ if (isset($_SESSION['felhasznalo_id'])) {
 
     if ($felhasznalo) {
         $_SESSION['szerepkor'] = $felhasznalo['rang'];
+        $_SESSION['email'] = $felhasznalo['email'];
         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
     }
 } else {
     $_SESSION['szerepkor'] = null;
+    $_SESSION['email'] = null;
     $_SESSION['perselyegyenleg'] = null;
 }
 
@@ -175,62 +176,63 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- <button type="button" class="toggle-nav-btn" onclick="toggleNav()" id="toggleKiegeszito<?= $row['id'] ?>">
-        <i class="fas fa-chevron-left"></i>
-    </button> -->
     <div class="container-fluid">
         <div class="row">
-        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
                 <div class="text-center">
                     <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
                 </div>
-                <h2 class="text-center">PénzRadar</h2>
+                <h2 class="text-center" id="penzradarTitle">PénzRadar</h2>
+                <audio id="penzradarAudio">
+                    <source src="../videok/intohang.mp3" type="audio/mpeg">
+                    A böngésződ nem támogatja az audió lejátszását.
+                </audio>
                 <ul class="nav flex-column flex-md-column mt-4">
-                <li class="nav-item">
-                    <a class="nav-link" href="../kezdolap/">
-                        <i class="fas fa-home"></i>
-                        <span class="link-szoveg">Kezdőlap</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
-                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Tervező</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
-                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Naptár</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
-                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Persely</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <li class="nav-item">
-                        <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
-                            <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span class="link-szoveg">Kapcsolat</span>
+                        <a class="nav-link" href="../kezdolap/">
+                            <i class="fas fa-home"></i>
+                            <span class="link-szoveg">Kezdőlap</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                            <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Tervező</span>
                             <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
                                 <i class="fas fa-lock lakat-jobb"></i>
                             <?php endif; ?>
                         </a>
                     </li>
-                <?php endif; ?>
-                <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                            <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Naptár</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock lakat-jobb"></i>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                            <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Persely</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock lakat-jobb"></i>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                                <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                                <span class="link-szoveg">Kapcsolat</span>
+                                <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                    <i class="fas fa-lock lakat-jobb"></i>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                 </ul>
                 <div id="arfolyamok" class="my-3">
                     <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
@@ -287,38 +289,88 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                 </header>
                 <div id="egyenlegkezeles" style="visibility: hidden;">
                 <div id="egyenlegkezeles">
-                <div class="dashboard mt-4">
-                <div class="kartya">
-                <h3>Kapcsolat</h3>
-                <form id="supportForm">
-                    <div>
-                        <label for="messageType">Típus:</label>
-                        <select id="messageType" name="messageType" required>
-                            <option value="">Válassz típust</option>
-                            <option value="bug">Hibabejelentés</option>
-                            <option value="idea">Ötlet</option>
-                            <option value="complaint">Panasz</option>
-                        </select>
+                    <div class="kartya">
+                        <div class="text-center">
+                        <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+                        </div>
+                        <h3 class="support-title">Support Kapcsolat</h3>
+                        <div class="callout-container">
+                            <p class="notice-text"><h3>FIGYELEM!</h3> A Weboldal még fejlesztés alatt, amennyiben hibát észlel, vagy ötlete, esetleg panasza van, itt jelezze nekünk!</p>
+                            <p class="support-text">Ez a PénzRadar Support felülete</p>
+                            <div class="user-info">
+                            <p class="contact-text">Levelező rendszerünk: <b class="email-text">Support@penzradar.hu</b></p>
+                            </div>
+                        </div>
+                        <div class="user-info">
+                            <p class="user-label"><b>Az ön felhasználó neve:</b> <?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></p>
+                            <p class="user-label"><b>Az ön emailje:</b> <?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></p>
+                        </div>
+                        <form id="supportForm">
+                            <label for="subject">Tárgy:</label>
+                            <select id="subject" name="subject">
+                                <option value="1">Hibabejelentés</option>
+                                <option value="2">Ötlet</option>
+                                <option value="3">Panasz</option>
+                                <option value="4">Egyéb</option>
+                            </select>
+                            <label for="message">Üzenet:</label>
+                            <textarea id="message" name="message" maxlength="300" placeholder="Maximum 300 karakter"></textarea>
+                            <button type="submit">Küldés</button>
+                        </form>
+                        <p id="responseMessage">Amennyiben megkaptuk az üzenetét, megerősítő emailt fog kapni!</p>
+                        <p id="supportInfo">Köszönjük, hogy segít jobbá tenni a PénzRadart!</p>
                     </div>
-                    <div style="margin-top: 15px;">
-                        <label for="message">Üzenet:</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Írd ide az üzeneted..." required></textarea>
-                    </div>
-                    <button type="submit" style="margin-top: 20px;">Küldés</button>
-                </form>
-                <p id="responseMessage"></p>
-                </div>
-                </div>
                 </div>
                 </div>
             </main>
         </div>
     </div>
     <script>
-
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const penzradarTitle = document.getElementById('penzradarTitle');
+            const penzradarAudio = document.getElementById('penzradarAudio');
+
+            penzradarTitle.addEventListener('click', function() {
+                penzradarAudio.currentTime = 0; // Visszaállítja az elejére a hangot
+                penzradarAudio.play().catch(function(error) {
+                    console.log("A hang lejátszása nem sikerült: ", error);
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+        const submitButton = document.getElementById('submitButton');
+        const form = document.getElementById('supportForm');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Megakadályozza az alapértelmezett form beküldést (ha nincs backend)
+
+            // Gomb letiltása és cooldown indítása
+            submitButton.disabled = true;
+            submitButton.textContent = 'Küldés (5s cooldown)';
+            let timeLeft = 5;
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                submitButton.textContent = `Küldés (${timeLeft}s cooldown)`;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Küldés';
+                }
+            }, 1000);
+
+            // Szimulált válaszüzenet (opcionális)
+            const responseMessage = document.getElementById('responseMessage');
+            responseMessage.style.display = 'block';
+            setTimeout(() => {
+                responseMessage.style.display = 'none';
+            }, 5000); // 5 másodperc után eltűnik
+        });
+    });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>

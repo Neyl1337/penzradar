@@ -161,3 +161,108 @@ canvas
     font-size: 25px;
     text-align: center;
 }
+
+.tranzakcio-tabla {
+    width: 70%;
+    margin-left: 150px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0 0 10px #63ffbe;
+    border-radius: 10px;
+    overflow: hidden;
+
+}
+
+.tranzakcio-tabla th,
+.tranzakcio-tabla td {
+    color: #ffffff;
+    border-bottom: 1px solid #63ffbe;
+}
+
+.tranzakcio-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: transparent;
+    color: white;
+}
+
+.tranzakcio-tabla thead th {
+    border-bottom: 2px solid #63ffbe;
+    
+}
+
+
+#PBevitel{
+
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#ind{
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#kuld{
+    cursor: url(../kepek/cursor.ico), default;
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url(../kepek/cursor.ico), default;
+    font-size: 14px;
+    margin-top: 40%;
+    margin-left: 80%;
+
+}
+
+#dateInput{
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+table{
+    margin-top: 100px;
+}
+
+
+@media (max-width: 768px) {
+    .oldalsav {
+        min-height: auto;
+    }
+    .tranzakcio-tabla {
+        font-size: 14px;
+    }
+    .tranzakcio-tabla{
+        margin-left: 10%;
+        width: 80%;
+        margin-top: 10px;
+    }
+
+
+    
+}
+
