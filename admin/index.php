@@ -156,7 +156,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Kezdőlap</title>
+    <title>PénzRadar - ADMIN PANEL</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -183,7 +183,8 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                         <h4>Statisztikák</h4>
                         <p>Összes felhasználó: <b><?php echo $osszes_felhasznalo; ?></b></p>
                         <p>Adminok száma: <b><?php echo $adminok_szama; ?></b></p>
-                        <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                        <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                        <li class="nav-item"><a class="nav-link" href="support.php" id="tamogatas_gomb"><i class="fas fa-headset"></i> Support</a></li>
                     </ul>
                 </nav>
                 <main class="col-12 col-md-9 col-lg-10 main-content">

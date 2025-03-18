@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             const penzradarTitle = document.getElementById('penzradarTitle');
             const penzradarAudio = document.getElementById('penzradarAudio');
@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
             });
 
             let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-            const cooldownPeriod = 30 * 60 * 1000; // 30 perc milliszekundumban
+            const cooldownPeriod = 1 * 60 * 1000; // 30 perc milliszekundumban
 
             function updateCooldown() {
                 const now = Date.now();
