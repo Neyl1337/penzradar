@@ -3,6 +3,7 @@ require_once '../adatbazis.php';
 
 session_start();
 
+// Felhasználói adatok lekérdezése
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, f.email, p.egyenleg 
@@ -24,140 +25,31 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása PHP-ban vesszővel
+// Perselyegyenleg formázása
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
-// Alapértelmezett kiválasztott persely összegének lekérdezése (első persely)
-$alapertelmezett_persely_id = !empty($_POST['persely_id']) ? (int)$_POST['persely_id'] : (isset($perselyek[0]['ID']) ? $perselyek[0]['ID'] : null);
-$jelenlegi_osszeg = 0;
-if ($alapertelmezett_persely_id) {
-    $stmt = $pdo->prepare("SELECT osszeg FROM perselyk WHERE ID = ? AND felhasznalo_nev = ?");
-    $stmt->execute([$alapertelmezett_persely_id, $_SESSION['felhasznalo_nev']]);
-    $persely = $stmt->fetch(PDO::FETCH_ASSOC);
-    $jelenlegi_osszeg = $persely ? $persely['osszeg'] : 0;
+// Support üzenet küldése (AJAX-al kezelt)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($_POST['message'])) {
+    $targy = $_POST['subject'];
+    $email = $_SESSION['email'] ?? '';
+    $felhasznalo = $_SESSION['felhasznalo_nev'] ?? '';
+    $szoveg = $_POST['message'];
+    $datum = date('Y-m-d'); // Valós dátum
+    $ido = date('H:i:s');   // Valós idő
+
+    $stmt = $pdo->prepare("
+        INSERT INTO support (targy, email, felhasznalo, szoveg, datum, ido) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$targy, $email, $felhasznalo, $szoveg, $datum, $ido]);
+
+    // Válasz JSON formátumban
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true]);
+    exit;
 }
-$formatált_jelenlegi_osszeg = number_format($jelenlegi_osszeg, 0, '.', ',');
-
-// Persely műveletek kezelése
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['persely_id'], $_POST['muvelet'], $_POST['osszeg'])) {
-        $persely_id = (int)$_POST['persely_id'];
-        $muvelet = $_POST['muvelet'];
-        $osszeg = (float)$_POST['osszeg'];
-
-        if ($osszeg < 0) {
-            $_SESSION['utolso_muvelet'] = "Hiba: Az összeg nem lehet negatív!";
-        } else {
-            $stmt = $pdo->prepare("SELECT osszeg FROM perselyk WHERE ID = ? AND felhasznalo_nev = ?");
-            $stmt->execute([$persely_id, $_SESSION['felhasznalo_nev']]);
-            $persely = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($persely) {
-                $jelenlegi_osszeg = $persely['osszeg'];
-
-                if ($muvelet === 'betet') {
-                    $stmt = $pdo->prepare("
-                        UPDATE perselyk 
-                        SET osszeg = osszeg + ?, 
-                            betesz = betesz + ? 
-                        WHERE ID = ? AND felhasznalo_nev = ?
-                    ");
-                    $stmt->execute([$osszeg, $osszeg, $persely_id, $_SESSION['felhasznalo_nev']]);
-                    $_SESSION['utolso_muvelet'] = "Betét: +$osszeg Ft";
-
-                } elseif ($muvelet === 'kivet') {
-                    if ($jelenlegi_osszeg >= $osszeg) {
-                        $stmt = $pdo->prepare("
-                            UPDATE perselyk 
-                            SET osszeg = osszeg - ?, 
-                                kivesz = kivesz + ? 
-                            WHERE ID = ? AND felhasznalo_nev = ?
-                        ");
-                        $stmt->execute([$osszeg, $osszeg, $persely_id, $_SESSION['felhasznalo_nev']]);
-                        $_SESSION['utolso_muvelet'] = "Kivét: -$osszeg Ft";
-                    } else {
-                        $_SESSION['utolso_muvelet'] = "Hiba: Nincs elég egyenleg a kivételhez!";
-                    }
-                } elseif ($muvelet === 'modositas') {
-                    $stmt = $pdo->prepare("
-                        UPDATE perselyk 
-                        SET osszeg = ?, 
-                            betesz = 0, 
-                            kivesz = 0 
-                        WHERE ID = ? AND felhasznalo_nev = ?
-                    ");
-                    $stmt->execute([$osszeg, $persely_id, $_SESSION['felhasznalo_nev']]);
-                    $_SESSION['utolso_muvelet'] = "Módosítás: Az összeg frissítve $osszeg Ft-ra, betét és kivét nullázva.";
-                }
-            } else {
-                $_SESSION['utolso_muvelet'] = "Hiba: Érvénytelen persely!";
-            }
-        }
-    }
-
-    // Persely törlés kezelése
-    if (isset($_POST['torles_persely_id'])) {
-        $persely_id = (int)$_POST['torles_persely_id'];
-
-        $stmt = $pdo->prepare("SELECT perselynev FROM perselyk WHERE ID = ? AND felhasznalo_nev = ?");
-        $stmt->execute([$persely_id, $_SESSION['felhasznalo_nev']]);
-        $persely = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($persely) {
-            $persely_nev = $persely['perselynev'];
-            $stmt = $pdo->prepare("DELETE FROM perselyk WHERE ID = ? AND felhasznalo_nev = ?");
-            $stmt->execute([$persely_id, $_SESSION['felhasznalo_nev']]);
-            $_SESSION['utolso_muvelet'] = "Persely törölve: $persely_nev";
-        } else {
-            $_SESSION['utolso_muvelet'] = "Hiba: A persely nem található!";
-        }
-
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-    // Persely létrehozás kezelése
-    if (isset($_POST['uj_persely_nev'])) {
-        $uj_persely_nev = trim($_POST['uj_persely_nev']);
-        $felhasznalo_nev = $_SESSION['felhasznalo_nev'];
-        $datum = date('Y-m-d');
-
-        $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM perselyk WHERE perselynev = ? AND felhasznalo_nev = ?");
-        $check_stmt->execute([$uj_persely_nev, $felhasznalo_nev]);
-        $exists = $check_stmt->fetchColumn();
-
-        if ($exists == 0) {
-            $stmt = $pdo->prepare("
-                INSERT INTO perselyk (perselynev, felhasznalo_nev, osszeg, betesz, kivesz, datum) 
-                VALUES (?, ?, 0, 0, 0, ?)
-            ");
-            $stmt->execute([$uj_persely_nev, $felhasznalo_nev, $datum]);
-            $_SESSION['utolso_muvelet'] = "Új persely létrehozva: $uj_persely_nev";
-        } else {
-            $_SESSION['utolso_muvelet'] = "Hiba: A '$uj_persely_nev' nevű persely már létezik!";
-        }
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-}
-
-// Perselyek újbóli lekérdezése a frissítés után
-$stmt = $pdo->prepare("
-    SELECT ID, perselynev, osszeg 
-    FROM perselyk 
-    WHERE felhasznalo_nev = ?
-");
-$stmt->execute([$_SESSION['felhasznalo_nev']]);
-$perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Összes egyenleg kiszámítása
-$ossz_egyenleg = array_sum(array_column($perselyek, 'osszeg'));
-$formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
 ?>
 
 <!DOCTYPE html>
@@ -165,7 +57,7 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Persely</title>
+    <title>PénzRadar - Support</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -174,6 +66,20 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        #submitButton {
+            transition: background-color 0.3s;
+        }
+        .success-green {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+        .cooldown-gray {
+            background-color: #808080 !important;
+            color: white !important;
+            cursor: not-allowed !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -291,33 +197,33 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                 <div id="egyenlegkezeles">
                     <div class="kartya">
                         <div class="text-center">
-                        <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+                            <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
                         </div>
                         <h3 class="support-title">Support Kapcsolat</h3>
                         <div class="callout-container">
                             <p class="notice-text"><h3>FIGYELEM!</h3> A Weboldal még fejlesztés alatt, amennyiben hibát észlel, vagy ötlete, esetleg panasza van, itt jelezze nekünk!</p>
                             <p class="support-text">Ez a PénzRadar Support felülete</p>
                             <div class="user-info">
-                            <p class="contact-text">Levelező rendszerünk: <b class="email-text">Support@penzradar.hu</b></p>
+                                <p class="contact-text">Levelező rendszerünk: <b class="email-text">Support@penzradar.hu</b></p>
                             </div>
                         </div>
                         <div class="user-info">
                             <p class="user-label"><b>Az ön felhasználó neve:</b> <?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></p>
                             <p class="user-label"><b>Az ön emailje:</b> <?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></p>
                         </div>
-                        <form id="supportForm">
+                        <form id="supportForm" method="POST">
                             <label for="subject">Tárgy:</label>
                             <select id="subject" name="subject">
-                                <option value="1">Hibabejelentés</option>
-                                <option value="2">Ötlet</option>
-                                <option value="3">Panasz</option>
-                                <option value="4">Egyéb</option>
+                                <option value="Hibabejelentés">Hibabejelentés</option>
+                                <option value="Ötlet">Ötlet</option>
+                                <option value="Panasz">Panasz</option>
+                                <option value="Egyéb">Egyéb</option>
                             </select>
                             <label for="message">Üzenet:</label>
-                            <textarea id="message" name="message" maxlength="300" placeholder="Maximum 300 karakter"></textarea>
-                            <button type="submit">Küldés</button>
+                            <textarea id="message" name="message" maxlength="300" placeholder="Maximum 300 karakter" required></textarea>
+                            <button type="submit" id="submitButton" class="btn btn-primary">Küldés</button>
                         </form>
-                        <p id="responseMessage">Amennyiben megkaptuk az üzenetét, megerősítő emailt fog kapni!</p>
+                        <p id="responseMessage" style="display: none;"></p>
                         <p id="supportInfo">Köszönjük, hogy segít jobbá tenni a PénzRadart!</p>
                     </div>
                 </div>
@@ -328,49 +234,89 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
     <script>
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
-
+        
         document.addEventListener('DOMContentLoaded', function() {
             const penzradarTitle = document.getElementById('penzradarTitle');
             const penzradarAudio = document.getElementById('penzradarAudio');
+            const submitButton = document.getElementById('submitButton');
+            const form = document.getElementById('supportForm');
+            const responseMessage = document.getElementById('responseMessage');
 
             penzradarTitle.addEventListener('click', function() {
-                penzradarAudio.currentTime = 0; // Visszaállítja az elejére a hangot
+                penzradarAudio.currentTime = 0;
                 penzradarAudio.play().catch(function(error) {
                     console.log("A hang lejátszása nem sikerült: ", error);
                 });
             });
-        });
 
-        document.addEventListener('DOMContentLoaded', function () {
-        const submitButton = document.getElementById('submitButton');
-        const form = document.getElementById('supportForm');
+            let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
+            const cooldownPeriod = 30 * 60 * 1000; // 30 perc milliszekundumban
 
-        form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Megakadályozza az alapértelmezett form beküldést (ha nincs backend)
-
-            // Gomb letiltása és cooldown indítása
-            submitButton.disabled = true;
-            submitButton.textContent = 'Küldés (5s cooldown)';
-            let timeLeft = 5;
-
-            const countdown = setInterval(() => {
-                timeLeft--;
-                submitButton.textContent = `Küldés (${timeLeft}s cooldown)`;
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
+            function updateCooldown() {
+                const now = Date.now();
+                if (now - lastSubmissionTime < cooldownPeriod) {
+                    submitButton.disabled = true;
+                    submitButton.classList.add('cooldown-gray');
+                    const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                } else {
                     submitButton.disabled = false;
+                    submitButton.classList.remove('cooldown-gray');
                     submitButton.textContent = 'Küldés';
                 }
-            }, 1000);
+            }
 
-            // Szimulált válaszüzenet (opcionális)
-            const responseMessage = document.getElementById('responseMessage');
-            responseMessage.style.display = 'block';
-            setTimeout(() => {
-                responseMessage.style.display = 'none';
-            }, 5000); // 5 másodperc után eltűnik
+            // Másodpercenként frissítjük a cooldown időt
+            setInterval(updateCooldown, 1000);
+            updateCooldown(); // Első azonnali frissítés
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                if (submitButton.disabled) return;
+
+                const formData = new FormData(form);
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        responseMessage.style.display = 'block';
+                        responseMessage.style.color = 'green';
+                        responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
+                        submitButton.classList.add('success-green');
+                        setTimeout(() => {
+                            submitButton.classList.remove('success-green');
+                            submitButton.classList.add('cooldown-gray');
+                        }, 2000); // 2 másodperc zöld, utána szürke
+
+                        lastSubmissionTime = Date.now();
+                        localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
+                        updateCooldown();
+
+                        // Űrlap törlése
+                        form.reset();
+                        setTimeout(() => {
+                            responseMessage.style.display = 'none';
+                        }, 5000); // 5 másodperc után eltűnik
+                    }
+                })
+                .catch(error => {
+                    console.error('Hiba történt:', error);
+                    responseMessage.style.display = 'block';
+                    responseMessage.style.color = 'red';
+                    responseMessage.textContent = 'Az üzenet küldése sikertelen!';
+                    setTimeout(() => {
+                        responseMessage.style.display = 'none';
+                    }, 5000);
+                });
+            });
         });
-    });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
