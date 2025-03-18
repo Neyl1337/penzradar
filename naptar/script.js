@@ -11,19 +11,17 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "block";
         document.getElementById("perselyegyenleg").style.visibility = "visible";
         document.getElementById("szerepkor").style.visibility = "visible";
-        document.getElementById("statisztika").style.visibility = "visible";
+        document.getElementById("naptar").style.visibility = "visible";
     } else {
+        document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
         document.getElementById("beallitasopcio").style.display = "none";
         document.getElementById("kijelentkezesopcio").style.display = "none";
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
-        document.getElementById("statisztika").style.visibility = "none";
-        document.getElementById("nemvagybejelentkezve").style.visibility = "visible";
-        document.getElementById("statisztika").innerHTML = "";
+        document.getElementById("naptar").style.visibility = "none";
     }
-}
-
+};
 
 //A naptár scriptje
 document.addEventListener('DOMContentLoaded', function () {

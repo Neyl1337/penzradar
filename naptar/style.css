@@ -1,268 +1,154 @@
-body {
-    background-color: #121212;
-    color: white;
-    cursor: url("../kepek/cursor.ico"), default;
-    position: hidden;
-}
-p{
-    font-size: 150%;
-    margin: 0px;
-}
-
-.grafikon-container {
-    position: relative;
-    width: 100%;
-    height: 300px;
-}
-
-@media (max-width: 768px) {
-    .grafikon-container {
-        height: 200px;
-    }
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4rem;
-    padding: 10px;
-}
-
-.nav-link i {
-    font-size: 1.8rem;
-    min-width: 35px;
-    text-align: center;
-}
-
-
-.arfolyam-stilus li {
-    font-size: 1.5rem;
-    margin: 10px 0;
-    list-style-type: none;
-    display: flex;
-    align-items: center;
-}
-
-.arfolyam-stilus li img {
-    width: 30px;
-    height: 20px;
-    margin-right: 10px;
-}
-.kartya1 {
+.calendar {
     background-color: #1e1e1e;
-    color: white;
-    border-radius: 10px;
-}
-.kartya1 a{
-    color: rgb(255, 0, 0);
-    text-decoration: none;
-}
-.kartya1 h3 {
-    color: #ff0000;
-}
-.oldalsav {
-    background-color: #1e1e1e;
-    min-height: 100vh;
-    padding: 20px;
-}
-.oldalsav h2 {
-    color: #63ffbe;
-}
-.oldalsav a {
-    color: white;
-    text-decoration: none;
-}
-.oldalsav a:hover {
-    color: #63ffbe;
-}
-.kartya {
-    background-color: #1e1e1e;
-    color: white;
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
-}
-.kartya b {
-    color: #63ffbe;
-}
-@media (max-width: 1192px) {
-    .oldalsav {
-        min-height: auto;
-        padding: 10px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-    }
-    .oldalsav h2 {
-        display: none;
-    }
-}
-.dropdown-menu {
-    background-color: #1e1e1e;
-    border: none;
-}
-.dropdown-item {
-    color: white;
-}
-.dropdown-item:hover {
-    color: #63ffbe;
-    background-color: #1e1e1e;
-}
-.btn-secondary {
-    background-color: #1e1e1e;
-    border-color: #1e1e1e;
-}
-.btn-secondary:hover {
-    background-color: #63ffbe;
-    border-color: #63ffbe;
-}
-
-#role, #balance {
-    color: #63ffbe;
-    font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-    #szerepkor, #perselyegyenleg {
-        font-size: 0.875rem;
-        display: block;
-        margin: 0;
-    }
-    .dropdown {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-a {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-button {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-span {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-.grafikon-container
-{
-    width: 35%; margin: auto; padding: 10px;
-}
-
-canvas
-{
-    background: #1E1E1E; border-radius: 8px;
-    box-shadow: 0 0 15px #63ffbe;
-}
-
-#adminpanel {
-    font-size: 25px;
-    text-align: center;
-}
-
-.tranzakcio-tabla {
-    width: 70%;
-    margin-left: 150px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 0 0 10px #63ffbe;
-    border-radius: 10px;
     overflow: hidden;
-
-}
-
-.tranzakcio-tabla th,
-.tranzakcio-tabla td {
-    color: #ffffff;
-    border-bottom: 1px solid #63ffbe;
-}
-
-.tranzakcio-tabla tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-    --bs-table-accent-bg: transparent;
-    color: white;
-}
-
-.tranzakcio-tabla thead th {
-    border-bottom: 2px solid #63ffbe;
-    
-}
-
-
-#PBevitel{
-
-    background-color: #1e1e1e;
-    border: 1px solid #63ffbe;
-    color: white;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-#ind{
-    background-color: #1e1e1e;
-    border: 1px solid #63ffbe;
-    color: white;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-#kuld{
-    cursor: url(../kepek/cursor.ico), default;
-    background-color: #63ffbe;
-    border-color: #63ffbe;
-    box-shadow: 0 0 5px #63ffbe;
-    color: #1e1e1e;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
-    cursor: url(../kepek/cursor.ico), default;
-    font-size: 14px;
-    margin-top: 40%;
-    margin-left: 80%;
-
-}
-
-#dateInput{
-    background-color: #1e1e1e;
-    border: 1px solid #63ffbe;
-    color: white;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-table{
-    margin-top: 100px;
-}
-
-
-@media (max-width: 768px) {
-    .oldalsav {
-        min-height: auto;
+    width: 500px;
+    padding-bottom: 50px;
+    padding-top: 10px;
+    margin-left: 250px;
     }
+    .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    }
+    .btn {
+    cursor: pointer;
+    }
+    #month-year {
+    font-weight: bold;
+    font-size: 20px;
+    }
+    .weekdays, .days {
+    display: flex;
+    flex-wrap: wrap;
+    }
+    .days {
+    height: 210px;
+    }
+    .weekdays div, .days div {
+    width: 14.28%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 5px;
+    }
+    .days div {
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
+    .days div:hover {
+    background-color: rgba(255, 255, 255, 0.452);
+    color: #60faba;
+    }
+    .days .today {
+    background-color: #48b889;
+    color: white;
+    }
+    .days  .fade {
+    color: #555;
+    }
+
+#bevitel{
+        background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+    overflow: hidden;
+    width: 300px;
+    height: 372px;
+    padding: 20px;
+    font-size: medium;
+    margin-left: 800px;
+    margin-top: -370px;
+    }
+
     .tranzakcio-tabla {
-        font-size: 14px;
-    }
-    .tranzakcio-tabla{
-        margin-left: 10%;
-        width: 80%;
-        margin-top: 10px;
-    }
-
-
+        width: 70%;
+        margin-left: 150px;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        box-shadow: 0 0 10px #63ffbe;
+        border-radius: 10px;
+        overflow: hidden;
     
-}
+    }
+    
+    .tranzakcio-tabla th,
+    .tranzakcio-tabla td {
+        color: #ffffff;
+        border-bottom: 1px solid #63ffbe;
+    }
+    
+    .tranzakcio-tabla tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        --bs-table-accent-bg: transparent;
+        color: white;
+    }
+    
+    .tranzakcio-tabla thead th {
+        border-bottom: 2px solid #63ffbe;
+        
+    }
+    
+    
+    #PBevitel{
+    
+        background-color: #1e1e1e;
+        border: 1px solid #63ffbe;
+        color: white;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    #ind{
+        background-color: #1e1e1e;
+        border: 1px solid #63ffbe;
+        color: white;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    #kuld{
+        cursor: url(../kepek/cursor.ico), default;
+        background-color: #63ffbe;
+        border-color: #63ffbe;
+        box-shadow: 0 0 5px #63ffbe;
+        color: #1e1e1e;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 5px;
+        cursor: url(../kepek/cursor.ico), default;
+        font-size: 14px;
+        margin-top: 30%;
+        margin-left: 80%;
+    
+    }
+    
+    #dateInput{
+        background-color: #1e1e1e;
+        border: 1px solid #63ffbe;
+        color: white;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    table{
+        margin-top: 100px;
+    }
 
+    .fade:not(.show) {
+        opacity: 100;
+    }

@@ -3,7 +3,6 @@ require_once '../adatbazis.php';
 
 session_start();
 
-
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
@@ -35,55 +34,45 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Az adatok feldolgozása
-    $adat1 = $_POST['PBevitel'];
-    $com = $_POST['ind'];
-    $date = $_POST['datum'];
+    if (isset($_POST['PBevitel'])) {
+        $adat1 = $_POST['PBevitel'];
+        $com = $_POST['ind'];
+        $date = $_POST['datum'];
 
-    if ($adat1 > 0) {
-        // Bevétel feltöltés
-        $stmt = $pdo->prepare("
-            INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
-            VALUES (?, ?, ?, ?, null);
-        ");
-        $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
-    } elseif ($adat1 < 0) {
-        // Kiadás feltöltés
-        $stmt = $pdo->prepare("
-            INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
-            VALUES (?, ?, ?, null, ?);
-        ");
-        $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
+        if ($adat1 > 0) {
+            // Bevétel feltöltés
+            $stmt = $pdo->prepare("
+                INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
+                VALUES (?, ?, ?, ?, null);
+            ");
+            $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
+        } elseif ($adat1 < 0) {
+            // Kiadás feltöltés
+            $stmt = $pdo->prepare("
+                INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
+                VALUES (?, ?, ?, null, ?);
+            ");
+            $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
+        }
+    }
+
+    // Törlés kezelése
+    if (isset($_POST['torles_id'])) {
+        $utasitas = $pdo->prepare("DELETE FROM naptar WHERE id = ? AND felhasznalo_id = ?");
+        $utasitas->execute([$_POST['torles_id'], $_SESSION['felhasznalo_id']]);
     }
 
     // Átirányítás az oldalra (PRG minta)
-    header("Location: ".$_SERVER['REQUEST_URI']);
+    header("Location: " . $_SERVER['REQUEST_URI']);
     exit;
 }
 
 // Eredmények lekérdezése
-$sql = "SELECT NBevetel, NKiadas, ind, datum FROM naptar WHERE felhasznalo_id = :felhasznalo_id";
+$sql = "SELECT id, NBevetel, NKiadas, ind, datum FROM naptar WHERE felhasznalo_id = :felhasznalo_id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':felhasznalo_id' => $_SESSION['felhasznalo_id']]);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-if (isset($_POST['torles_id'])) {
-    $utasitas = $pdo->prepare("DELETE FROM naptar WHERE id = ? AND felhasznalo_id = ?");
-    $utasitas->execute([$_POST['torles_id'], $_SESSION['felhasznalo_id']]);
-}
-
-
-
-
-
-
-
-
-
-
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="hu">
@@ -93,13 +82,12 @@ if (isset($_POST['torles_id'])) {
     <title>PénzRadar - Naptár</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="naptar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -113,33 +101,33 @@ if (isset($_POST['torles_id'])) {
                 <li class="nav-item">
                     <a class="nav-link" href="../kezdolap/">
                         <i class="fas fa-home"></i>
-                        Kezdőlap
+                        <span class="link-szoveg">Kezdőlap</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
                         <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                       Tervező
+                        <span class="link-szoveg">Tervező</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
                         <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        Naptár
+                        <span class="link-szoveg">Naptár</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
                         <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                       Persely
+                        <span class="link-szoveg">Persely</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb ms-2"></i>
+                            <i class="fas fa-lock lakat-jobb"></i>
                         <?php endif; ?>
                     </a>
                 </li>
@@ -147,9 +135,9 @@ if (isset($_POST['torles_id'])) {
                     <li class="nav-item">
                         <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
                             <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            Kapcsolat
+                            <span class="link-szoveg">Kapcsolat</span>
                             <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                                <i class="fas fa-lock lakat-jobb ms-2"></i>
+                                <i class="fas fa-lock lakat-jobb"></i>
                             <?php endif; ?>
                         </a>
                     </li>
@@ -212,101 +200,97 @@ if (isset($_POST['torles_id'])) {
                         </ul>
                     </div>
                 </header>
-                <div class="dashboard mt-4" id="statisztika" style="visibility: hidden;">
-                
-                <div class="row">    
-                        <div class="calendar col-md-6 col-sm-12">
-                                <div class="header">
-                                <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-                                <div id="month-year"></div>
-                                <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="dashboard mt-4" id="naptar" style="visibility: hidden;">
+                    <div class="container" id="tervezoablakok">
+                        <div class="row justify-content-center align-items-start">
+                            <div class="col-12 col-md-6 mb-4">
+                                <br>
+                                <div class="calendar mx-auto" style="width: 100%; max-width: 350px;">
+                                    <div class="header d-flex justify-content-between align-items-center">
+                                        <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+                                        <div id="month-year"></div>
+                                        <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
+                                    </div>
+                                    <div class="weekdays d-flex justify-content-between">
+                                        <div>V</div>
+                                        <div>H</div>
+                                        <div>K</div>
+                                        <div>Sz</div>
+                                        <div>Cs</div>
+                                        <div>P</div>
+                                        <div>Szo</div>
+                                    </div>
+                                    <div class="days" id="days"></div>
+                                </div>
                             </div>
-                            <div class="weekdays">
-                                <div>V</div>
-                                <div>H</div>
-                                <div>K</div>
-                                <div>Sz</div>
-                                <div>Cs</div>
-                                <div>P</div>
-                                <div>Szo</div>
+                            <div class="col-12 col-md-6 mb-4">
+                            <div id="bevitel" class="text-center mx-auto mt-4" style="width: 100%; max-width: 350px;">
+                                <form action="" method="POST">
+                                    Írd be a költésed/bevételed:
+                                    <input type="number" id="PBevitel" name="PBevitel" required>
+                                    <br>
+                                    <br>
+                                    jelöld meg, mikor (fog) történt:
+                                    <input type="date" id="dateInput" name="datum" required>
+                                    <br>
+                                    <br>
+                                    Írd be az indokot
+                                    <br>
+                                    <input type="text" id="ind" name="ind" required>
+                                    <input type="submit" id="kuld">
+                                </form>
+                                </div>
                             </div>
-                            <div class="days" id="days"></div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <table class="table table-striped tranzakcio-tabla mx-auto" style="width: 100%; max-width: 1000px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Összeg</th>
+                                            <th>Mikor</th>
+                                            <th>Indok</th>
+                                            <th>Műveletek</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($result as $tranzakcio): ?>
+                                            <tr data-label="Sor">
+                                                <?php
+                                                if ($tranzakcio['NBevetel'] === null) {
+                                                    echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NKiadas']) . '</td>';
+                                                } elseif ($tranzakcio['NKiadas'] === null) {
+                                                    echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NBevetel']) . '</td>';
+                                                }
+                                                ?>
+                                                <td data-label="Mikor"><?php echo htmlspecialchars($tranzakcio['datum'] ?? ''); ?></td>
+                                                <td data-label="Indok"><?php echo htmlspecialchars($tranzakcio['ind']); ?></td>
+                                                <td data-label="Műveletek">
+                                                    <form method="POST" style="display:inline;">
+                                                        <input type="hidden" name="torles_id" value="<?php echo $tranzakcio['id']; ?>">
+                                                        <button type="submit" class="btn btn-danger btn-sm button3">Törlés</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
-
-                            <div id="bevitel" class=" col-md-6 col-sm-12">
-                            <form action="" method="POST">
-                            Írd be a költésed/bevételed:
-                            <input type="number" id="PBevitel" name="PBevitel" required>
-                            <br>
-                            <br>
-                            jelöld meg, mikor (fog) történt:
-                            <input type="date" id="dateInput" name="datum" required>
-                            <br>
-                            <br>
-                            Írd be az indokot
-                            <br>
-                            <input type="text" id="ind" name="ind" required>
-                            <input type="submit" id="kuld">
-                        </form>
-
-
-                        </div> 
-                </div>
-                    <div>
-                        
-
-                    <table class="table table-striped tranzakcio-tabla">
-                        <thead>
-                            <tr>
-                                <th>Összeg</th>
-                                <th>Mikor</th>
-                                <th>Indok</th>
-                                <th>Műveletek</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($result as $tranzakcio): ?>
-                                <tr class="<?php echo $tranzakcio['felfuggesztve'] ? 'felfuggesztett' : ''; ?>" data-label="Sor">
-                                    <?php
-                                    if ($tranzakcio['NBevetel'] === null) {
-                                        echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NKiadas']) . '</td>';
-                                    } elseif ($tranzakcio['NKiadas'] === null) {
-                                        echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NBevetel']) . '</td>';
-                                    }
-                                    ?>
-                                    <td data-label="Mikor"><?php echo htmlspecialchars($tranzakcio['datum'] ?? ''); ?></td>
-                                    <td data-label="Indok"><?php echo htmlspecialchars($tranzakcio['ind']); ?></td>
-                                    <td data-label="Műveletek">
-                                        <?php if ($tranzakcio['felfuggesztve']): ?>
-                                            <form method="POST" style="display:inline;">
-                                                <input type="hidden" name="aktiv_id" value="<?php echo $tranzakcio['id']; ?>">
-                                                <button type="submit" class="btn btn-success btn-sm button2">Aktiválás</button>
-                                            </form>
-                                        <?php endif; ?>
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="torles_id" value="<?php echo $tranzakcio['id']; ?>">
-                                            <button type="submit" class="btn btn-danger btn-sm button3">Törlés</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-
-                    </table>
-
-                    </div>
-
-                </div>
-
-                <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
-                    <div class="card p-3 mt-3 kartya1">
-                            <center>
-                            <h3>Jelenleg Nem vagy bejelentkezve!</h3>
-                            <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
-                            <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
-                            </center>
+                        </div>
                     </div>
                 </div>
+                        <div class="dashboard mt-4" id="nemvagybejelentkezve" style="visibility: hidden;">
+                            <div class="card p-3 mt-3 kartya1">
+                                    <center>
+                                    <h3>Jelenleg Nem vagy bejelentkezve!</h3>
+                                    <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
+                                    <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
+                                    </center>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
             </main>
         </div>
     </div>
