@@ -6,6 +6,8 @@ require '../PHPMailer/Exception.php';
 require '../PHPMailer/PHPMailer.php';
 require '../PHPMailer/SMTP.php';
 
+date_default_timezone_set('Europe/Budapest');
+
 session_start();
 
 if (isset($_SESSION['felhasznalo_id'])) {
@@ -40,12 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
     $szoveg = $_POST['message'];
     $datum = date('Y-m-d');
     $ido = date('H:i:s');
+    $statusz = 'Várakozás';
 
     $stmt = $pdo->prepare("
-        INSERT INTO support (targy, email, felhasznalo, szoveg, datum, ido) 
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO support (targy, email, felhasznalo, szoveg, datum, ido, statusz) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->execute([$targy, $email, $felhasznalo, $szoveg, $datum, $ido]);
+    $stmt->execute([$targy, $email, $felhasznalo, $szoveg, $datum, $ido, $statusz]);
 
     $mail = new PHPMailer(true);
     try {
@@ -56,13 +59,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
         $mail->Password = 'obvgamdjyxnqmwrv';
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
+        $mail->AltBody = "Kedves $felhasznalo!\n\nKöszönjük, hogy felvette velünk a kapcsolatot! Az alábbi support üzenetet sikeresen rögzítettük:\n\nTárgy: $targy\nÜzenet: $szoveg\nDátum: $datum\n\nCsapatunk hamarosan átnézi az üzenetét, és szükség esetén kapcsolatba lép Önnel. Köszönjük a türelmét!\n\nÜdvözlettel,\nPénzRadar csapata";
+
         $mail->setFrom('penzradar.hu@gmail.com', 'PénzRadar');
         $mail->addAddress($email, $felhasznalo);
         $mail->Subject = 'Üzenetét megkaptuk';
         $mail->CharSet = 'UTF-8';
-        $mail->Body = "Kedves $felhasznalo,\n\nMegkaptuk a bejelentését a következő tárggyal: $targy\nÜzenete: $szoveg\n\nHamarosan válaszolunk Önnek!\n\nÜdvözlettel,\nPénzRadar csapata";
+
+        $logoUrl = 'https://penzradar.hu/kepek/ujlogo.png';
+
+        $emailBody = "
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #2b2b2b; color: #ffffff; padding: 20px; margin: 0; }
+                .container { background-color: #2b2b2b; padding: 20px; border-radius: 12px; border: 2px solid #63ffbe; max-width: 600px; margin: 0 auto; text-align: center; }
+                .header { margin-bottom: 20px; }
+                .header img { max-width: 80px; height: auto; margin-bottom: 10px; }
+                .header h1 { color: #63ffbe; margin: 0; font-size: 24px; }
+                h2 { color: #63ffbe; margin: 0 0 10px 0; font-size: 28px; }
+                .message-box { background-color: #1e1e1e; color: #63ffbe; padding: 15px; border-radius: 8px; display: inline-block; font-size: 16px; margin: 20px 0; text-align: center; }
+                p { line-height: 1.6; color: #ffffff; }
+                .footer { margin-top: 20px; color: #ffffff; font-size: 14px; }
+                b { color:rgb(255, 76, 76); }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <img src='$logoUrl' alt='PénzRadar Logó' />
+                    <h1>PénzRadar</h1>
+                </div>
+                <h2>Kedves " . htmlspecialchars($felhasznalo) . "!</h2>
+                <b>Ez a rendszer által autómatikusan elküldött üzenet, kérjük ne válaszoljon erre az üzenetre!</b>
+                <p>Köszönjük, hogy felvette velünk a kapcsolatot! Az alábbi support üzenetet sikeresen rögzítettük:</p>
+                <p><strong>Tárgy:</strong> " . htmlspecialchars($targy) . "</p>
+                <div class='message-box'>
+                    <div><strong>Üzenet:</strong></div>
+                    <p>" . htmlspecialchars($szoveg) . "</p>
+                </div>
+                <p>Egy Support hamarosan átnézi az üzenetét, és szükség esetén kapcsolatba lép Önnel. Köszönjük a türelmét!</p>
+                <div class='footer'>
+                    <p>". htmlspecialchars($datum) . " - " . htmlspecialchars($ido) ."</p>
+                    <p>Üdvözlettel,<br>PénzRadar csapata</p>
+                    <p><a href='mailto:Support@penzradar.hu'>Support@penzradar.hu</a></p>
+                </div>
+            </div>
+        </body>
+        </html>";
+
+        $mail->Body = $emailBody;
         $mail->send();
     } catch (Exception $e) {
+        error_log("Email küldés sikertelen: " . $mail->ErrorInfo);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Email küldése sikertelen.']);
+        exit;
     }
 
     header('Content-Type: application/json');
@@ -97,6 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
             background-color: #808080 !important;
             color: white !important;
             cursor: not-allowed !important;
+            pointer-events: none !important;
         }
     </style>
 </head>
@@ -269,31 +322,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
             });
 
             let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-            const cooldownPeriod = 1 * 60 * 1000;
+            const cooldownPeriod = 30 * 60 * 1000; // 1 perc cooldown
+            let isSubmitting = false; // Nyomon követjük, hogy a küldés folyamatban van-e
 
             function updateCooldown() {
                 const now = Date.now();
-                if (now - lastSubmissionTime < cooldownPeriod) {
+                const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
+
+                if (timeLeft > 0 || isSubmitting) {
+                    // Gomb letiltása, ha a visszaszámlálás tart vagy a küldés folyamatban van
                     submitButton.disabled = true;
                     submitButton.classList.add('cooldown-gray');
-                    const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
-                    const minutes = Math.floor(timeLeft / 60);
-                    const seconds = timeLeft % 60;
-                    submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    if (!isSubmitting) {
+                        const minutes = Math.floor(timeLeft / 60);
+                        const seconds = timeLeft % 60;
+                        submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    }
                 } else {
+                    // Gomb engedélyezése, ha a visszaszámlálás lejárt és a küldés befejeződött
                     submitButton.disabled = false;
                     submitButton.classList.remove('cooldown-gray');
                     submitButton.textContent = 'Küldés';
                 }
             }
 
+            // Visszaszámlálás frissítése másodpercenként
             setInterval(updateCooldown, 1000);
             updateCooldown();
 
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                if (submitButton.disabled) return;
+                // Ha a gomb le van tiltva, ne történjen semmi
+                if (submitButton.disabled) {
+                    console.log('A gomb le van tiltva, küldés nem lehetséges.');
+                    return;
+                }
+
+                // Küldés folyamatban van
+                isSubmitting = true;
+                submitButton.disabled = true;
+                submitButton.classList.add('success-green');
+                submitButton.textContent = 'Küldés folyamatban';
 
                 const formData = new FormData(form);
 
@@ -304,20 +374,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        responseMessage.style.display = 'block';
-                        responseMessage.style.color = 'green';
-                        responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
-                        submitButton.classList.add('success-green');
                         setTimeout(() => {
                             submitButton.classList.remove('success-green');
                             submitButton.classList.add('cooldown-gray');
-                        }, 2000);
 
-                        lastSubmissionTime = Date.now();
-                        localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
+                            responseMessage.style.display = 'block';
+                            responseMessage.style.color = 'green';
+                            responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
+
+                            // Frissítjük a legutóbbi küldés időpontját
+                            lastSubmissionTime = Date.now();
+                            localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
+                            isSubmitting = false; // Küldés befejeződött
+                            updateCooldown();
+
+                            form.reset();
+                            setTimeout(() => {
+                                responseMessage.style.display = 'none';
+                            }, 5000);
+                        }, 3000);
+                    } else {
+                        // Sikertelen küldés esetén
+                        submitButton.classList.remove('success-green');
+                        submitButton.classList.add('cooldown-gray');
+                        submitButton.textContent = 'Küldés sikertelen';
+
+                        responseMessage.style.display = 'block';
+                        responseMessage.style.color = 'red';
+                        responseMessage.textContent = 'Az üzenet küldése sikertelen!';
+
+                        isSubmitting = false; // Küldés befejeződött
                         updateCooldown();
 
-                        form.reset();
                         setTimeout(() => {
                             responseMessage.style.display = 'none';
                         }, 5000);
@@ -325,9 +413,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                 })
                 .catch(error => {
                     console.error('Hiba történt:', error);
+                    submitButton.classList.remove('success-green');
+                    submitButton.classList.add('cooldown-gray');
+                    submitButton.textContent = 'Küldés sikertelen';
+
                     responseMessage.style.display = 'block';
                     responseMessage.style.color = 'red';
                     responseMessage.textContent = 'Az üzenet küldése sikertelen!';
+
+                    isSubmitting = false; // Küldés befejeződött
+                    updateCooldown();
+
                     setTimeout(() => {
                         responseMessage.style.display = 'none';
                     }, 5000);

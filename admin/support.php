@@ -55,11 +55,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['support_action'])) {
         } catch (PDOException $e) {
             echo "Hiba történt a szöveg frissítése során: " . $e->getMessage();
         }
+    } elseif ($_POST['support_action'] === 'update_status') {
+        $support_id = intval($_POST['support_id']);
+        try {
+            $update_query = "UPDATE support SET statusz = 'Megtekintett' WHERE id = ?";
+            $stmt = $pdo->prepare($update_query);
+            $stmt->execute([$support_id]);
+            // JSON válasz az AJAX kéréshez
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'status' => 'Megtekintett']);
+            exit();
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit();
+        }
     }
 }
 
-// Fetch support tickets (including 'ido' column)
-$support_query = "SELECT id, targy AS target, email, felhasznalo, szoveg, datum, ido FROM support";
+// Fetch support tickets (including 'ido' and 'statusz' columns)
+$support_query = "SELECT id, targy AS target, email, felhasznalo, szoveg, datum, ido, statusz FROM support";
 $support_stmt = $pdo->prepare($support_query);
 $support_stmt->execute();
 $support_tickets = $support_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -152,7 +167,21 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
     .btn-close {
         filter: invert(1); /* Fehér "X" ikon */
     }
-</style>
+    .status-button {
+        padding: 6px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: default;
+        font-size: 14px;
+        color: #fff;
+    }
+    .status-waiting {
+        background-color: #ff9800; /* Narancssárga */
+    }
+    .status-viewed {
+        background-color: #2196f3; /* Kék */
+    }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -204,7 +233,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <table id="supportTable">
                         <tr>
-                            <th colspan="8" class="text-center">
+                            <th colspan="9" class="text-center">
                                 <h2>Support Felület</h2>
                             </th>
                         </tr>
@@ -217,6 +246,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                             <th class="formaz">Dátum</th>
                             <th class="formaz">Idő</th>
                             <th class="formaz">Törlés</th>
+                            <th class="formaz">Státusz</th>
                         </tr>
                         <?php foreach ($support_tickets as $ticket): ?>
                             <tr>
@@ -225,7 +255,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                 <td class="formaz"><?= htmlspecialchars($ticket['email']) ?></td>
                                 <td><?= htmlspecialchars($ticket['felhasznalo']) ?></td>
                                 <td class="formaz">
-                                    <button type="button" class="button-view" data-bs-toggle="modal" data-bs-target="#viewTextModal<?= $ticket['id'] ?>">Megtekintés</button>
+                                    <button type="button" class="button-view view-btn" data-support-id="<?= $ticket['id'] ?>" data-bs-toggle="modal" data-bs-target="#viewTextModal<?= $ticket['id'] ?>">Megtekintés</button>
                                 </td>
                                 <td class="formaz"><?= htmlspecialchars($ticket['datum']) ?></td>
                                 <td class="formaz"><?= htmlspecialchars($ticket['ido']) ?></td>
@@ -235,6 +265,11 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                                         <input type="hidden" name="support_action" value="delete_support">
                                         <button type="submit" class="button-delete">Törlés</button>
                                     </form>
+                                </td>
+                                <td class="formaz">
+                                    <span class="status-button <?= $ticket['statusz'] === 'Várakozás' ? 'status-waiting' : 'status-viewed' ?>" id="status-<?= $ticket['id'] ?>">
+                                        <?= htmlspecialchars($ticket['statusz']) ?>
+                                    </span>
                                 </td>
                             </tr>
 
@@ -258,6 +293,75 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
         </div>
     </div>
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded esemény lefutott');
+
+        const viewButtons = document.querySelectorAll('.view-btn');
+        console.log('Megtalált gombok száma:', viewButtons.length);
+
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                console.log('Megtekintés gomb megnyomva');
+
+                const supportId = this.getAttribute('data-support-id');
+                const statusElement = document.getElementById(`status-${supportId}`);
+
+                if (!statusElement) {
+                    console.error('Státusz elem nem található, ID:', supportId);
+                    return;
+                }
+
+                // Státusz ellenőrzés finomítása (whitespace-ek eltávolítása és nagybetű-érzéketlenség)
+                const currentStatus = statusElement.textContent.trim().toLowerCase();
+                console.log('Jelenlegi státusz:', currentStatus);
+
+                // Azonnali státusz váltás a kliensoldalon
+                if (currentStatus !== 'megtekintett') {
+                    console.log('Státusz váltás: Várakozás -> Megtekintett');
+                    statusElement.textContent = 'Megtekintett';
+                    statusElement.classList.remove('status-waiting');
+                    statusElement.classList.add('status-viewed');
+                } else {
+                    console.log('A státusz már Megtekintett, nincs váltás');
+                }
+
+                // AJAX kérés a státusz frissítésére a háttérben
+                fetch(window.location.href, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `support_action=update_status&support_id=${supportId}`
+                })
+                .then(response => {
+                    console.log('AJAX válasz státusz:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('AJAX válasz:', data);
+                    if (!data.success) {
+                        console.error('Hiba a státusz frissítésekor:', data.error);
+                        // Ha az adatbázis frissítése nem sikerült, visszaállítjuk a státuszt
+                        statusElement.textContent = 'Várakozás';
+                        statusElement.classList.remove('status-viewed');
+                        statusElement.classList.add('status-waiting');
+                    }
+                })
+                .catch(error => {
+                    console.error('AJAX hiba:', error);
+                    // Késleltetett visszaállítás
+                    setTimeout(() => {
+                        statusElement.textContent = 'Várakozás';
+                        statusElement.classList.remove('status-viewed');
+                        statusElement.classList.add('status-waiting');
+                    }, 1000);
+                });
+
+                console.log('Modal megnyitása folyamatban...');
+            });
+        });
+
+        // Meglévő JavaScript kód
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
 
@@ -270,6 +374,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
             document.getElementById('usersTable').style.display = 'none';
             document.getElementById('supportTable').style.display = 'block';
         });
+    });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../kezdolap/script.js"></script>

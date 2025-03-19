@@ -24,22 +24,3 @@ window.onload = () => {
         document.getElementById("egyenlegkezeles").innerHTML = "";
     }
 };
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const form = document.getElementById('supportForm');
-//     const responseMessage = document.getElementById('responseMessage');
-
-//     form.addEventListener('submit', (e) => {
-//         e.preventDefault();
-//         const type = document.getElementById('messageType').value;
-//         const message = document.getElementById('message').value;
-
-//         if (type && message) {
-//             responseMessage.textContent = `Köszönjük! Az üzeneted elküldve: ${type}, hamarosan egy SUPPORT munkatársunk fel fogja venni veled a kapcsolatot!`;
-//             form.reset();
-//         } else {
-//             responseMessage.textContent = 'Kérlek, töltsd ki az összes mezőt!';
-//             responseMessage.style.color = '#ff073a';
-//         }
-//     });
-// });
