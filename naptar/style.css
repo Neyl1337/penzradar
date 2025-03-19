@@ -106,6 +106,31 @@
         -moz-appearance: none;
         appearance: none;
     }
+
+    #PBevitel:focus{
+        background-color: #1e1e1e;
+            border: 1px solid #63ffbe;
+            color: white;
+            outline: none;
+            animation: pulseBorder 1s infinite;  
+        }
+
+    #ind:focus{
+        background-color: #1e1e1e;
+            border: 1px solid #63ffbe;
+            color: white;
+            outline: none;
+            animation: pulseBorder 1s infinite;
+        
+    }
+
+    #dateInput:focus{
+        background-color: #1e1e1e;
+        border: 1px solid #63ffbe;
+        color: white;
+        outline: none;
+        animation: pulseBorder 1s infinite;
+    }
     
     #ind{
         background-color: #1e1e1e;
@@ -129,9 +154,18 @@
         border-radius: 5px;
         cursor: url(../kepek/cursor.ico), default;
         font-size: 14px;
-        margin-top: 30%;
+        margin-top: 18%;
         margin-left: 80%;
     
+    }
+
+    #kuld:focus{
+        background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    outline: none;
+    animation: pulseBorder 1s infinite;
+
     }
     
     #dateInput{
@@ -152,3 +186,42 @@
     .fade:not(.show) {
         opacity: 100;
     }
+
+    #valaszto{
+        background-color: #1e1e1e;
+        border: 1px solid #63ffbe;
+        color: white;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%2363ffbe' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+   #valaszto:focus{
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    outline: none;
+    animation: pulseBorder 1s infinite;
+   }
+
+   @keyframes pulseBorder {
+    0% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 5px rgba(99, 255, 190, 0.5);
+    }
+    50% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 15px rgba(99, 255, 190, 1);
+    }
+    100% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 5px rgba(99, 255, 190, 0.5);
+    }
+}

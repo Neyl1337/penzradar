@@ -36,18 +36,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Az adatok feldolgozása
     if (isset($_POST['PBevitel'])) {
         $adat1 = $_POST['PBevitel'];
+        $valasztas = $_POST['valaszto'];
         $com = $_POST['ind'];
         $date = $_POST['datum'];
 
-        if ($adat1 > 0) {
+        if ($valasztas === 'bevetel'  ) {
             // Bevétel feltöltés
             $stmt = $pdo->prepare("
                 INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
                 VALUES (?, ?, ?, ?, null);
             ");
             $stmt->execute([$_SESSION['felhasznalo_id'], $com, $date, $adat1]);
-        } elseif ($adat1 < 0) {
+        } elseif ($valasztas === 'kiadas') {
             // Kiadás feltöltés
+            $adat1 = abs($adat1) * -1;
+
             $stmt = $pdo->prepare("
                 INSERT INTO naptar (felhasznalo_id, ind, datum, NBevetel, NKiadas) 
                 VALUES (?, ?, ?, null, ?);
@@ -224,8 +227,15 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 mb-4">
-                            <div id="bevitel" class="text-center mx-auto mt-4" style="width: 100%; max-width: 350px;">
+                            <div id="bevitel" class="mx-auto mt-4" style="width: 100%; max-width: 350px;">
                                 <form action="" method="POST">
+                                <select name="valaszto" id="valaszto">
+                                        <option value="bevetel">Bevétel</option>
+                                        <option value="kiadas">Kiadás</option>
+
+                                    </select>
+                                    <br>
+                                    <br>
                                     Írd be a költésed/bevételed:
                                     <input type="number" id="PBevitel" name="PBevitel" required>
                                     <br>
@@ -248,6 +258,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <thead>
                                         <tr>
                                             <th>Összeg</th>
+                                            <th>Állapot</th>
                                             <th>Mikor</th>
                                             <th>Indok</th>
                                             <th>Műveletek</th>
@@ -261,6 +272,16 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NKiadas']) . '</td>';
                                                 } elseif ($tranzakcio['NKiadas'] === null) {
                                                     echo '<td data-label="Összeg">' . htmlspecialchars($tranzakcio['NBevetel']) . '</td>';
+                                                }
+
+                                                if($tranzakcio['NBevetel'] === null)
+                                                {
+                                                   echo '<td data-label="Állapot">Kiadás</td>';
+                                                }
+                                                else
+                                                {
+                                                    echo '<td data-label="Állapot">Bevétel</td>';
+
                                                 }
                                                 ?>
                                                 <td data-label="Mikor"><?php echo htmlspecialchars($tranzakcio['datum'] ?? ''); ?></td>
