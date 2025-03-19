@@ -102,6 +102,10 @@ a:hover{
     animation: pulseBorder 1s infinite;
 }
 
+.form-control::placeholder {
+    color: grey;
+}
+
 @keyframes pulseBorder {
     0% {
         border-color: #63ffbe;

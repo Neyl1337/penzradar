@@ -1,9 +1,13 @@
 <?php
 require_once '../adatbazis.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../PHPMailer/Exception.php';
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
 
 session_start();
 
-// Felhasználói adatok lekérdezése
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, f.email, p.egyenleg 
@@ -25,19 +29,17 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $_SESSION['perselyegyenleg'] = null;
 }
 
-// Perselyegyenleg formázása
 $formatált_egyenleg = isset($_SESSION['perselyegyenleg']) 
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
-// Support üzenet küldése (AJAX-al kezelt)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($_POST['message'])) {
     $targy = $_POST['subject'];
     $email = $_SESSION['email'] ?? '';
     $felhasznalo = $_SESSION['felhasznalo_nev'] ?? '';
     $szoveg = $_POST['message'];
-    $datum = date('Y-m-d'); // Valós dátum
-    $ido = date('H:i:s');   // Valós idő
+    $datum = date('Y-m-d');
+    $ido = date('H:i:s');
 
     $stmt = $pdo->prepare("
         INSERT INTO support (targy, email, felhasznalo, szoveg, datum, ido) 
@@ -45,7 +47,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
     ");
     $stmt->execute([$targy, $email, $felhasznalo, $szoveg, $datum, $ido]);
 
-    // Válasz JSON formátumban
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'penzradar.hu@gmail.com';
+        $mail->Password = 'obvgamdjyxnqmwrv';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+        $mail->setFrom('penzradar.hu@gmail.com', 'PénzRadar');
+        $mail->addAddress($email, $felhasznalo);
+        $mail->Subject = 'Üzenetét megkaptuk';
+        $mail->CharSet = 'UTF-8';
+        $mail->Body = "Kedves $felhasznalo,\n\nMegkaptuk a bejelentését a következő tárggyal: $targy\nÜzenete: $szoveg\n\nHamarosan válaszolunk Önnek!\n\nÜdvözlettel,\nPénzRadar csapata";
+        $mail->send();
+    } catch (Exception $e) {
+    }
+
     header('Content-Type: application/json');
     echo json_encode(['success' => true]);
     exit;
@@ -250,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
             });
 
             let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-            const cooldownPeriod = 1 * 60 * 1000; // 30 perc milliszekundumban
+            const cooldownPeriod = 1 * 60 * 1000;
 
             function updateCooldown() {
                 const now = Date.now();
@@ -268,9 +287,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                 }
             }
 
-            // Másodpercenként frissítjük a cooldown időt
             setInterval(updateCooldown, 1000);
-            updateCooldown(); // Első azonnali frissítés
+            updateCooldown();
 
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -293,17 +311,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                         setTimeout(() => {
                             submitButton.classList.remove('success-green');
                             submitButton.classList.add('cooldown-gray');
-                        }, 2000); // 2 másodperc zöld, utána szürke
+                        }, 2000);
 
                         lastSubmissionTime = Date.now();
                         localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
                         updateCooldown();
 
-                        // Űrlap törlése
                         form.reset();
                         setTimeout(() => {
                             responseMessage.style.display = 'none';
-                        }, 5000); // 5 másodperc után eltűnik
+                        }, 5000);
                     }
                 })
                 .catch(error => {
