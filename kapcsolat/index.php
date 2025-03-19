@@ -121,6 +121,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
     echo json_encode(['success' => true]);
     exit;
 }
+// Fetch user's support tickets
+$userSupportTickets = [];
+if (isset($_SESSION['felhasznalo_nev'])) {
+    $supportQuery = "SELECT targy, datum, ido, statusz, valasz_ido FROM support WHERE felhasznalo = ? ORDER BY datum DESC, ido DESC";
+    $supportStmt = $pdo->prepare($supportQuery);
+    $supportStmt->execute([$_SESSION['felhasznalo_nev']]);
+    $userSupportTickets = $supportStmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -150,6 +158,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
             color: white !important;
             cursor: not-allowed !important;
             pointer-events: none !important;
+        }
+        .support-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e1e1e;
+            box-shadow: 0 0 15px #63ffbe;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .support-history-table th, .support-history-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+        }
+        .support-history-table th {
+            background-color: #63ffbe;
+            color: #121212;
+            text-transform: uppercase;
+        }
+        .support-history-table tr:hover {
+            background-color: #2a2a2a;
+        }
+        .status-label {
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #fff;
+        }
+        .status-waiting {
+            background-color: #ff9800; /* Narancssárga - Várakozás */
+        }
+        .status-in-progress {
+            background-color: #b9a911; /* Sárga - Folyamatban */
+        }
+        .status-answered {
+            background-color: #4caf50; /* Zöld - Válasz elküldve */
+        }
+        .countdown {
+        color: #ff9800;
+        font-weight: bold;
         }
     </style>
 </head>
@@ -201,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                     </li>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                         <li class="nav-item">
-                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/" style="background-color: #FFBA00;">
+                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
                                 <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                                 <span class="link-szoveg">Kapcsolat</span>
                                 <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
@@ -300,137 +348,192 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                     </div>
                 </div>
                 </div>
+                <!-- Felhasználó elküldött üzenetei -->
+                <?php if (!empty($userSupportTickets)): ?>
+                    <div class="kartya mt-4">
+                        <h3 class="support-title">Elküldött Üzeneteid</h3>
+                        <table class="support-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Tárgy</th>
+                                    <th>Időpont</th>
+                                    <th>Állapot</th>
+                                    <th>A törlésig maradt idő</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($userSupportTickets as $ticket): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($ticket['targy']) ?></td>
+                                        <td><?= htmlspecialchars($ticket['datum']) . ' ' . htmlspecialchars($ticket['ido']) ?></td>
+                                        <td>
+                                            <span class="status-label <?php 
+                                                if ($ticket['statusz'] === 'Várakozás') {
+                                                    echo 'status-waiting';
+                                                } elseif ($ticket['statusz'] === 'Folyamatban') {
+                                                    echo 'status-in-progress';
+                                                } elseif ($ticket['statusz'] === 'Válasz elküldve') {
+                                                    echo 'status-answered';
+                                                }
+                                            ?>">
+                                                <?= htmlspecialchars($ticket['statusz']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php if ($ticket['statusz'] === 'Válasz elküldve' && !empty($ticket['valasz_ido'])): ?>
+                                                <span class="countdown" data-start-time="<?= strtotime($ticket['valasz_ido']) ?>"></span>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </main>
         </div>
     </div>
     <script>
-        const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
-        const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+    const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
+    const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const penzradarTitle = document.getElementById('penzradarTitle');
-            const penzradarAudio = document.getElementById('penzradarAudio');
-            const submitButton = document.getElementById('submitButton');
-            const form = document.getElementById('supportForm');
-            const responseMessage = document.getElementById('responseMessage');
+    document.addEventListener('DOMContentLoaded', function() {
+        const penzradarTitle = document.getElementById('penzradarTitle');
+        const penzradarAudio = document.getElementById('penzradarAudio');
+        const submitButton = document.getElementById('submitButton');
+        const form = document.getElementById('supportForm');
+        const responseMessage = document.getElementById('responseMessage');
 
-            penzradarTitle.addEventListener('click', function() {
-                penzradarAudio.currentTime = 0;
-                penzradarAudio.play().catch(function(error) {
-                    console.log("A hang lejátszása nem sikerült: ", error);
-                });
+        penzradarTitle.addEventListener('click', function() {
+            penzradarAudio.currentTime = 0;
+            penzradarAudio.play().catch(function(error) {
+                console.log("A hang lejátszása nem sikerült: ", error);
             });
+        });
 
-            let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-            const cooldownPeriod = 30 * 60 * 1000; // 1 perc cooldown
-            let isSubmitting = false; // Nyomon követjük, hogy a küldés folyamatban van-e
+        let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
+        const cooldownPeriod = 1 * 60 * 1000; // 1 perc cooldown
+        let isSubmitting = false;
 
-            function updateCooldown() {
-                const now = Date.now();
-                const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
+        function updateCooldown() {
+            const now = Date.now();
+            const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
 
-                if (timeLeft > 0 || isSubmitting) {
-                    // Gomb letiltása, ha a visszaszámlálás tart vagy a küldés folyamatban van
-                    submitButton.disabled = true;
-                    submitButton.classList.add('cooldown-gray');
-                    if (!isSubmitting) {
-                        const minutes = Math.floor(timeLeft / 60);
-                        const seconds = timeLeft % 60;
-                        submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    }
-                } else {
-                    // Gomb engedélyezése, ha a visszaszámlálás lejárt és a küldés befejeződött
-                    submitButton.disabled = false;
-                    submitButton.classList.remove('cooldown-gray');
-                    submitButton.textContent = 'Küldés';
-                }
-            }
-
-            // Visszaszámlálás frissítése másodpercenként
-            setInterval(updateCooldown, 1000);
-            updateCooldown();
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                // Ha a gomb le van tiltva, ne történjen semmi
-                if (submitButton.disabled) {
-                    console.log('A gomb le van tiltva, küldés nem lehetséges.');
-                    return;
-                }
-
-                // Küldés folyamatban van
-                isSubmitting = true;
+            if (timeLeft > 0 || isSubmitting) {
                 submitButton.disabled = true;
-                submitButton.classList.add('success-green');
-                submitButton.textContent = 'Küldés folyamatban';
+                submitButton.classList.add('cooldown-gray');
+                if (!isSubmitting) {
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+            } else {
+                submitButton.disabled = false;
+                submitButton.classList.remove('cooldown-gray');
+                submitButton.textContent = 'Küldés';
+            }
+        }
 
-                const formData = new FormData(form);
+        setInterval(updateCooldown, 1000);
+        updateCooldown();
 
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        setTimeout(() => {
-                            submitButton.classList.remove('success-green');
-                            submitButton.classList.add('cooldown-gray');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (submitButton.disabled) {
+                console.log('A gomb le van tiltva, küldés nem lehetséges.');
+                return;
+            }
+            isSubmitting = true;
+            submitButton.disabled = true;
+            submitButton.classList.add('success-green');
+            submitButton.textContent = 'Küldés folyamatban';
 
-                            responseMessage.style.display = 'block';
-                            responseMessage.style.color = 'green';
-                            responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
+            const formData = new FormData(form);
 
-                            // Frissítjük a legutóbbi küldés időpontját
-                            lastSubmissionTime = Date.now();
-                            localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
-                            isSubmitting = false; // Küldés befejeződött
-                            updateCooldown();
-
-                            form.reset();
-                            setTimeout(() => {
-                                responseMessage.style.display = 'none';
-                            }, 5000);
-                        }, 3000);
-                    } else {
-                        // Sikertelen küldés esetén
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
                         submitButton.classList.remove('success-green');
                         submitButton.classList.add('cooldown-gray');
-                        submitButton.textContent = 'Küldés sikertelen';
-
                         responseMessage.style.display = 'block';
-                        responseMessage.style.color = 'red';
-                        responseMessage.textContent = 'Az üzenet küldése sikertelen!';
-
-                        isSubmitting = false; // Küldés befejeződött
+                        responseMessage.style.color = 'green';
+                        responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
+                        lastSubmissionTime = Date.now();
+                        localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
+                        isSubmitting = false;
                         updateCooldown();
-
+                        form.reset();
                         setTimeout(() => {
                             responseMessage.style.display = 'none';
+                            location.reload();
                         }, 5000);
-                    }
-                })
-                .catch(error => {
-                    console.error('Hiba történt:', error);
+                    }, 3000);
+                } else {
                     submitButton.classList.remove('success-green');
                     submitButton.classList.add('cooldown-gray');
                     submitButton.textContent = 'Küldés sikertelen';
-
                     responseMessage.style.display = 'block';
                     responseMessage.style.color = 'red';
                     responseMessage.textContent = 'Az üzenet küldése sikertelen!';
-
-                    isSubmitting = false; // Küldés befejeződött
+                    isSubmitting = false;
                     updateCooldown();
-
                     setTimeout(() => {
                         responseMessage.style.display = 'none';
                     }, 5000);
-                });
+                }
+            })
+            .catch(error => {
+                console.error('Hiba történt:', error);
+                submitButton.classList.remove('success-green');
+                submitButton.classList.add('cooldown-gray');
+                submitButton.textContent = 'Küldés sikertelen';
+                responseMessage.style.display = 'block';
+                responseMessage.style.color = 'red';
+                responseMessage.textContent = 'Az üzenet küldése sikertelen!';
+                isSubmitting = false;
+                updateCooldown();
+                setTimeout(() => {
+                    responseMessage.style.display = 'none';
+                }, 5000);
             });
         });
-    </script>
+
+        // Visszaszámláló logika
+        function startCountdown() {
+            const countdownElements = document.querySelectorAll('.countdown');
+            countdownElements.forEach(element => {
+                const startTime = parseInt(element.getAttribute('data-start-time')) * 1000; // Unix időbélyeg milliszekundumban
+                const endTime = startTime + (5 * 60 * 60 * 1000); // 5 óra
+
+                function updateCountdown() {
+                    const now = Date.now();
+                    const timeLeft = endTime - now;
+
+                    if (timeLeft <= 0) {
+                        element.textContent = 'Lejárt';
+                    } else {
+                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        element.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    }
+                }
+
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            });
+        }
+
+        startCountdown();
+    });
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>

@@ -215,7 +215,7 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                     <table>
                         <tr>
                             <th colspan="4" class="text-center">
-                                <h3 class="text-center m-0">Felhasználók kezelése</h3>
+                                <h3 class="text-center m-0">Felhasználók kezelése <i class="fas fa-users"></i></h3>
                             </th>
                             <th colspan="4">
                                 <div class="filter-container card p-3 mt-3 kartya1">

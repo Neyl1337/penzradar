@@ -469,3 +469,7 @@ p b {
         margin-bottom: 0;
     }
 }
+
+#supportTable h3 {
+    font-size: 3rem;
+}
