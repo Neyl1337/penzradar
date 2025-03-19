@@ -11,10 +11,10 @@
 <body>
     <div class="bejelentkezo-doboz">
         <div class="text-center">
-            <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+            <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo" id="mobilnezet">
         </div>
         <h1>PénzRadar</h1>
-        <b class="d-flex justify-content-end border-bottom"></b><br>
+        <b class="d-flex justify-content-end border-bottom" id="mobilnezet"></b><br id="mobilnezet">
         <h5>Bejelentkezés</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
@@ -36,7 +36,7 @@
             <div class= "oldal">
                 <center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
             </div>
-            <br><b class="d-flex justify-content-end border-bottom"></b>
+            <br id="mobilnezet"><b class="d-flex justify-content-end border-bottom" id="mobilnezet"></b>
         </form>      
         <div class="almenet">
             <br>

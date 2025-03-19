@@ -195,3 +195,23 @@ span {
     margin: 0 auto 10px auto;
     pointer-events: none;
 }
+
+@media only screen and (max-height: 700px) {
+    #mobilnezet {
+        display: none !important;
+    }
+
+    #mobilnezet br {
+        display: none !important;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    #mobilnezet {
+        display: none !important;
+    }
+
+    #mobilnezet br {
+        display: none !important;
+    }
+}

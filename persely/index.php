@@ -211,7 +211,7 @@ $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/" style="background-color: #4ACDA3;">
                         <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                         <span class="link-szoveg">Persely</span>
                         <?php if (!isset($_SESSION['felhasznalo_id'])): ?>

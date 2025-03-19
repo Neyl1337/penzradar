@@ -11,10 +11,10 @@
 <body>
     <div class="regisztracios-doboz">
         <div class="text-center">
-                <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+                <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo" id="mobilnezet">
             </div>
         <h1>PénzRadar</h1>
-        <b class="d-flex justify-content-end border-bottom"></b><br>
+        <b class="d-flex justify-content-end border-bottom" id="mobilnezet"></b><br id="mobilnezet">
         <h5>Regisztráció</h5>
         <div class="mb-3" id="Uzenet">
             <center><p></p></center>
@@ -22,7 +22,7 @@
         <form id="regForm" method="POST" action="adatbazis_signup.php">
             <div class="mb-3">
                 <label for="nev" class="form-label">Felhasználónév</label>
-                <input type="text" class="form-control" id="nev" name="nev" placeholder="Név" required>
+                <input type="text" class="form-control" id="nev" name="nev" placeholder="Felhasználónév" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email cím</label>
@@ -43,8 +43,8 @@
             <button type="submit" id="regisztracio" class="btn btn-zold w-100">Regisztráció</button>
         </form>        
         <div class= "oldal">
-            <br><center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
-            <br><b class="d-flex justify-content-end border-bottom"></b><br>
+            <br><center><a href="../kezdolap/" id="mobilnezet"><b id="mobilnezet">Vissza az oldalra</b></a></center>
+            <br id="mobilnezet"><b class="d-flex justify-content-end border-bottom" id="mobilnezet"></b><br id="mobilnezet">
         </div>
         <div class="almenet">
             <p>Van már fiókod? <a href="../bejelentkezes/">Bejelentkezés</a></p>

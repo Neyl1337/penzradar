@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                     </li>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                         <li class="nav-item">
-                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/" style="background-color: #FFBA00;">
                                 <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                                 <span class="link-szoveg">Kapcsolat</span>
                                 <?php if (!isset($_SESSION['felhasznalo_id'])): ?>

@@ -484,12 +484,12 @@ for ($i = 0; $i < 7; $i++) {
             </div>
             <h2 class="text-center">PénzRadar</h2>
             <ul class="nav flex-column flex-md-column mt-4">
-                <li class="nav-item">
-                    <a class="nav-link" href="../kezdolap/">
-                        <i class="fas fa-home"></i>
-                        <span class="link-szoveg">Kezdőlap</span>
-                    </a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../kezdolap/" style="background-color: #4ACDA3;">
+                    <i class="fas fa-home"></i>
+                    <span class="link-szoveg">Kezdőlap</span>
+                </a>
+            </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
                         <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
