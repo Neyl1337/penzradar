@@ -469,6 +469,9 @@ for ($i = 0; $i < 7; $i++) {
         }
     }
 }
+
+$waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
+$total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -652,7 +655,12 @@ for ($i = 0; $i < 7; $i++) {
                 <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                     <div>
                         <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                        <li class="nav-item"><a class="nav-link" href="../admin/index.php"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel  <div id="felhszam"><?php echo $total_users; ?></div>
+                    </p></a></li>
+                    </div>
+                    <div>
+                        <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div>
+                    </p></a></li>
                     </div>
                 <?php endif; ?>
             </ul>

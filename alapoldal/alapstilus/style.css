@@ -265,8 +265,57 @@ canvas {
 }
 
 #adminpanel {
-    font-size: 25px;
+    font-size: 1.5rem;
     text-align: center;
+    margin-right: auto;
+}
+
+#supportpanel {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-right: auto;
+}
+
+#supportszam {
+    color: #FFBA00;
+    border: #FFBA00 4px solid;
+    border-radius: 20px;
+    margin-left: 10px; 
+    padding: 2px 6px;
+    align-items: right; 
+    justify-content: right; 
+    font-size: 1rem;
+}
+
+#felhszam {
+    color: #63ffbe;
+    border: #63ffbe 4px solid;
+    border-radius: 20px;
+    margin-left: 10px; 
+    padding: 2px 6px;
+    align-items: right; 
+    justify-content: right; 
+    font-size: 1rem;
+}
+
+@media only screen and (max-width: 1750px) {
+    #adminpanel {
+        font-size: 1rem;
+    }
+    
+    #supportpanel {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #adminpanel {
+        font-size: 1.5rem;
+    }
+
+    #supportpanel {
+        font-size: 1.5rem;
+    }
 }
 
 #mainContent {

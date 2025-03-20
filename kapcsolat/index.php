@@ -81,7 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                 .message-box { background-color: #1e1e1e; color: #63ffbe; padding: 15px; border-radius: 8px; display: inline-block; font-size: 16px; margin: 20px 0; text-align: center; }
                 p { line-height: 1.6; color: #ffffff; }
                 .footer { margin-top: 20px; color: #ffffff; font-size: 14px; }
-                b { color:rgb(255, 76, 76); }
+                .footer b { color: #ffba00; } /* Sárga szín a PénzRadar Csapata szöveghez */
+                b { color: rgb(255, 76, 76); } /* Az automatikus üzenet figyelmeztetés piros marad */
             </style>
         </head>
         <body>
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                     <h1>PénzRadar</h1>
                 </div>
                 <h2>Kedves " . htmlspecialchars($felhasznalo) . "!</h2>
-                <b>Ez a rendszer által autómatikusan elküldött üzenet, kérjük ne válaszoljon erre az üzenetre!</b>
+                <b>Ez a rendszer által autómatikusan elküldött üzenet, kérjük ne válaszoljon rá!</b>
                 <p>Köszönjük, hogy felvette velünk a kapcsolatot! Az alábbi support üzenetet sikeresen rögzítettük:</p>
                 <p><strong>Tárgy:</strong> " . htmlspecialchars($targy) . "</p>
                 <div class='message-box'>
@@ -100,8 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
                 </div>
                 <p>Egy Support hamarosan átnézi az üzenetét, és szükség esetén kapcsolatba lép Önnel. Köszönjük a türelmét!</p>
                 <div class='footer'>
-                    <p>". htmlspecialchars($datum) . " - " . htmlspecialchars($ido) ."</p>
-                    <p>Üdvözlettel,<br>PénzRadar csapata</p>
+                    <p>" . htmlspecialchars($datum) . " - " . htmlspecialchars($ido) . "</p>
+                    <p>Üdvözlettel,<br><b>PénzRadar csapata</b></p>
                     <p><a href='mailto:Support@penzradar.hu'>Support@penzradar.hu</a></p>
                 </div>
             </div>
@@ -121,14 +122,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && isset($
     echo json_encode(['success' => true]);
     exit;
 }
+
 // Fetch user's support tickets
 $userSupportTickets = [];
 if (isset($_SESSION['felhasznalo_nev'])) {
-    $supportQuery = "SELECT targy, datum, ido, statusz, valasz_ido FROM support WHERE felhasznalo = ? ORDER BY datum DESC, ido DESC";
+    $supportQuery = "SELECT targy, datum, ido, statusz, valasz_ido, valasz FROM support WHERE felhasznalo = ? ORDER BY datum DESC, ido DESC";
     $supportStmt = $pdo->prepare($supportQuery);
     $supportStmt->execute([$_SESSION['felhasznalo_nev']]);
     $userSupportTickets = $supportStmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+$waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
+$total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -145,61 +150,6 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="style.css">
-    <style>
-        #submitButton {
-            transition: background-color 0.3s;
-        }
-        .success-green {
-            background-color: #28a745 !important;
-            color: white !important;
-        }
-        .cooldown-gray {
-            background-color: #808080 !important;
-            color: white !important;
-            cursor: not-allowed !important;
-            pointer-events: none !important;
-        }
-        .support-history-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #1e1e1e;
-            box-shadow: 0 0 15px #63ffbe;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .support-history-table th, .support-history-table td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #444;
-        }
-        .support-history-table th {
-            background-color: #63ffbe;
-            color: #121212;
-            text-transform: uppercase;
-        }
-        .support-history-table tr:hover {
-            background-color: #2a2a2a;
-        }
-        .status-label {
-        padding: 6px 10px;
-        border-radius: 5px;
-        font-size: 14px;
-        color: #fff;
-        }
-        .status-waiting {
-            background-color: #ff9800; /* Narancssárga - Várakozás */
-        }
-        .status-in-progress {
-            background-color: #b9a911; /* Sárga - Folyamatban */
-        }
-        .status-answered {
-            background-color: #4caf50; /* Zöld - Válasz elküldve */
-        }
-        .countdown {
-        color: #ff9800;
-        font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -278,7 +228,7 @@ if (isset($_SESSION['felhasznalo_nev'])) {
                             <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                         </div>
                         <div class="mb-2">
-                            <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                            <label for="kamatSzazalek" style="color: white; font-size: 1.2rem;">Kamatláb (%):</label>
                             <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                         </div>
                         <div class="mb-2">
@@ -292,7 +242,12 @@ if (isset($_SESSION['felhasznalo_nev'])) {
                 <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                     <div>
                         <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                        <li class="nav-item"><a class="nav-link" href="../admin/"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel</p></a></li>
+                        <li class="nav-item"><a class="nav-link" href="../admin/index.php"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel  <div id="felhszam"><?php echo $total_users; ?></div>
+                    </p></a></li>
+                    </div>
+                    <div>
+                        <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div>
+                    </p></a></li>
                     </div>
                 <?php endif; ?>
             </nav>
@@ -357,37 +312,71 @@ if (isset($_SESSION['felhasznalo_nev'])) {
                                 <tr>
                                     <th>Tárgy</th>
                                     <th>Időpont</th>
+                                    <th>Státusz</th>
+                                    <th>Support</th>
                                     <th>Állapot</th>
-                                    <th>A törlésig maradt idő</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($userSupportTickets as $ticket): ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($ticket['targy']) ?></td>
-                                        <td><?= htmlspecialchars($ticket['datum']) . ' ' . htmlspecialchars($ticket['ido']) ?></td>
-                                        <td>
-                                            <span class="status-label <?php 
-                                                if ($ticket['statusz'] === 'Várakozás') {
-                                                    echo 'status-waiting';
-                                                } elseif ($ticket['statusz'] === 'Folyamatban') {
-                                                    echo 'status-in-progress';
-                                                } elseif ($ticket['statusz'] === 'Válasz elküldve') {
-                                                    echo 'status-answered';
-                                                }
-                                            ?>">
-                                                <?= htmlspecialchars($ticket['statusz']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($ticket['statusz'] === 'Válasz elküldve' && !empty($ticket['valasz_ido'])): ?>
-                                                <span class="countdown" data-start-time="<?= strtotime($ticket['valasz_ido']) ?>"></span>
-                                            <?php else: ?>
-                                                -
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <?php foreach ($userSupportTickets as $index => $ticket): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($ticket['targy']) ?></td>
+                                    <td><?= htmlspecialchars($ticket['datum']) . ' ' . htmlspecialchars($ticket['ido']) ?></td>
+                                    <td>
+                                        <span class="status-label <?php 
+                                            if ($ticket['statusz'] === 'Várakozás') {
+                                                echo 'status-waiting';
+                                            } elseif ($ticket['statusz'] === 'Megtekintett') {
+                                                echo 'status-viewed';
+                                            } elseif ($ticket['statusz'] === 'Folyamatban') {
+                                                echo 'status-in-progress';
+                                            } elseif ($ticket['statusz'] === 'Válasz elküldve') {
+                                                echo 'status-answered';
+                                            } 
+                                        ?>">
+                                            <?= htmlspecialchars($ticket['statusz']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="view-response-btn" 
+                                                <?php if ($ticket['statusz'] === 'Válasz elküldve'): ?>
+                                                    data-bs-toggle="modal" data-bs-target="#viewResponseModal<?= $index ?>"
+                                                <?php else: ?>
+                                                    disabled
+                                                <?php endif; ?>>
+                                            Válasz megtekintése
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <?php if ($ticket['statusz'] === 'Válasz elküldve' && !empty($ticket['valasz_ido'])): ?>
+                                            <b>Az üzeneted törléséig maradt idő: </b>
+                                            <span class="countdown" data-start-time="<?= strtotime($ticket['valasz_ido']) ?>"></span>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <!-- Válasz megtekintése Modal -->
+                                <?php if (!empty($ticket['valasz'])): ?>
+                                    <div class="modal fade" id="viewResponseModal<?= $index ?>" tabindex="-1" aria-labelledby="viewResponseModalLabel<?= $index ?>" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="viewResponseModalLabel<?= $index ?>">Bejelentésed tárgya: <b><?=htmlspecialchars($ticket['targy'])?></b><br>
+                                                    Egy Support reagált az üzenetedre</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p class="support-text"><?= htmlspecialchars($ticket['valasz']) ?></p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <h5>Üdvözlettel, <b>Pénzradar Csapata!</b></h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -398,142 +387,7 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     <script>
     const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
     const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const penzradarTitle = document.getElementById('penzradarTitle');
-        const penzradarAudio = document.getElementById('penzradarAudio');
-        const submitButton = document.getElementById('submitButton');
-        const form = document.getElementById('supportForm');
-        const responseMessage = document.getElementById('responseMessage');
-
-        penzradarTitle.addEventListener('click', function() {
-            penzradarAudio.currentTime = 0;
-            penzradarAudio.play().catch(function(error) {
-                console.log("A hang lejátszása nem sikerült: ", error);
-            });
-        });
-
-        let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-        const cooldownPeriod = 1 * 60 * 1000; // 1 perc cooldown
-        let isSubmitting = false;
-
-        function updateCooldown() {
-            const now = Date.now();
-            const timeLeft = Math.max(0, Math.floor((cooldownPeriod - (now - lastSubmissionTime)) / 1000));
-
-            if (timeLeft > 0 || isSubmitting) {
-                submitButton.disabled = true;
-                submitButton.classList.add('cooldown-gray');
-                if (!isSubmitting) {
-                    const minutes = Math.floor(timeLeft / 60);
-                    const seconds = timeLeft % 60;
-                    submitButton.textContent = `Elérhetővé válik: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                }
-            } else {
-                submitButton.disabled = false;
-                submitButton.classList.remove('cooldown-gray');
-                submitButton.textContent = 'Küldés';
-            }
-        }
-
-        setInterval(updateCooldown, 1000);
-        updateCooldown();
-
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            if (submitButton.disabled) {
-                console.log('A gomb le van tiltva, küldés nem lehetséges.');
-                return;
-            }
-            isSubmitting = true;
-            submitButton.disabled = true;
-            submitButton.classList.add('success-green');
-            submitButton.textContent = 'Küldés folyamatban';
-
-            const formData = new FormData(form);
-
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    setTimeout(() => {
-                        submitButton.classList.remove('success-green');
-                        submitButton.classList.add('cooldown-gray');
-                        responseMessage.style.display = 'block';
-                        responseMessage.style.color = 'green';
-                        responseMessage.textContent = 'Üzenetét sikeresen elküldtük! Megerősítő emailt fog kapni.';
-                        lastSubmissionTime = Date.now();
-                        localStorage.setItem('lastSubmissionTime', lastSubmissionTime);
-                        isSubmitting = false;
-                        updateCooldown();
-                        form.reset();
-                        setTimeout(() => {
-                            responseMessage.style.display = 'none';
-                            location.reload();
-                        }, 5000);
-                    }, 3000);
-                } else {
-                    submitButton.classList.remove('success-green');
-                    submitButton.classList.add('cooldown-gray');
-                    submitButton.textContent = 'Küldés sikertelen';
-                    responseMessage.style.display = 'block';
-                    responseMessage.style.color = 'red';
-                    responseMessage.textContent = 'Az üzenet küldése sikertelen!';
-                    isSubmitting = false;
-                    updateCooldown();
-                    setTimeout(() => {
-                        responseMessage.style.display = 'none';
-                    }, 5000);
-                }
-            })
-            .catch(error => {
-                console.error('Hiba történt:', error);
-                submitButton.classList.remove('success-green');
-                submitButton.classList.add('cooldown-gray');
-                submitButton.textContent = 'Küldés sikertelen';
-                responseMessage.style.display = 'block';
-                responseMessage.style.color = 'red';
-                responseMessage.textContent = 'Az üzenet küldése sikertelen!';
-                isSubmitting = false;
-                updateCooldown();
-                setTimeout(() => {
-                    responseMessage.style.display = 'none';
-                }, 5000);
-            });
-        });
-
-        // Visszaszámláló logika
-        function startCountdown() {
-            const countdownElements = document.querySelectorAll('.countdown');
-            countdownElements.forEach(element => {
-                const startTime = parseInt(element.getAttribute('data-start-time')) * 1000; // Unix időbélyeg milliszekundumban
-                const endTime = startTime + (5 * 60 * 60 * 1000); // 5 óra
-
-                function updateCountdown() {
-                    const now = Date.now();
-                    const timeLeft = endTime - now;
-
-                    if (timeLeft <= 0) {
-                        element.textContent = 'Lejárt';
-                    } else {
-                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                        element.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    }
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            });
-        }
-
-        startCountdown();
-    });
-</script>
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>
