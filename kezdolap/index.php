@@ -2,6 +2,26 @@
 require_once '../adatbazis.php';
 session_start();
 
+if (isset($_POST['cookie_elfogad'])) {
+    setcookie('cookie_elfogadva', '1', time() + (365 * 24 * 60 * 60), "/");
+    setcookie('cookie_elfogadva_ideje', time(), time() + (365 * 24 * 60 * 60), "/");
+    header("Refresh:0"); // Oldal újratöltése az elfogadás után
+    exit;
+}
+
+if (isset($_POST['teszt_elrejt']) && $_POST['teszt_elrejt'] == '1') {
+    setcookie('teszt_elrejtve', '1', time() + (10 * 365 * 24 * 60 * 60), "/");
+    setcookie('teszt_utolso_megjelenes', '', time() - 3600, "/"); // Töröljük az időzítést
+    header("Refresh:0");
+    exit;
+} elseif (isset($_POST['teszt_ok']) && !isset($_POST['teszt_elrejt'])) {
+    setcookie('teszt_utolso_megjelenes', time(), time() + (365 * 24 * 60 * 60), "/");
+    header("Refresh:0");
+    exit;
+}
+
+// A további meglévő kódod (dátumszámítások stb.) itt folytatódik...
+
 $mai_nap = date('Y-m-d');
 $honap_eleje = date('Y-m-01');
 $het_eleje = date('Y-m-d', strtotime('monday this week', strtotime($mai_nap)));
@@ -475,6 +495,75 @@ for ($i = 0; $i < 7; $i++) {
             A böngésződ nem támogatja a videó lejátszását.
         </video>
     </div>
+
+    <?php if (isset($_SESSION['felhasznalo_id']) && (!isset($_COOKIE['cookie_elfogadva']) || (isset($_COOKIE['cookie_elfogadva']) && (time() - $_COOKIE['cookie_elfogadva_ideje']) > 365 * 24 * 60 * 60))): ?>
+        <div class="modal fade custom-modal" id="cookieModal" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="cookieModalLabel">Sütik elfogadása</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        Ez a weboldal sütiket (Cookie-kat) használ a jobb felhasználói élmény érdekében. Kérjük, fogadja el a sütik használatát!
+                    </div>
+                    <div class="modal-footer justify-content-center" style="border-top: none;">
+                        <form method="post" id="cookieForm">
+                            <button type="submit" name="cookie_elfogad" class="btn btn-primary">Elfogadom</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php
+            if (isset($_POST['teszt_ok'])) {
+                setcookie('teszt_utolso_megjelenes', time(), time() + 600, "/");
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
+            if (isset($_GET['elrejt_teszt'])) {
+                setcookie('teszt_elrejtve', '1', time() + (365 * 24 * 60 * 60), "/");
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
+            $teszt_megjelenik = isset($_SESSION['felhasznalo_id']) && 
+                                isset($_COOKIE['cookie_elfogadva']) && 
+                                !isset($_COOKIE['teszt_elrejtve']) && 
+                                (!isset($_COOKIE['teszt_utolso_megjelenes']) || (time() - $_COOKIE['teszt_utolso_megjelenes']) >= 600);
+
+            $kizaro_szerepkorok = array('Takarékos', 'Szerény', 'Átlagos', 'Kiegyensúlyozott', 'Tehetős', 'Luxus', 'Prémium', 'Elit', 'Admin', 'Moderátor', 'Tulaj');
+
+            $szerepkor_kizarva = isset($_SESSION['szerepkor']) && in_array($_SESSION['szerepkor'], $kizaro_szerepkorok);
+
+            if ($teszt_megjelenik && !$szerepkor_kizarva): 
+            ?>
+            <div class="modal fade custom-modal" id="tesztModal" tabindex="-1" aria-labelledby="tesztModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-center" id="tesztModalLabel">Üdvözöljük!</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            Szeretne kitölteni egy rövid tesztet, és felmérni szerepkörét?
+                        </div>
+                        <div class="text-center" style="color: red; margin-bottom: 15px;">
+                            <a href="?elrejt_teszt=1" style="color: red; text-decoration: none;">Ne jelenjen meg többé</a>
+                        </div>
+                        <div class="modal-footer justify-content-center" style="border-top: none;">
+                            <form method="post" id="tesztForm">
+                                <a href="../szerepkorfelmeres/" class="btn btn-primary">Teszt kitöltése</a>
+                                <button type="submit" name="teszt_ok" class="btn btn-secondary">Kilépés</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
     <div class="container-fluid" id="mainContent">
         <div class="row">

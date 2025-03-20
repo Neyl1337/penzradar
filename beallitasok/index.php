@@ -54,7 +54,6 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
         if ($felhasznalo && password_verify($felhasznalo_jelszo, $felhasznalo['jelszo'])) {
             $uj_nev = trim($_POST['uj_nev']);
 
-            // Ellenőrzés: 3-20 karakter, csak betűk és számok
             if (!preg_match("/^[\p{L}0-9]{3,20}$/u", $uj_nev)) {
                 $hiba_nev = "ervenytelen_nev";
             } else {
@@ -258,14 +257,13 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                     </div>
                 <?php endif; ?>
                 <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                    <!-- Bal oldali kalkulátor - csak bejelentkezett állapotban, keret nélkül -->
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                         <br>
                         <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
                         <form id="kamatSzamitasForm">
                             <div class="mb-2">
                                 <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
-                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatalt_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
                             </div>
                             <div class="mb-2">
                                 <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
@@ -304,102 +302,126 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                         </ul>
                     </div>
                 </header>
-                <div class="container-fluid">
+                <div class="container settings-container" id="modositaspanel" style="visibility: hidden;">
                     <div class="row">
-                        <div id="modositas" style="visibility: hidden;">
-                            <div>
-                                <h2 id="nevmodosit">Név módosítása</h2>
-                                <form action="" method="POST">
-                                    <div class="mb-3">
-                                        <label for="regi_jelszo_nev" class="form-label">Jelenlegi jelszó</label>
-                                        <input type="password" class="form-control" id="regi_jelszo_nev" name="regi_jelszo_nev" required>
+                        <div class="col-lg-8 mb-4">
+                            <div class="settings-card">
+                                <h1 class="settings-title">Fiók beállítások</h1>
+                                <div class="row">
+                                    <div id="modositas" style="visibility: hidden;" class="col-md-6 mb-4">
+                                        <div class="settings-section">
+                                            <h2 id="nevmodosit">Név módosítása</h2>
+                                            <form action="" method="POST">
+                                                <div class="mb-3">
+                                                    <label for="regi_jelszo_nev" class="form-label">Jelenlegi jelszó</label>
+                                                    <input type="password" class="form-control" id="regi_jelszo_nev" name="regi_jelszo_nev" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="uj_nev" class="form-label">Új név</label>
+                                                    <input type="text" class="form-control" id="uj_nev" name="uj_nev">
+                                                </div>
+                                                <?php if ($hiba_nev === true): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        A jelenlegi jelszó nem megfelelő a név módosításához!
+                                                    </div>
+                                                <?php elseif ($hiba_nev === "ilyen_nev_mar_van"): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        Ez a név már foglalt, kérlek válassz másikat!
+                                                    </div>
+                                                <?php elseif ($hiba_nev === "ervenytelen_nev"): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        A név 3-20 karakter hosszú lehet, és csak betűket meg számokat tartalmazhat!
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($siker_nev): ?>
+                                                    <div class="alert alert-success" role="alert">
+                                                        A név sikeresen módosítva!
+                                                    </div>
+                                                <?php endif; ?>
+                                                <button type="submit" class="button2">Mentés</button>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="uj_nev" class="form-label">Új név</label>
-                                        <input type="text" class="form-control" id="uj_nev" name="uj_nev">
+
+                                    <div id="modositas2" style="visibility: hidden;" class="col-md-6 mb-4">
+                                        <div class="settings-section">
+                                            <h2 id="jelszomodosit">Jelszó módosítása</h2>
+                                            <form action="" method="POST">
+                                                <div class="mb-3">
+                                                    <label for="regi_jelszo_jelszo" class="form-label">Jelenlegi jelszó</label>
+                                                    <input type="password" class="form-control" id="regi_jelszo_jelszo" name="regi_jelszo_jelszo" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="uj_jelszo" class="form-label">Új jelszó</label>
+                                                    <input type="password" class="form-control" id="uj_jelszo" name="uj_jelszo">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="uj_jelszo_meg" class="form-label">Új jelszó megerősítése</label>
+                                                    <input type="password" class="form-control" id="uj_jelszo_meg" name="uj_jelszo_meg">
+                                                </div>
+                                                <?php if ($hiba_jelszo): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        A jelenlegi jelszó nem megfelelő vagy a két új jelszó nem egyezik!
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($siker_jelszo): ?>
+                                                    <div class="alert alert-success" role="alert">
+                                                        A jelszó sikeresen módosítva!
+                                                    </div>
+                                                <?php endif; ?>
+                                                <button type="submit" class="button2">Mentés</button>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <?php if ($hiba_nev === true): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            A jelenlegi jelszó nem megfelelő a név módosításához!
+                                    
+                                    <div id="modositas3" style="visibility: hidden;" class="col-md-6 mb-4">
+                                        <div class="settings-section">
+                                            <h2 id="emailmodositas">Email módosítása</h2>
+                                            <form action="" method="POST" id="emailModositasForm">
+                                                <div class="mb-3">
+                                                    <label for="uj_email" class="form-label">Új email</label>
+                                                    <input type="text" class="form-control" id="uj_email" name="uj_email">
+                                                </div>
+                                                <?php if ($hiba_email === true): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        Az email küldése sikertelen!
+                                                    </div>
+                                                <?php elseif ($hiba_email === "ilyen_email_mar_van"): ?>
+                                                    <div class="alert alert-danger" role="alert">
+                                                        Ez az email cím már foglalt, kérlek válassz másikat!
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($siker_email): ?>
+                                                    <div class="alert alert-success" role="alert">
+                                                        A megerősítő kód elküldve az új email címre.
+                                                    </div>
+                                                <?php endif; ?>
+                                                <button type="submit" class="button2" id="emailMentesGomb">Mentés</button>
+                                            </form>
                                         </div>
-                                    <?php elseif ($hiba_nev === "ilyen_nev_mar_van"): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            Ez a név már foglalt, kérlek válassz másikat!
-                                        </div>
-                                    <?php elseif ($hiba_nev === "ervenytelen_nev"): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            A név 3-20 karakter hosszú lehet, és csak betűket meg számokat tartalmazhat!
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if ($siker_nev): ?>
-                                        <div class="alert alert-success" role="alert">
-                                            A név sikeresen módosítva!
-                                        </div>
-                                    <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary">Mentés</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div id="modositas2" style="visibility: hidden;">
-                            <div>
-                                <h2 id="jelszomodosit">Jelszó módosítása</h2>
-                                <form action="" method="POST">
-                                    <div class="mb-3">
-                                        <label for="regi_jelszo_jelszo" class="form-label">Jelenlegi jelszó</label>
-                                        <input type="password" class="form-control" id="regi_jelszo_jelszo" name="regi_jelszo_jelszo" required>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="uj_jelszo" class="form-label">Új jelszó</label>
-                                        <input type="password" class="form-control" id="uj_jelszo" name="uj_jelszo">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="uj_jelszo_meg" class="form-label">Új jelszó megerősítése</label>
-                                        <input type="password" class="form-control" id="uj_jelszo_meg" name="uj_jelszo_meg">
-                                    </div>
-                                    <?php if ($hiba_jelszo): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            A jelenlegi jelszó nem megfelelő vagy a két új jelszó nem egyezik!
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if ($siker_jelszo): ?>
-                                        <div class="alert alert-success" role="alert">
-                                            A jelszó sikeresen módosítva!
-                                        </div>
-                                    <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary">Mentés</button>
-                                </form>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="modositas3" style="visibility: hidden;">
-                            <div>
-                                <h2 id="emailmodositas">Email módosítása</h2>
-                                <form action="" method="POST" id="emailModositasForm">
-                                    <label for="uj_email" class="form-label">Új email</label>
-                                    <input type="text" class="form-control" id="uj_email" name="uj_email"><br>
-                                    <?php if ($hiba_email === true): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            Az email küldése sikertelen!
-                                        </div>
-                                    <?php elseif ($hiba_email === "ilyen_email_mar_van"): ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            Ez az email cím már foglalt, kérlek válassz másikat!
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if ($siker_email): ?>
-                                        <div class="alert alert-success" role="alert">
-                                            A megerősítő kód elküldve az új email címre.
-                                        </div>
-                                    <?php endif; ?>
-                                    <button type="submit" class="button2 btn-primary" id="emailMentesGomb">Mentés</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div id="modositas4" style="visibility: hidden;">
-                            <div>
-                                <h2 id="fioktorles">Fiók törlése</h2>
-                                <button type="button" class="button3 btn-danger" data-bs-toggle="modal" data-bs-target="#fioktorlesModal">Törlés</button>
+                        <div class="col-lg-4 mb-4">
+                            <div class="sidebar-card">
+                                <h2 class="sidebar-title">Fiók kezelés</h2>
+                                <div id="modositas4" style="visibility: hidden;" class="mb-4">
+                                    <div class="settings-section">
+                                        <h2 id="fioktorles">Fiók törlése</h2>
+                                        <button type="button" class="button3" data-bs-toggle="modal" data-bs-target="#fioktorlesModal">Törlés</button>
+                                    </div>
+                                </div>
+                                <div class="info-section">
+                                    <h3 class="info-title">Biztonsági tippek</h3>
+                                    <ul>
+                                        <li>Használj erős, egyedi jelszót.</li>
+                                        <li>Ne oszd meg senkivel a jelszavadat.</li>
+                                        <li>Frissítsd rendszeresen a jelszavadat.</li>
+                                        <li>Ha gyanús tevékenységet észlelsz, azonnal lépj kapcsolatba velünk.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -432,11 +454,10 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
     const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
     const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
 
-    // Email módosítás gomb letiltása és szöveg változtatása
     document.getElementById('emailModositasForm').addEventListener('submit', function(event) {
         const gomb = document.getElementById('emailMentesGomb');
-        gomb.disabled = true; // Gomb letiltása
-        gomb.textContent = 'Kérlek várj...'; // Szöveg módosítása
+        gomb.disabled = true;
+        gomb.textContent = 'Kérlek várj...';
     });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

@@ -106,7 +106,7 @@ p {
     color: #63ffbe;
     text-align: center;
     margin-bottom: 20px;
-    font-size: 2rem; /* Alapértelmezett betűméret */
+    font-size: 2rem;
     text-transform: uppercase;
     font-family: "Arial Black", Impact, sans-serif;
     font-weight: bold;
@@ -117,6 +117,17 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.oldalsav h2:after {
+    content: "v2.3"; /*VERZIÓSZÁM*/
+    color: #63ffbe;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-weight: bold;
+    font-size: 0.8rem;
+    position: relative;
+    top: 0.5em;
+    margin-left: 5px;
 }
 
 .oldalsav h2:hover {
@@ -375,15 +386,33 @@ canvas {
     margin-left: 5px;
 }
 
+@media only screen and (max-width: 1800px) {
+    .oldalsav h2 {
+        font-size: 1.0rem;
+    }
+    
+    .oldalsav h2:after {
+        display: none;
+    }
+}
+
 @media only screen and (max-width: 1570px) {
     .oldalsav h2 {
-        font-size: 1.3rem;
+        font-size: 1.0rem;
+    }
+
+    .oldalsav h2:after {
+        display: none;
     }
 }
 
 @media only screen and (max-width: 1135px) {
     .oldalsav h2 {
-        font-size: 1.0rem;
+        font-size: 0.7rem;
+    }
+
+    .oldalsav h2:after {
+        display: none;
     }
 }
 
@@ -401,7 +430,7 @@ canvas {
 
   @media only screen and (max-width: 767px) {
     .oldalsav h2 {
-        font-size: 2rem;
+        font-size: 1.7rem;
     }
 
     .link-szoveg {
@@ -409,6 +438,10 @@ canvas {
     }
 
     .lakat-jobb {
+        display: block;
+    }
+
+    .oldalsav h2:after {
         display: block;
     }
   }

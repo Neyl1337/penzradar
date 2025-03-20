@@ -113,3 +113,16 @@ aktualisIdoP.innerHTML = frissitIdo();
 setInterval(() => {
     aktualisIdoP.innerHTML = frissitIdo();
 }, 1000);
+
+if (bejelentkezve === "true") {
+    const cookieModal = document.getElementById('cookieModal');
+    const tesztModal = document.getElementById('tesztModal');
+
+    if (cookieModal) {
+        const cookieBsModal = new bootstrap.Modal(cookieModal, { backdrop: 'static', keyboard: false });
+        cookieBsModal.show();
+    } else if (tesztModal) {
+        const tesztBsModal = new bootstrap.Modal(tesztModal, { backdrop: 'static', keyboard: false });
+        tesztBsModal.show();
+    }
+}

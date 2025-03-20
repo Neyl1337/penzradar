@@ -28,16 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt1 = $pdo->prepare("DELETE FROM naptar WHERE felhasznalo_id = ?");
             $stmt1->execute([$felhasznalo_id]);
-
-            $stmt2 = $pdo->prepare("DELETE FROM persely WHERE felhasznalo_id = ?");
+            
+            $stmt2 = $pdo->prepare("DELETE FROM perselyk WHERE felhasznalo_nev = ?");
             $stmt2->execute([$felhasznalo_id]);
-
+            
             $stmt3 = $pdo->prepare("DELETE FROM tervezo WHERE felhasznalo_nev = ?");
             $stmt3->execute([$felhasznalo_id]);
-
-            $stmt4 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            
+            $stmt4 = $pdo->prepare("DELETE FROM celok WHERE felhasznalo_nev = ?");
             $stmt4->execute([$felhasznalo_id]);
 
+            $stmt5 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt5->execute([$felhasznalo_id]);
+            
             $pdo->commit();
 
             unset($_SESSION['torles_kod']);
@@ -70,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>PénzRadar - Megerősítés</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="megerosites.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="regisztracios-doboz">

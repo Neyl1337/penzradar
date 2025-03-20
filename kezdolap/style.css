@@ -68,3 +68,99 @@
     max-width: 600px;
     margin: 0 auto;
 }
+
+.custom-modal {
+    background-color: #1e1e1e36;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
+}
+
+.custom-modal .modal-header {
+    background-color: #63ffbe;
+    color: #121212;
+    border-bottom: 1px solid #55daa2;
+    display: block;
+    padding: 10px;
+}
+
+.custom-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.custom-modal .btn-close {
+    filter: invert(1);
+}
+
+.custom-modal .modal-body {
+    font-size: 1.2rem;
+    padding: 20px;
+    text-align: center;
+}
+
+.custom-modal .modal-footer {
+    border-top: 1px solid #63ffbe;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal .btn-secondary,
+.custom-modal .btn-primary,
+.custom-modal .btn-danger {
+    min-width: 100px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    text-align: center;
+}
+
+.custom-modal .btn-secondary {
+    background-color: #444;
+    border: none;
+    color: white;
+}
+
+.custom-modal .btn-secondary:hover {
+    background-color: #555;
+    color: #ffffff;
+}
+
+.custom-modal .btn-primary {
+    background-color: #63ffbe;
+    border: none;
+    color: #121212;
+}
+
+.custom-modal .btn-primary:hover {
+    background-color: #55daa2;
+    color: #ffffff;
+}
+
+.custom-modal .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #1e1e1e;
+}
+
+.custom-modal .btn-danger:hover {
+    background-color: #c82333;
+    color: #ffffff;
+}
+.btn-close {
+    display: none;
+}

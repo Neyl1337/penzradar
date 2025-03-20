@@ -1,35 +1,74 @@
+<?php
+require_once '../adatbazis.php';
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
+    header('Content-Type: application/json');
+    $valasz = ['siker' => false];
+    
+    if (isset($_SESSION['felhasznalo_id'])) {
+        $bejovo_adat = json_decode(file_get_contents('php://input'), true);
+        $szerepkor = $bejovo_adat['szerepkor'] ?? null;
+        
+        if ($szerepkor) {
+            try {
+                $lekerdezes = $pdo->prepare("UPDATE felhasznalok SET rang = ? WHERE id = ?");
+                $lekerdezes->execute([$szerepkor, $_SESSION['felhasznalo_id']]);
+                $_SESSION['szerepkor'] = $szerepkor;
+                $valasz['siker'] = true;
+            } catch (PDOException $e) {
+                $valasz['hiba'] = "Adatbázis hiba: " . $e->getMessage();
+            }
+        } else {
+            $valasz['hiba'] = "Nincs szerepkör megadva";
+        }
+    } else {
+        $valasz['hiba'] = "Nincs bejelentkezett felhasználó";
+    }
+    
+    echo json_encode($valasz);
+    exit;
+}
+
+if (isset($_SESSION['felhasznalo_id'])) {
+    $lekerdezes = $pdo->prepare("
+        SELECT f.rang, f.email, f.nev, p.egyenleg 
+        FROM felhasznalok f
+        INNER JOIN persely p ON f.id = p.felhasznalo_id
+        WHERE f.id = ?
+    ");
+    $lekerdezes->execute([$_SESSION['felhasznalo_id']]);
+    $felhasznalo = $lekerdezes->fetch(PDO::FETCH_ASSOC);
+
+    if ($felhasznalo) {
+        $_SESSION['szerepkor'] = $felhasznalo['rang'];
+        $_SESSION['email'] = $felhasznalo['email'];
+        $_SESSION['felhasznalo_nev'] = $felhasznalo['nev'];
+        $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
+    }
+} else {
+    $_SESSION['szerepkor'] = null;
+    $_SESSION['email'] = null;
+    $_SESSION['felhasznalo_nev'] = null;
+    $_SESSION['perselyegyenleg'] = null;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pénzügyi Felmérés</title>
+    <title>Szerepkör felmérő</title>
+    <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Sütik elfogadása felugró ablak -->
-        <div id="sutiModal" class="modal">
-            <div class="modal-tartalom">
-                <h2>Sütik elfogadása</h2>
-                <p>Ez a weboldal sütiket használ a jobb felhasználói élmény érdekében. Elfogadod a sütik használatát?</p>
-                <button id="sutiElfogad">Elfogadom</button>
-                <button id="sutiBezár">Bezárás</button>
-            </div>
-        </div>
-
-        <!-- Másik oldal felajánlása felugró ablak -->
-        <div id="oldalModal" class="modal">
-            <div class="modal-tartalom">
-                <h2>Érdekel egy másik ajánlat?</h2>
-                <p>Látogass el partneroldalunkra további pénzügyi tippekért!</p>
-                <button id="oldalMegnyit">Megnyitom</button>
-                <button id="oldalBezár">Bezárás</button>
-            </div>
-        </div>
-
     <div class="kontener">
-        <h3>PénzRadar</h3>
-        <h1>Pénzügyi Felmérés</h1>
+        <h1>PénzRadar</h1>
+        <h2>Szerepkör felmérő</h2>
+        <center><p>Bejelentkezve mint: <?php echo isset($_SESSION['felhasznalo_nev']) ? htmlspecialchars($_SESSION['felhasznalo_nev']) : "Nem vagy bejelentkezve"; ?></p></center>
+        <br><br>
         <div id="kerdesek">
             <div class="kerdes aktiv">
                 <label>Mennyit költesz havonta ételre és alapvető élelmiszerekre?</label>
@@ -138,7 +177,14 @@
             </div>
         </div>
         <button id="kovetkezo" onclick="lepjTovabb()">Következő</button>
-        <div id="eredmeny"></div>
+        <div id="eredmeny">
+            <?php
+            if (isset($_SESSION['szerepkor'])) {
+                echo "Megítélt szerepkör: " . htmlspecialchars($_SESSION['szerepkor']);
+            }
+            ?>
+        </div>
+        <button id="mentes" style="display: none;" onclick="mentesSzerepkor()">Kérem a szerepköröm!</button>
     </div>
 
     <script src="script.js"></script>
