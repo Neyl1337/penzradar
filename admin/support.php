@@ -46,10 +46,10 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
 
 // Előre megírt válaszok definiálása
 $predefined_responses = [
-    'Javítva' => 'Köszönjük a bejelentést! A problémát sikeresen javítottuk.',
-    'Folyamatban' => 'A bejelentett probléma megoldása folyamatban van, hamarosan értesítünk a fejleményekről.',
-    'Hamarosan' => 'A problémát hamarosan megvizsgáljuk és megoldjuk.',
-    'Elutasítva' => 'Sajnáljuk, de a bejelentést nem áll módunkban elfogadni. További részletekért kérjük, vedd fel velünk a kapcsolatot.'
+    'Javítva' => 'Köszönjük bejelentését! A problémát sikeresen kijavítottuk, további kellemes használatot kívánunk! Amennyiben bármi problémát észlel, kérjük vegye fel velünk a kapcsolatot.',
+    'Folyamatban' => 'Köszönjük bejelentését! A bejelentett probléma megoldása folyamatban van, kérjük figyelje a PénzRadar weboldal frissítését! Ha bármi problémát észlel, kérjük vegye fel velünk a kapcsolatot. Szíves türelmét kérjük.',
+    'Hamarosan' => 'Köszönjük bejelentését! A problémát hamarosan megvizsgáljuk és kijavítjuk. Amennyiben bármi problémát észlel, kérjük vegye fel velünk a kapcsolatot. Köszönjük türelmét!',
+    'Elutasítva' => 'Köszönjük! A bejelentését nem áll módunkban elfogadni és kivizsgálni. További részletekért kérjük, vegye fel velünk a kapcsolatot. Szíves elnézését kérjük a kellemetlenségért.'
 ];
 
 // Support ticket handling

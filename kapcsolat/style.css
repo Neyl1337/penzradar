@@ -76,6 +76,12 @@ li.nav-item {
     cursor: pointer; /* Kattinthatóvá téve */
 }
 
+@media only screen and (max-width: 580px) { 
+    .contact-text {
+        font-size: 110%;
+    }
+}
+
 /* Felhasználói adatok címkéi */
 .user-label {
     font-size: 1.2rem;
