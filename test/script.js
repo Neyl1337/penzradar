@@ -31,9 +31,9 @@ function eredmenyKalkulacio() {
     } else if (osszeg <= 10) {
         eredmenySzoveg = "Szerény";
     } else if (osszeg <= 15) {
-        eredmenySzoveg = "Kiegyensúlyozott";
-    } else if (osszeg <= 20) {
         eredmenySzoveg = "Átlagos";
+    } else if (osszeg <= 20) {
+        eredmenySzoveg = "Kiegyensúlyozott";
     } else if (osszeg <= 25) {
         eredmenySzoveg = "Tehetős";
     } else if (osszeg <= 30) {
