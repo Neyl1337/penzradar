@@ -178,9 +178,9 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                         </ul>
                     </div>
                 </header>
-                <div id="profil" style="visibility: hidden;">
+                <div id="szemelyes" style="visibility: hidden;">
                     <div class="container mt-4">
-                        <h2 id="profilod">Profilod</h2>
+                        <h2 id="szemelyesadat">Személyes Adatok</h2>
                         <form id="profilbox" method="POST" action="felhasznalo_modositas.php">
                             <div class="mb-3">
                                 <label class="form-label">Név</label>
@@ -200,6 +200,60 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                     <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["regisztracio_idopont"] ?? ""); ?></label>
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Valuta</label>
+                                <div class="form-check">
+                                <select name="valaszto" id="valaszto">
+                                        <option value="HUF">HUF</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Születési Dátum</label>
+                                <div class="form-check">
+                                <label class="form-check-label"><?php?></label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Nem</label>
+                                <div class="form-check">
+                                <label class="form-check-label"><?php?></label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
+
+                <div id="Weboldali" style="visibility: hidden;">
+                    <div class="container mt-4">
+                        <h2 id="profilod">Web Adatok</h2>
+                        <form id="profilbox" method="POST">
+                        <div class="mb-3">
+                                <label class="form-label">FelhasználóNév</label>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
+                                </div>
+                        </div>
+
+                        <div class="mb-3">
+                                <label class="form-label">Össz költés</label>
+                                <div class="form-check">
+                                    <label for=""></label>
+                                </div>
+                        </div>
+
+                        <div class="mb-3">
+                                <label class="form-label">Össz Bevétel </label>
+                                <div class="form-check">
+                                    <label for=""></label>
+                                </div>
+                        </div>
                         </form>
                     </div>
                 </div>

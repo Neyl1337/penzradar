@@ -11,7 +11,9 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "block";
         document.getElementById("perselyegyenleg").style.visibility = "visible";
         document.getElementById("szerepkor").style.visibility = "visible";
-        document.getElementById("profil").style.visibility = "visible";
+        document.getElementById("szemelyes").style.visibility = "visible";
+        document.getElementById("Weboldali").style.visibility = "visible";
+
     } else {
         document.getElementById('felhasznaloNev').textContent = "Jelentkezz be!";
         document.getElementById("profilopcio").style.display = "none";
@@ -19,6 +21,7 @@ window.onload = () => {
         document.getElementById("kijelentkezesopcio").style.display = "none";
         document.getElementById("perselyegyenleg").style.visibility = "none";
         document.getElementById("szerepkor").style.visibility = "none";
-        document.getElementById("profil").style.visibility = "none";
+        document.getElementById("szemelyes").style.visibility = "none";
+        document.getElementById("Weboldali").style.visibility = "none";
     }
 };
