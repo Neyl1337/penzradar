@@ -237,3 +237,10 @@
     border: 2px solid #63ffbe; /* Hasonló keret a csatolt CSS-hez */
     box-shadow: #63ffbe 0px 0px 10px; /* Fénylő árnyék effektus */
 }
+
+@media (min-width: 768px) {
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}

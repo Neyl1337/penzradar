@@ -5,13 +5,13 @@ session_start();
 if (isset($_POST['cookie_elfogad'])) {
     setcookie('cookie_elfogadva', '1', time() + (365 * 24 * 60 * 60), "/");
     setcookie('cookie_elfogadva_ideje', time(), time() + (365 * 24 * 60 * 60), "/");
-    header("Refresh:0"); // Oldal újratöltése az elfogadás után
+    header("Refresh:0");
     exit;
 }
 
 if (isset($_POST['teszt_elrejt']) && $_POST['teszt_elrejt'] == '1') {
     setcookie('teszt_elrejtve', '1', time() + (10 * 365 * 24 * 60 * 60), "/");
-    setcookie('teszt_utolso_megjelenes', '', time() - 3600, "/"); // Töröljük az időzítést
+    setcookie('teszt_utolso_megjelenes', '', time() - 3600, "/");
     header("Refresh:0");
     exit;
 } elseif (isset($_POST['teszt_ok']) && !isset($_POST['teszt_elrejt'])) {
@@ -19,8 +19,6 @@ if (isset($_POST['teszt_elrejt']) && $_POST['teszt_elrejt'] == '1') {
     header("Refresh:0");
     exit;
 }
-
-// A további meglévő kódod (dátumszámítások stb.) itt folytatódik...
 
 $mai_nap = date('Y-m-d');
 $honap_eleje = date('Y-m-01');
@@ -53,62 +51,46 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_eredmeny = $naptar_lekerdezes->fetch(PDO::FETCH_ASSOC);
     $napi_bevetel += $naptar_eredmeny['osszeg'] ?? 0;
 
-    $tervezo_lekerdezes = $pdo->prepare("SELECT osszeg, gyakorisag, datum FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel' AND felfuggesztve = 0 AND datum <= ?");
-    $tervezo_lekerdezes->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
+    $tervezo_lekerdezes = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+    $tervezo_lekerdezes->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
     $tervezo_sorok = $tervezo_lekerdezes->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tervezo_sorok as $sor) {
         $osszeg = $sor['osszeg'] ?? 0;
         $gyakorisag = $sor['gyakorisag'];
         $datum = $sor['datum'];
+        $tipus = $sor['tipus'];
 
-        if ($datum <= $mai_nap) {
-            switch ($gyakorisag) {
-                case 'Napi':
-                    if ($datum == $mai_nap) $napi_bevetel += $osszeg;
+        if ($tipus == 'Bevétel') {
+            $aktualis_datum = $datum;
+            while ($aktualis_datum <= $mai_nap) {
+                if ($aktualis_datum == $mai_nap) {
+                    $napi_bevetel += $osszeg;
                     break;
-                case 'Heti':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                }
+                switch ($gyakorisag) {
+                    case 'Napi':
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+                        break;
+                    case 'Heti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                    }
-                    break;
-                case 'Kétheti':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                        break;
+                    case 'Kétheti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                    }
-                    break;
-                case 'Havi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                        break;
+                    case 'Havi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                    }
-                    break;
-                case 'Negyedévi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                        break;
+                    case 'Negyedévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                    }
-                    break;
-                case 'Félévi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                        break;
+                    case 'Félévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                    }
-                    break;
-                case 'Évi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                        break;
+                    case 'Évi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -121,63 +103,45 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_het_eredmeny = $naptar_het->fetch(PDO::FETCH_ASSOC);
     $heti_bevetel += $naptar_het_eredmeny['osszeg'] ?? 0;
 
-    $tervezo_het = $pdo->prepare("SELECT osszeg, gyakorisag, datum FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel' AND felfuggesztve = 0 AND datum <= ?");
-    $tervezo_het->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
+    $tervezo_het = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+    $tervezo_het->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
     $tervezo_het_sorok = $tervezo_het->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tervezo_het_sorok as $sor) {
         $osszeg = $sor['osszeg'] ?? 0;
         $gyakorisag = $sor['gyakorisag'];
         $datum = $sor['datum'];
+        $tipus = $sor['tipus'];
 
-        if ($datum <= $mai_nap && $datum >= $het_eleje) {
-            switch ($gyakorisag) {
-                case 'Napi':
-                    $napok_szama = (strtotime($mai_nap) - strtotime(max($het_eleje, $datum))) / (60 * 60 * 24) + 1;
-                    $heti_bevetel += $osszeg * $napok_szama;
-                    break;
-                case 'Heti':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+        if ($tipus == 'Bevétel') {
+            $aktualis_datum = $datum;
+            while ($aktualis_datum <= $mai_nap) {
+                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) {
+                    $heti_bevetel += $osszeg;
+                }
+                switch ($gyakorisag) {
+                    case 'Napi':
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+                        break;
+                    case 'Heti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                    }
-                    break;
-                case 'Kétheti':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+                        break;
+                    case 'Kétheti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                    }
-                    break;
-                case 'Havi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+                        break;
+                    case 'Havi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                    }
-                    break;
-                case 'Negyedévi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+                        break;
+                    case 'Negyedévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                    }
-                    break;
-                case 'Félévi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+                        break;
+                    case 'Félévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                    }
-                    break;
-                case 'Évi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_bevetel += $osszeg;
+                        break;
+                    case 'Évi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -198,8 +162,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_max_eredmeny = $naptar_max->fetch(PDO::FETCH_ASSOC);
     $legnagyobb_bevetel = $naptar_max_eredmeny['osszeg'] ?? 0;
 
-    $tervezo_max = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel' AND felfuggesztve = 0");
-    $tervezo_max->execute([$_SESSION['felhasznalo_id']]);
+    $tervezo_max = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel'");
+    $tervezo_max->execute([$_SESSION['felhasznalo_nev']]);
     $tervezo_max_eredmeny = $tervezo_max->fetch(PDO::FETCH_ASSOC);
     $legnagyobb_bevetel = max($legnagyobb_bevetel, $tervezo_max_eredmeny['osszeg'] ?? 0);
 }
@@ -211,62 +175,46 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_kiadas_eredmeny = $naptar_kiadas->fetch(PDO::FETCH_ASSOC);
     $napi_kiadas += abs($naptar_kiadas_eredmeny['osszeg'] ?? 0);
 
-    $tervezo_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás' AND felfuggesztve = 0 AND datum <= ?");
-    $tervezo_kiadas->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
+    $tervezo_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+    $tervezo_kiadas->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
     $tervezo_kiadas_sorok = $tervezo_kiadas->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tervezo_kiadas_sorok as $sor) {
         $osszeg = $sor['osszeg'] ?? 0;
         $gyakorisag = $sor['gyakorisag'];
         $datum = $sor['datum'];
+        $tipus = $sor['tipus'];
 
-        if ($datum <= $mai_nap) {
-            switch ($gyakorisag) {
-                case 'Napi':
-                    if ($datum == $mai_nap) $napi_kiadas += $osszeg;
+        if ($tipus == 'Kiadás') {
+            $aktualis_datum = $datum;
+            while ($aktualis_datum <= $mai_nap) {
+                if ($aktualis_datum == $mai_nap) {
+                    $napi_kiadas += $osszeg;
                     break;
-                case 'Heti':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                }
+                switch ($gyakorisag) {
+                    case 'Napi':
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+                        break;
+                    case 'Heti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                    }
-                    break;
-                case 'Kétheti':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                        break;
+                    case 'Kétheti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                    }
-                    break;
-                case 'Havi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                        break;
+                    case 'Havi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                    }
-                    break;
-                case 'Negyedévi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                        break;
+                    case 'Negyedévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                    }
-                    break;
-                case 'Félévi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                        break;
+                    case 'Félévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                    }
-                    break;
-                case 'Évi':
-                    $aktualis_datum = $datum;
-                    while ($aktualis_datum <= $mai_nap) {
-                        if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                        break;
+                    case 'Évi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -279,63 +227,45 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_het_kiadas_eredmeny = $naptar_het_kiadas->fetch(PDO::FETCH_ASSOC);
     $heti_kiadas += abs($naptar_het_kiadas_eredmeny['osszeg'] ?? 0);
 
-    $tervezo_het_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás' AND felfuggesztve = 0 AND datum <= ?");
-    $tervezo_het_kiadas->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
+    $tervezo_het_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+    $tervezo_het_kiadas->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
     $tervezo_het_kiadas_sorok = $tervezo_het_kiadas->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tervezo_het_kiadas_sorok as $sor) {
         $osszeg = $sor['osszeg'] ?? 0;
         $gyakorisag = $sor['gyakorisag'];
         $datum = $sor['datum'];
+        $tipus = $sor['tipus'];
 
-        if ($datum <= $mai_nap && $datum >= $het_eleje) {
-            switch ($gyakorisag) {
-                case 'Napi':
-                    $napok_szama = (strtotime($mai_nap) - strtotime(max($het_eleje, $datum))) / (60 * 60 * 24) + 1;
-                    $heti_kiadas += $osszeg * $napok_szama;
-                    break;
-                case 'Heti':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+        if ($tipus == 'Kiadás') {
+            $aktualis_datum = $datum;
+            while ($aktualis_datum <= $mai_nap) {
+                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) {
+                    $heti_kiadas += $osszeg;
+                }
+                switch ($gyakorisag) {
+                    case 'Napi':
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+                        break;
+                    case 'Heti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                    }
-                    break;
-                case 'Kétheti':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+                        break;
+                    case 'Kétheti':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                    }
-                    break;
-                case 'Havi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+                        break;
+                    case 'Havi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                    }
-                    break;
-                case 'Negyedévi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+                        break;
+                    case 'Negyedévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                    }
-                    break;
-                case 'Félévi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+                        break;
+                    case 'Félévi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                    }
-                    break;
-                case 'Évi':
-                    $aktualis_datum = max($het_eleje, $datum);
-                    while ($aktualis_datum <= $mai_nap) {
-                        $heti_kiadas += $osszeg;
+                        break;
+                    case 'Évi':
                         $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                    }
-                    break;
+                        break;
+                }
             }
         }
     }
@@ -356,20 +286,11 @@ if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_max_kiadas_eredmeny = $naptar_max_kiadas->fetch(PDO::FETCH_ASSOC);
     $legnagyobb_kiadas = $naptar_max_kiadas_eredmeny['osszeg'] ?? 0;
 
-    $tervezo_max_kiadas = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás' AND felfuggesztve = 0");
-    $tervezo_max_kiadas->execute([$_SESSION['felhasznalo_id']]);
+    $tervezo_max_kiadas = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás'");
+    $tervezo_max_kiadas->execute([$_SESSION['felhasznalo_nev']]);
     $tervezo_max_kiadas_eredmeny = $tervezo_max_kiadas->fetch(PDO::FETCH_ASSOC);
     $legnagyobb_kiadas = max($legnagyobb_kiadas, $tervezo_max_kiadas_eredmeny['osszeg'] ?? 0);
 }
-
-$napi_bevetel_format = number_format($napi_bevetel, 0, '.', ',');
-$heti_bevetel_format = number_format($heti_bevetel, 0, '.', ',');
-$atlagos_bevetel_format = number_format($atlagos_bevetel, 0, '.', ',');
-$legnagyobb_bevetel_format = number_format($legnagyobb_bevetel, 0, '.', ',');
-$napi_kiadas_format = number_format($napi_kiadas, 0, '.', ',');
-$heti_kiadas_format = number_format($heti_kiadas, 0, '.', ',');
-$atlagos_kiadas_format = number_format($atlagos_kiadas, 0, '.', ',');
-$legnagyobb_kiadas_format = number_format($legnagyobb_kiadas, 0, '.', ',');
 
 $heti_bevetelek = array_fill(0, 7, 0);
 $heti_kiadasok = array_fill(0, 7, 0);
@@ -386,8 +307,8 @@ for ($i = 0; $i < 7; $i++) {
     $heti_kiadasok[$i] = $naptar_nap_kiad_eredmeny['osszeg'] ?? 0;
 
     if ($nap <= $mai_nap) {
-        $tervezo_nap = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND felfuggesztve = 0 AND datum <= ?");
-        $tervezo_nap->execute([$_SESSION['felhasznalo_id'], $nap]);
+        $tervezo_nap = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+        $tervezo_nap->execute([$_SESSION['felhasznalo_nev'], $nap]);
         $tervezo_nap_sorok = $tervezo_nap->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($tervezo_nap_sorok as $sor) {
@@ -396,79 +317,52 @@ for ($i = 0; $i < 7; $i++) {
             $datum = $sor['datum'];
             $tipus = $sor['tipus'];
 
-            if ($datum <= $nap) {
+            $aktualis_datum = $datum;
+            while ($aktualis_datum <= $nap) {
+                if ($aktualis_datum == $nap) {
+                    if ($tipus == 'Bevétel') {
+                        $heti_bevetelek[$i] += $osszeg;
+                    } else if ($tipus == 'Kiadás') {
+                        $heti_kiadasok[$i] += $osszeg;
+                    }
+                    break;
+                }
                 switch ($gyakorisag) {
                     case 'Napi':
-                        if ($datum == $nap) {
-                            if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                            else $heti_kiadasok[$i] += $osszeg;
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
                         break;
                     case 'Heti':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
                         break;
                     case 'Kétheti':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
                         break;
                     case 'Havi':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
                         break;
                     case 'Negyedévi':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
                         break;
                     case 'Félévi':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
                         break;
                     case 'Évi':
-                        $aktualis_datum = $datum;
-                        while ($aktualis_datum <= $nap) {
-                            if ($aktualis_datum == $nap) {
-                                if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
-                                else $heti_kiadasok[$i] += $osszeg;
-                            }
-                            $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        }
+                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
                         break;
                 }
             }
         }
     }
 }
+
+$napi_bevetel_format = number_format($napi_bevetel, 0, '.', ',');
+$heti_bevetel_format = number_format($heti_bevetel, 0, '.', ',');
+$atlagos_bevetel_format = number_format($atlagos_bevetel, 0, '.', ',');
+$legnagyobb_bevetel_format = number_format($legnagyobb_bevetel, 0, '.', ',');
+$napi_kiadas_format = number_format($napi_kiadas, 0, '.', ',');
+$heti_kiadas_format = number_format($heti_kiadas, 0, '.', ',');
+$atlagos_kiadas_format = number_format($atlagos_kiadas, 0, '.', ',');
+$legnagyobb_kiadas_format = number_format($legnagyobb_kiadas, 0, '.', ',');
 
 $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
 $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
@@ -518,55 +412,55 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+    <?php endif; ?>
 
-        <?php
-            if (isset($_POST['teszt_ok'])) {
-                setcookie('teszt_utolso_megjelenes', time(), time() + 600, "/");
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
-            }
+    <?php
+    if (isset($_POST['teszt_ok'])) {
+        setcookie('teszt_utolso_megjelenes', time(), time() + 600, "/");
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
 
-            if (isset($_GET['elrejt_teszt'])) {
-                setcookie('teszt_elrejtve', '1', time() + (365 * 24 * 60 * 60), "/");
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
-            }
+    if (isset($_GET['elrejt_teszt'])) {
+        setcookie('teszt_elrejtve', '1', time() + (365 * 24 * 60 * 60), "/");
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
 
-            $teszt_megjelenik = isset($_SESSION['felhasznalo_id']) && 
-                                isset($_COOKIE['cookie_elfogadva']) && 
-                                !isset($_COOKIE['teszt_elrejtve']) && 
-                                (!isset($_COOKIE['teszt_utolso_megjelenes']) || (time() - $_COOKIE['teszt_utolso_megjelenes']) >= 600);
+    $teszt_megjelenik = isset($_SESSION['felhasznalo_id']) && 
+                        isset($_COOKIE['cookie_elfogadva']) && 
+                        !isset($_COOKIE['teszt_elrejtve']) && 
+                        (!isset($_COOKIE['teszt_utolso_megjelenes']) || (time() - $_COOKIE['teszt_utolso_megjelenes']) >= 600);
 
-            $kizaro_szerepkorok = array('Takarékos', 'Szerény', 'Átlagos', 'Kiegyensúlyozott', 'Tehetős', 'Luxus', 'Prémium', 'Elit', 'Admin', 'Moderátor', 'Tulaj');
+    $kizaro_szerepkorok = array('Takarékos', 'Szerény', 'Átlagos', 'Kiegyensúlyozott', 'Tehetős', 'Luxus', 'Prémium', 'Elit', 'Admin', 'Moderátor', 'Tulaj');
 
-            $szerepkor_kizarva = isset($_SESSION['szerepkor']) && in_array($_SESSION['szerepkor'], $kizaro_szerepkorok);
+    $szerepkor_kizarva = isset($_SESSION['szerepkor']) && in_array($_SESSION['szerepkor'], $kizaro_szerepkorok);
 
-            if ($teszt_megjelenik && !$szerepkor_kizarva): 
-            ?>
-            <div class="modal fade custom-modal" id="tesztModal" tabindex="-1" aria-labelledby="tesztModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title text-center" id="tesztModalLabel">Üdvözöljük!</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
-                        </div>
-                        <div class="modal-body text-center">
-                            Szeretne kitölteni egy rövid tesztet, és felmérni szerepkörét?
-                        </div>
-                        <div class="text-center" style="color: red; margin-bottom: 15px;">
-                            <a href="?elrejt_teszt=1" style="color: red; text-decoration: none;">Ne jelenjen meg többé</a>
-                        </div>
-                        <div class="modal-footer justify-content-center" style="border-top: none;">
-                            <form method="post" id="tesztForm">
-                                <a href="../szerepkorfelmeres/" class="btn btn-primary">Teszt kitöltése</a>
-                                <button type="submit" name="teszt_ok" class="btn btn-secondary">Kilépés</button>
-                            </form>
-                        </div>
-                    </div>
+    if ($teszt_megjelenik && !$szerepkor_kizarva): 
+    ?>
+    <div class="modal fade custom-modal" id="tesztModal" tabindex="-1" aria-labelledby="tesztModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="tesztModalLabel">Üdvözöljük!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body text-center">
+                    Szeretne kitölteni egy rövid tesztet, és felmérni szerepkörét?
+                </div>
+                <div class="text-center" style="color: red; margin-bottom: 15px;">
+                    <a href="?elrejt_teszt=1" style="color: red; text-decoration: none;">Ne jelenjen meg többé</a>
+                </div>
+                <div class="modal-footer justify-content-center" style="border-top: none;">
+                    <form method="post" id="tesztForm">
+                        <a href="../szerepkorfelmeres/" class="btn btn-primary">Teszt kitöltése</a>
+                        <button type="submit" name="teszt_ok" class="btn btn-secondary">Kilépés</button>
+                    </form>
                 </div>
             </div>
-            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="container-fluid" id="mainContent">
         <div class="row">

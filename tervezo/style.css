@@ -306,7 +306,7 @@ h1 {
 }
 
 .form-label {
-    color: #63ffbe;
+    color: #ffffff;
 }
 
 .tervezo-form .form-control, .tervezo-form .form-select {
@@ -344,4 +344,69 @@ h1 {
 
 .table {
     color: white;
+}
+
+/* style.css */
+.celok-tabla .form-control {
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #63ffbe;
+    resize: vertical; /* Csak függőlegesen méretezhető */
+}
+
+.tranzakcio-tabla .btn-link, .celok-tabla .btn-link {
+    line-height: 1;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.pipa-nagy {
+    font-size: 1.5rem;
+    display: block;
+    text-align: center;
+}
+.kuka-kozep {
+    display: block;
+    text-align: center;
+}
+.gomb-kozep {
+    display: block;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .tranzakcio-tabla th, .tranzakcio-tabla td {
+        font-size: 0.8rem;
+        padding: 0.2rem;
+    }
+}
+.sporoasi-ablak {
+    text-align: center;
+}
+.sporoasi-ablak h3 {
+    margin-bottom: 20px;
+}
+.sporolas {
+    list-style: none;
+    padding: 0;
+    counter-reset: tip-counter;
+}
+.sporolas li {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s ease;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    display: none;
+    color: #63FFBE;
+    counter-increment: tip-counter;
+    position: relative;
+    padding-left: 40px;
+}
+.sporolas li.visible {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
 }
