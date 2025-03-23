@@ -18,6 +18,36 @@ if (!isset($_SESSION['felhasznalo_id'])) {
     exit;
 }
 
+// Függvény az egyenleg frissítésére a persely táblában
+function frissitPerselyEgyenleg($pdo, $felhasznalo_id) {
+    try {
+        // Összeadjuk az osszeg értékeket a perselyk táblában az adott felhasznalo_id-hez
+        $stmt = $pdo->prepare("SELECT SUM(osszeg) as total_osszeg FROM perselyk WHERE felhasznalo_id = ?");
+        $stmt->execute([$felhasznalo_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $ossz_egyenleg = $result['total_osszeg'] ? (int)$result['total_osszeg'] : 0; // Ha NULL, akkor 0
+
+        // Ellenőrizzük, hogy létezik-e már rekord a persely táblában
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM persely WHERE felhasznalo_id = ?");
+        $stmt->execute([$felhasznalo_id]);
+        $exists = $stmt->fetchColumn();
+
+        if ($exists) {
+            // Ha létezik, frissítjük az egyenleget
+            $stmt = $pdo->prepare("UPDATE persely SET egyenleg = ? WHERE felhasznalo_id = ?");
+            $stmt->execute([$ossz_egyenleg, $felhasznalo_id]);
+        } else {
+            // Ha nem létezik, beszúrunk egy új rekordot
+            $stmt = $pdo->prepare("INSERT INTO persely (felhasznalo_id, egyenleg) VALUES (?, ?)");
+            $stmt->execute([$felhasznalo_id, $ossz_egyenleg]);
+        }
+    } catch (PDOException $e) {
+        $_SESSION['utolso_muvelet'] = "Hiba az egyenleg frissítése közben a persely táblában: " . $e->getMessage();
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+}
+
 try {
     // Felhasználó adatainak lekérdezése
     $stmt = $pdo->prepare("SELECT id, nev AS felhasznalo_nev, rang FROM felhasznalok WHERE id = ?");
@@ -33,9 +63,9 @@ try {
         exit;
     }
 
-    // Perselyek lekérdezése az adott felhasználóhoz
+    // Perselyek lekérdezése az adott felhasználóhoz, további adatokkal (datum, betesz, kivesz)
     $stmt = $pdo->prepare("
-        SELECT ID, felhasznalo_id, perselynev, osszeg 
+        SELECT ID, felhasznalo_id, perselynev, osszeg, betesz, kivesz, datum 
         FROM perselyk 
         WHERE felhasznalo_id = ?
     ");
@@ -49,13 +79,19 @@ try {
         $stmt = $pdo->prepare("SELECT osszeg FROM perselyk WHERE ID = ? AND felhasznalo_id = ?");
         $stmt->execute([$alapertelmezett_persely_id, $_SESSION['felhasznalo_id']]);
         $persely = $stmt->fetch(PDO::FETCH_ASSOC);
-        $jelenlegi_osszeg = $persely ? $persely['osszeg'] : 0;
+        $jelenlegi_osszeg = $persely ? (float)$persely['osszeg'] : 0; // decimal(10,2) típusú, ezért float-ként kezeljük
     }
     $formatált_jelenlegi_osszeg = number_format($jelenlegi_osszeg, 0, '.', ',');
 
     // Összes egyenleg kiszámítása
-    $ossz_egyenleg = array_sum(array_column($perselyek, 'osszeg'));
+    $osszegek = array_map(function($persely) {
+        return (float)$persely['osszeg']; // Biztosítjuk, hogy az osszeg float legyen
+    }, $perselyek);
+    $ossz_egyenleg = array_sum($osszegek);
     $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
+
+    // Egyenleg frissítése a persely táblában
+    frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
 
     // Persely műveletek kezelése
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -72,7 +108,7 @@ try {
                 $persely = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($persely) {
-                    $jelenlegi_osszeg = $persely['osszeg'];
+                    $jelenlegi_osszeg = (float)$persely['osszeg'];
 
                     if ($muvelet === 'betet') {
                         $stmt = $pdo->prepare("
@@ -118,6 +154,13 @@ try {
         if (isset($_POST['torles_persely_id'])) {
             $persely_id = (int)$_POST['torles_persely_id'];
 
+            // Hibakeresés: Ellenőrizzük, hogy a torles_persely_id értéke megérkezik-e
+            if (empty($persely_id)) {
+                $_SESSION['utolso_muvelet'] = "Hiba: A persely ID nem érkezett meg!";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
             $stmt = $pdo->prepare("SELECT perselynev FROM perselyk WHERE ID = ? AND felhasznalo_id = ?");
             $stmt->execute([$persely_id, $_SESSION['felhasznalo_id']]);
             $persely = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -130,9 +173,6 @@ try {
             } else {
                 $_SESSION['utolso_muvelet'] = "Hiba: A persely nem található!";
             }
-
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit;
         }
 
         // Persely létrehozás kezelése
@@ -158,13 +198,32 @@ try {
             }
         }
 
+        // Perselyek újbóli lekérdezése a POST műveletek után
+        $stmt = $pdo->prepare("
+            SELECT ID, perselynev, osszeg, betesz, kivesz, datum 
+            FROM perselyk 
+            WHERE felhasznalo_id = ?
+        ");
+        $stmt->execute([$_SESSION['felhasznalo_id']]);
+        $perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Összes egyenleg újraszámítása
+        $osszegek = array_map(function($persely) {
+            return (float)$persely['osszeg'];
+        }, $perselyek);
+        $ossz_egyenleg = array_sum($osszegek);
+        $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
+
+        // Egyenleg frissítése a persely táblában a POST műveletek után
+        frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
+
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
 
-    // Perselyek újbóli lekérdezése a frissítés után
+    // Perselyek újbóli lekérdezése a frissítés után, további adatokkal
     $stmt = $pdo->prepare("
-        SELECT ID, perselynev, osszeg 
+        SELECT ID, perselynev, osszeg, betesz, kivesz, datum 
         FROM perselyk 
         WHERE felhasznalo_id = ?
     ");
@@ -172,8 +231,14 @@ try {
     $perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Összes egyenleg kiszámítása
-    $ossz_egyenleg = array_sum(array_column($perselyek, 'osszeg'));
+    $osszegek = array_map(function($persely) {
+        return (float)$persely['osszeg'];
+    }, $perselyek);
+    $ossz_egyenleg = array_sum($osszegek);
     $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
+
+    // Egyenleg frissítése a persely táblában (biztosítjuk, hogy mindig naprakész legyen)
+    frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
 
     $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
     $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
@@ -293,62 +358,99 @@ try {
                             </ul>
                         </div>
                     </header>
-                    <div id="egyenlegkezeles">
-                        <div class="dashboard mt-4">
-                            <div class="piggy-bank-card">
-                                <h3 class="piggy-bank-title">Persely kezelése</h3>
+                    <div class="row mt-4" id="egyenlegkezeles">
+                    <!-- Bal oldal: Persely létrehozása és műveletek -->
+                    <div class="col-md-6 col-lg-5">
+                        <div class="piggy-bank-card">
+                            <h3 class="piggy-bank-title">Új persely létrehozása</h3>
+                            <div class="piggy-bank-body">
+                                <form method="POST">
+                                    <div class="mb-3">
+                                        <label for="uj_persely_nev" class="form-label">Persely neve:</label>
+                                        <input type="text" name="uj_persely_nev" id="uj_persely_nev" class="form-control" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success piggy-bank-btn">Új persely készítése</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <?php if (!empty($perselyek)): ?>
+                            <div class="piggy-bank-card mt-4">
+                                <h3 class="piggy-bank-title">Persely műveletek</h3>
                                 <div class="piggy-bank-body">
-                                    <?php if (!empty($perselyek)): ?>
-                                        <form method="POST" class="mb-3">
-                                            <div class="mb-3">
-                                                <label for="persely_id" class="form-label">Persely kiválasztása:</label>
-                                                <select name="persely_id" id="persely_id" class="form-select" required>
-                                                    <?php foreach ($perselyek as $persely): ?>
-                                                        <option value="<?php echo $persely['ID']; ?>">
-                                                            <?php echo htmlspecialchars($persely['perselynev']) . " (" . number_format($persely['osszeg'], 0, '.', ',') . " Ft)"; ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="muvelet" class="form-label">Művelet:</label>
-                                                <select name="muvelet" id="muvelet" class="form-select" required>
-                                                    <option value="betet">Betét</option>
-                                                    <option value="kivet">Kivét</option>
-                                                    <option value="modositas">Módosítás</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="osszeg" class="form-label">Összeg (Ft):</label>
-                                                <input type="number" name="osszeg" id="osszeg" class="form-control" min="0" step="0.01" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-success piggy-bank-btn" id="vegrehajtasGomb">Pénz bedobása</button>
-                                        </form>
+                                    <!-- "Utolsó művelet" felirat az űrlap tetején -->
+                                    <p class="piggy-bank-last-action"><b>Utolsó művelet</b><br><?php echo htmlspecialchars($_SESSION['utolso_muvelet'] ?? 'Nincs előző művelet'); ?></p>
 
-                                        <h4 class="piggy-bank-selected-balance">Kiválasztott persely egyenlege: <?php echo $formatált_jelenlegi_osszeg; ?> Ft</h4>
-                                        <h4 class="piggy-bank-balance">Összesen: <?php echo $formatált_egyenleg; ?> Ft</h4>
-                                        <p class="piggy-bank-last-action">Utolsó művelet: <?php echo htmlspecialchars($_SESSION['utolso_muvelet'] ?? 'Nincs előző művelet'); ?></p>
-
-                                        <form method="POST" class="mb-3">
-                                            <input type="hidden" name="torles_persely_id" id="torles_persely_id" value="<?php echo $perselyek[0]['ID']; ?>">
-                                            <button type="submit" class="btn btn-danger piggy-bank-btn" onclick="document.getElementById('torles_persely_id').value = document.getElementById('persely_id').value;">Persely törlése</button>
-                                        </form>
-                                    <?php else: ?>
-                                        <p class="piggy-bank-empty">Nincsenek még perselyeid!</p>
-                                    <?php endif; ?>
-
-                                    <h4 class="piggy-bank-title">Új persely létrehozása</h4>
-                                    <form method="POST">
+                                    <form method="POST" class="mb-3">
                                         <div class="mb-3">
-                                            <label for="uj_persely_nev" class="form-label">Persely neve:</label>
-                                            <input type="text" name="uj_persely_nev" id="uj_persely_nev" class="form-control" required>
+                                            <label for="persely_id" class="form-label">Persely kiválasztása:</label>
+                                            <select name="persely_id" id="persely_id" class="form-select" required>
+                                                <?php foreach ($perselyek as $persely): ?>
+                                                    <option value="<?php echo $persely['ID']; ?>">
+                                                        <?php echo htmlspecialchars($persely['perselynev']) . " (" . number_format($persely['osszeg'], 0, '.', ',') . " Ft)"; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </div>
-                                        <button type="submit" class="btn btn-success piggy-bank-btn">Új persely készítése</button>
+                                        <div class="mb-3">
+                                            <label for="muvelet" class="form-label">Művelet:</label>
+                                            <select name="muvelet" id="muvelet" class="form-select" required>
+                                                <option value="betet">Betét</option>
+                                                <option value="kivet">Kivét</option>
+                                                <option value="modositas">Módosítás</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="osszeg" class="form-label">Összeg (Ft):</label>
+                                            <input type="number" name="osszeg" id="osszeg" class="form-control" min="0" step="0.01" value="0" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-success piggy-bank-btn" id="vegrehajtasGomb">Pénz betétele</button>
                                     </form>
                                 </div>
                             </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Jobb oldal: Perselyek kártyája -->
+                    <div class="col-md-6 col-lg-7">
+                        <div class="piggy-bank-card">
+                            <h3 class="piggy-bank-title">Perselyek</h3>
+                            <div class="piggy-bank-body">
+                                <?php if (!empty($perselyek)): ?>
+                                    <div class="row">
+                                        <?php foreach ($perselyek as $persely): ?>
+                                            <div class="col-12 mb-3">
+                                                <div class="piggy-bank-mini-card">
+                                                    <div class="piggy-bank-mini-content">
+                                                        <div class="piggy-bank-mini-left">
+                                                            <p class="piggy-bank-mini-detail">Egyenleg: <?php echo number_format($persely['osszeg'], 0, '.', ','); ?> Ft</p>
+                                                            <p class="piggy-bank-mini-detail">Létrehozva: <?php echo htmlspecialchars($persely['datum']); ?></p>
+                                                        </div>
+                                                        <div class="piggy-bank-mini-center">
+                                                            <h5 class="piggy-bank-mini-title"><?php echo htmlspecialchars($persely['perselynev']); ?></h5>
+                                                        </div>
+                                                        <div class="piggy-bank-mini-right">
+                                                            <p class="piggy-bank-mini-detail">Betett: <?php echo number_format($persely['betesz'], 0, '.', ','); ?> Ft</p>
+                                                            <p class="piggy-bank-mini-detail">Kivett: <?php echo number_format($persely['kivesz'], 0, '.', ','); ?> Ft</p>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Törlés gomb -->
+                                                    <form method="POST" class="mt-2">
+                                                        <input type="hidden" name="torles_persely_id" value="<?php echo $persely['ID']; ?>">
+                                                        <button type="submit" class="btn btn-danger piggy-bank-mini-btn">Persely törlése</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <h4 class="piggy-bank-balance">Összesen: <?php echo $formatált_egyenleg; ?> Ft</h4>
+                                <?php else: ?>
+                                    <p class="piggy-bank-empty">Nincsenek még perselyeid!</p>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
+                </div>
                 </main>
             </div>
         </div>
