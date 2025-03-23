@@ -54,12 +54,12 @@ body::before {
     width: 100%;
     max-width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    position: relative; /* Hozzáadva az előugró ablak pozícionálásához */
-    z-index: 1; /* A háttéranimáció fölé helyezi */
-    transform: scale(0.9); /* Kezdeti méret az animációhoz */
-    animation: popIn 0.6s ease-out forwards; /* Előugró animáció */
-    border: 2px solid #63ffbe; /* Hasonló keret a csatolt CSS-hez */
-    box-shadow: #63ffbe 0px 0px 10px; /* Fénylő árnyék effektus */
+    position: relative;
+    z-index: 1;
+    transform: scale(0.9);
+    animation: popIn 0.6s ease-out forwards;
+    border: 2px solid #63ffbe;
+    box-shadow: #63ffbe 0px 0px 10px;
 }
 
 @keyframes popIn {
@@ -76,7 +76,7 @@ body::before {
 .regisztracios-doboz h1 {
     color: #63ffbe;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .regisztracios-doboz h5 {

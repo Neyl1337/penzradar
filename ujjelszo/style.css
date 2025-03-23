@@ -7,17 +7,46 @@ body {
     height: 100vh;
     margin: 0;
     cursor: url("../kepek/cursor.ico"), default;
+    position: relative;
+    overflow: hidden;
 }
-.oldal a{
+
+/* Dinamikus háttér animáció */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(99, 255, 190, 0.4), transparent);
+    animation: pulseBackground 4s infinite alternate;
+    z-index: -1;
+}
+
+@keyframes pulseBackground {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0.3;
+    }
+}
+
+.oldal a {
     color: #ffffff;
     border-radius: 8px;
     border: none;
     text-decoration: none;
     text-align: center;
 }
-.oldal a:hover{
+
+.oldal a:hover {
     color: #63ffbe;
 }
+
 .regisztracios-doboz {
     background-color: #2b2b2b;
     border-radius: 12px;
@@ -25,11 +54,29 @@ body {
     width: 100%;
     max-width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    transform: scale(0.9);
+    animation: popIn 0.6s ease-out forwards;
+    border: 2px solid #63ffbe;
+    box-shadow: #63ffbe 0px 0px 10px;
 }
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 .regisztracios-doboz h1 {
     color: #63ffbe;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .regisztracios-doboz h5 {
@@ -37,65 +84,11 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
-.form-control {
-    background-color: #ffffff;
-    color: #000000;
-    border: 1px solid #63ffbe;
-    border-radius: 8px;
-}
-.form-control:focus {
-    border-color: #63ffbe;
-    box-shadow: 0 0 5px #63ffbe;
-}
-.btn-zold {
-    background-color: #63ffbe;
-    color: #1a1a1a;
-    border-radius: 8px;
-    border: none;
-}
-
-a {
-    color: #63ffbe;
-    text-decoration: none;
-}
-
-.btn-zold:hover {
-    background-color: #63ffbe;
-    color: #ffffff;
-}
-.almenet {
-    text-align: center;
-    margin-top: 10px;
-}
-.almenet a {
-    color: #63ffbe;
-    text-decoration: none;
-}
-
-.almenet a:hover {
-    text-decoration: underline;
-}
-#Uzenet {
-    color: #FF7F7F;
-    display: none;
-}
-
-a {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-button {
-    cursor: url("../kepek/cursor.ico"), default;
-}
-
-span {
-    cursor: url("../kepek/cursor.ico"), default;
-}
 
 .form-control {
-    background-color: #1e1e1e;
+    background-color: #1e1e1e !important;
+    color: white !important;
     border: 1px solid #63ffbe;
-    color: white;
     border-radius: 5px;
     transition: all 0.3s ease;
     -webkit-appearance: none;
@@ -104,10 +97,11 @@ span {
 }
 
 .form-control:focus {
-    background-color: #1e1e1e;
-    border: 1px solid #63ffbe;
-    color: white;
+    background-color: #1e1e1e !important;
+    border-color: #63ffbe;
+    color: white !important;
     outline: none;
+    box-shadow: 0 0 5px #63ffbe;
     animation: pulseBorder 1s infinite;
 }
 
@@ -123,7 +117,7 @@ span {
     border: 1px solid #63ffbe !important;
     color: white !important;
     -webkit-text-fill-color: white !important;
-    box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
     transition: all 0.3s ease;
 }
 
@@ -148,10 +142,78 @@ span {
 }
 
 .form-label {
-    color: #63ffbe;
+    color: #ffffff;
+}
+
+.btn-zold {
+    background-color: #63ffbe;
+    color: #1a1a1a;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
 }
 
 .btn-zold:hover {
     background-color: #4ec996;
     color: #ffffff;
+    box-shadow: 0 0 10px rgba(99, 255, 190, 0.5);
+}
+
+.almenet {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.almenet a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+
+.almenet a:hover {
+    text-decoration: underline;
+}
+
+#Uzenet {
+    color: #FF7F7F;
+    display: none;
+}
+
+a {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+button {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+span {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+.logo {
+    max-width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    pointer-events: none;
+}
+
+@media only screen and (max-height: 700px) {
+    #mobilnezet {
+        display: none !important;
+    }
+
+    #mobilnezet br {
+        display: none !important;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    #mobilnezet {
+        display: none !important;
+    }
+
+    #mobilnezet br {
+        display: none !important;
+    }
 }
