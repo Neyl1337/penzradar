@@ -9,6 +9,12 @@ if (isset($_POST['cookie_elfogad'])) {
     exit;
 }
 
+if (isset($_POST['cookie_elutasit'])) {
+    setcookie('cookie_elutasitva', '1', time() + 120, "/");
+    header("Refresh:0");
+    exit;
+}
+
 if (isset($_POST['teszt_elrejt']) && $_POST['teszt_elrejt'] == '1') {
     setcookie('teszt_elrejtve', '1', time() + (10 * 365 * 24 * 60 * 60), "/");
     setcookie('teszt_utolso_megjelenes', '', time() - 3600, "/");
@@ -20,8 +26,12 @@ if (isset($_POST['teszt_elrejt']) && $_POST['teszt_elrejt'] == '1') {
     exit;
 }
 
-$mai_nap = date('Y-m-d');
-$honap_eleje = date('Y-m-01');
+$valasztott_idoszak = isset($_GET['idoszak']) ? $_GET['idoszak'] : '2025-03';
+$honap_eleje = date('Y-m-01', strtotime($valasztott_idoszak));
+$honap_vege = date('Y-m-t', strtotime($valasztott_idoszak));
+$napok_szama = date('t', strtotime($valasztott_idoszak));
+
+$mai_nap = '2025-03-24';
 $het_eleje = date('Y-m-d', strtotime('monday this week', strtotime($mai_nap)));
 $het_vege = date('Y-m-d', strtotime('sunday this week', strtotime($mai_nap)));
 
@@ -45,11 +55,105 @@ if (isset($_SESSION['felhasznalo_id'])) {
 $formatált_egyenleg = number_format($_SESSION['perselyegyenleg'] ?? 0, 0, '.', ',');
 
 $napi_bevetel = 0;
+$heti_bevetel = 0;
+$havi_bevetel = 0;
+$atlagos_bevetel = 0;
+$legnagyobb_bevetel = 0;
+$legkisebb_bevetel = PHP_INT_MAX;
+
+$napi_kiadas = 0;
+$heti_kiadas = 0;
+$havi_kiadas = 0;
+$atlagos_kiadas = 0;
+$legnagyobb_kiadas = 0;
+$legkisebb_kiadas = PHP_INT_MAX;
+
+$atlagos_napi_bevetel = 0;
+$atlagos_heti_bevetel = 0;
+$atlagos_havi_bevetel = 0;
+$atlagos_napi_kiadas = 0;
+$atlagos_heti_kiadas = 0;
+$atlagos_havi_kiadas = 0;
+
+$heti_bevetelek = array_fill(0, 7, 0);
+$heti_kiadasok = array_fill(0, 7, 0);
+$havi_bevetelek = array_fill(0, $napok_szama, 0);
+$havi_kiadasok = array_fill(0, $napok_szama, 0);
+
 if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_lekerdezes = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
     $naptar_lekerdezes->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
-    $naptar_eredmeny = $naptar_lekerdezes->fetch(PDO::FETCH_ASSOC);
-    $napi_bevetel += $naptar_eredmeny['osszeg'] ?? 0;
+    $napi_bevetel += $naptar_lekerdezes->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_het = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NBevetel IS NOT NULL");
+    $naptar_het->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
+    $heti_bevetel += $naptar_het->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_honap = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NBevetel IS NOT NULL");
+    $naptar_honap->execute([$_SESSION['felhasznalo_id'], $honap_eleje, $mai_nap]);
+    $havi_bevetel += $naptar_honap->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag = $pdo->prepare("SELECT AVG(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
+    $naptar_atlag->execute([$_SESSION['felhasznalo_id']]);
+    $atlagos_bevetel = $naptar_atlag->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_max = $pdo->prepare("SELECT MAX(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
+    $naptar_max->execute([$_SESSION['felhasznalo_id']]);
+    $legnagyobb_bevetel = $naptar_max->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_min = $pdo->prepare("SELECT MIN(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
+    $naptar_min->execute([$_SESSION['felhasznalo_id']]);
+    $min_bevetel = $naptar_min->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? PHP_INT_MAX;
+    $legkisebb_bevetel = min($legkisebb_bevetel, $min_bevetel);
+
+    $naptar_kiadas = $pdo->prepare("SELECT SUM(NKiadas) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
+    $naptar_kiadas->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
+    $napi_kiadas += abs($naptar_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0);
+
+    $naptar_het_kiadas = $pdo->prepare("SELECT SUM(NKiadas) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NKiadas IS NOT NULL");
+    $naptar_het_kiadas->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
+    $heti_kiadas += abs($naptar_het_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0);
+
+    $naptar_honap_kiadas = $pdo->prepare("SELECT SUM(NKiadas) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NKiadas IS NOT NULL");
+    $naptar_honap_kiadas->execute([$_SESSION['felhasznalo_id'], $honap_eleje, $mai_nap]);
+    $havi_kiadas += abs($naptar_honap_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0);
+
+    $naptar_atlag_kiadas = $pdo->prepare("SELECT AVG(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
+    $naptar_atlag_kiadas->execute([$_SESSION['felhasznalo_id']]);
+    $atlagos_kiadas = $naptar_atlag_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_max_kiadas = $pdo->prepare("SELECT MAX(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
+    $naptar_max_kiadas->execute([$_SESSION['felhasznalo_id']]);
+    $legnagyobb_kiadas = $naptar_max_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_min_kiadas = $pdo->prepare("SELECT MIN(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
+    $naptar_min_kiadas->execute([$_SESSION['felhasznalo_id']]);
+    $min_kiadas = $naptar_min_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? PHP_INT_MAX;
+    $legkisebb_kiadas = min($legkisebb_kiadas, $min_kiadas);
+
+    $naptar_atlag_napi_bevetel = $pdo->prepare("SELECT AVG(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
+    $naptar_atlag_napi_bevetel->execute([$_SESSION['felhasznalo_id']]);
+    $atlagos_napi_bevetel = $naptar_atlag_napi_bevetel->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag_heti_bevetel = $pdo->prepare("SELECT AVG(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NBevetel IS NOT NULL");
+    $naptar_atlag_heti_bevetel->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
+    $atlagos_heti_bevetel = $naptar_atlag_heti_bevetel->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag_havi_bevetel = $pdo->prepare("SELECT AVG(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NBevetel IS NOT NULL");
+    $naptar_atlag_havi_bevetel->execute([$_SESSION['felhasznalo_id'], $honap_eleje, $mai_nap]);
+    $atlagos_havi_bevetel = $naptar_atlag_havi_bevetel->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag_napi_kiadas = $pdo->prepare("SELECT AVG(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
+    $naptar_atlag_napi_kiadas->execute([$_SESSION['felhasznalo_id']]);
+    $atlagos_napi_kiadas = $naptar_atlag_napi_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag_heti_kiadas = $pdo->prepare("SELECT AVG(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NKiadas IS NOT NULL");
+    $naptar_atlag_heti_kiadas->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
+    $atlagos_heti_kiadas = $naptar_atlag_heti_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+    $naptar_atlag_havi_kiadas = $pdo->prepare("SELECT AVG(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NKiadas IS NOT NULL");
+    $naptar_atlag_havi_kiadas->execute([$_SESSION['felhasznalo_id'], $honap_eleje, $mai_nap]);
+    $atlagos_havi_kiadas = $naptar_atlag_havi_kiadas->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
 
     $tervezo_lekerdezes = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
     $tervezo_lekerdezes->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
@@ -60,295 +164,114 @@ if (isset($_SESSION['felhasznalo_id'])) {
         $gyakorisag = $sor['gyakorisag'];
         $datum = $sor['datum'];
         $tipus = $sor['tipus'];
+        $aktualis_datum = $datum;
 
-        if ($tipus == 'Bevétel') {
-            $aktualis_datum = $datum;
-            while ($aktualis_datum <= $mai_nap) {
-                if ($aktualis_datum == $mai_nap) {
-                    $napi_bevetel += $osszeg;
-                    break;
-                }
-                switch ($gyakorisag) {
-                    case 'Napi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
-                        break;
-                    case 'Heti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        break;
-                    case 'Kétheti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        break;
-                    case 'Havi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        break;
-                    case 'Negyedévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        break;
-                    case 'Félévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        break;
-                    case 'Évi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        break;
-                }
+        while ($aktualis_datum <= $mai_nap) {
+            if ($tipus == 'Bevétel') {
+                if ($aktualis_datum == $mai_nap) $napi_bevetel += $osszeg;
+                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) $heti_bevetel += $osszeg;
+                if ($aktualis_datum >= $honap_eleje && $aktualis_datum <= $mai_nap) $havi_bevetel += $osszeg;
+                $legnagyobb_bevetel = max($legnagyobb_bevetel, $osszeg);
+                $legkisebb_bevetel = min($legkisebb_bevetel, $osszeg);
+            } elseif ($tipus == 'Kiadás') {
+                if ($aktualis_datum == $mai_nap) $napi_kiadas += $osszeg;
+                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) $heti_kiadas += $osszeg;
+                if ($aktualis_datum >= $honap_eleje && $aktualis_datum <= $mai_nap) $havi_kiadas += $osszeg;
+                $legnagyobb_kiadas = max($legnagyobb_kiadas, $osszeg);
+                $legkisebb_kiadas = min($legkisebb_kiadas, $osszeg);
+            }
+
+            switch ($gyakorisag) {
+                case 'Napi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day')); break;
+                case 'Heti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days')); break;
+                case 'Kétheti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days')); break;
+                case 'Havi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month')); break;
+                case 'Negyedévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months')); break;
+                case 'Félévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months')); break;
+                case 'Évi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year')); break;
             }
         }
     }
-}
 
-$heti_bevetel = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_het = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NBevetel IS NOT NULL");
-    $naptar_het->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
-    $naptar_het_eredmeny = $naptar_het->fetch(PDO::FETCH_ASSOC);
-    $heti_bevetel += $naptar_het_eredmeny['osszeg'] ?? 0;
+    for ($i = 0; $i < 7; $i++) {
+        $nap = date('Y-m-d', strtotime("$het_eleje +$i days"));
+        $naptar_nap_bev = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
+        $naptar_nap_bev->execute([$_SESSION['felhasznalo_id'], $nap]);
+        $heti_bevetelek[$i] = $naptar_nap_bev->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
 
-    $tervezo_het = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
-    $tervezo_het->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
-    $tervezo_het_sorok = $tervezo_het->fetchAll(PDO::FETCH_ASSOC);
+        $naptar_nap_kiad = $pdo->prepare("SELECT SUM(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
+        $naptar_nap_kiad->execute([$_SESSION['felhasznalo_id'], $nap]);
+        $heti_kiadasok[$i] = $naptar_nap_kiad->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
 
-    foreach ($tervezo_het_sorok as $sor) {
-        $osszeg = $sor['osszeg'] ?? 0;
-        $gyakorisag = $sor['gyakorisag'];
-        $datum = $sor['datum'];
-        $tipus = $sor['tipus'];
+        if ($nap <= $mai_nap) {
+            $tervezo_nap = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+            $tervezo_nap->execute([$_SESSION['felhasznalo_nev'], $nap]);
+            $tervezo_nap_sorok = $tervezo_nap->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($tipus == 'Bevétel') {
-            $aktualis_datum = $datum;
-            while ($aktualis_datum <= $mai_nap) {
-                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) {
-                    $heti_bevetel += $osszeg;
-                }
-                switch ($gyakorisag) {
-                    case 'Napi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+            foreach ($tervezo_nap_sorok as $sor) {
+                $osszeg = $sor['osszeg'] ?? 0;
+                $gyakorisag = $sor['gyakorisag'];
+                $datum = $sor['datum'];
+                $tipus = $sor['tipus'];
+                $aktualis_datum = $datum;
+
+                while ($aktualis_datum <= $nap) {
+                    if ($aktualis_datum == $nap) {
+                        if ($tipus == 'Bevétel') $heti_bevetelek[$i] += $osszeg;
+                        else if ($tipus == 'Kiadás') $heti_kiadasok[$i] += $osszeg;
                         break;
-                    case 'Heti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        break;
-                    case 'Kétheti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        break;
-                    case 'Havi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        break;
-                    case 'Negyedévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        break;
-                    case 'Félévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        break;
-                    case 'Évi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        break;
-                }
-            }
-        }
-    }
-}
-
-$atlagos_bevetel = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_atlag = $pdo->prepare("SELECT AVG(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
-    $naptar_atlag->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
-    $naptar_atlag_eredmeny = $naptar_atlag->fetch(PDO::FETCH_ASSOC);
-    $atlagos_bevetel = $naptar_atlag_eredmeny['osszeg'] ?? 0;
-}
-
-$legnagyobb_bevetel = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_max = $pdo->prepare("SELECT MAX(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
-    $naptar_max->execute([$_SESSION['felhasznalo_id']]);
-    $naptar_max_eredmeny = $naptar_max->fetch(PDO::FETCH_ASSOC);
-    $legnagyobb_bevetel = $naptar_max_eredmeny['osszeg'] ?? 0;
-
-    $tervezo_max = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel'");
-    $tervezo_max->execute([$_SESSION['felhasznalo_nev']]);
-    $tervezo_max_eredmeny = $tervezo_max->fetch(PDO::FETCH_ASSOC);
-    $legnagyobb_bevetel = max($legnagyobb_bevetel, $tervezo_max_eredmeny['osszeg'] ?? 0);
-}
-
-$napi_kiadas = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_kiadas = $pdo->prepare("SELECT SUM(NKiadas) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
-    $naptar_kiadas->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
-    $naptar_kiadas_eredmeny = $naptar_kiadas->fetch(PDO::FETCH_ASSOC);
-    $napi_kiadas += abs($naptar_kiadas_eredmeny['osszeg'] ?? 0);
-
-    $tervezo_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
-    $tervezo_kiadas->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
-    $tervezo_kiadas_sorok = $tervezo_kiadas->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($tervezo_kiadas_sorok as $sor) {
-        $osszeg = $sor['osszeg'] ?? 0;
-        $gyakorisag = $sor['gyakorisag'];
-        $datum = $sor['datum'];
-        $tipus = $sor['tipus'];
-
-        if ($tipus == 'Kiadás') {
-            $aktualis_datum = $datum;
-            while ($aktualis_datum <= $mai_nap) {
-                if ($aktualis_datum == $mai_nap) {
-                    $napi_kiadas += $osszeg;
-                    break;
-                }
-                switch ($gyakorisag) {
-                    case 'Napi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
-                        break;
-                    case 'Heti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        break;
-                    case 'Kétheti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        break;
-                    case 'Havi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        break;
-                    case 'Negyedévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        break;
-                    case 'Félévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        break;
-                    case 'Évi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        break;
-                }
-            }
-        }
-    }
-}
-
-$heti_kiadas = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_het_kiadas = $pdo->prepare("SELECT SUM(NKiadas) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum >= ? AND datum <= ? AND NKiadas IS NOT NULL");
-    $naptar_het_kiadas->execute([$_SESSION['felhasznalo_id'], $het_eleje, $mai_nap]);
-    $naptar_het_kiadas_eredmeny = $naptar_het_kiadas->fetch(PDO::FETCH_ASSOC);
-    $heti_kiadas += abs($naptar_het_kiadas_eredmeny['osszeg'] ?? 0);
-
-    $tervezo_het_kiadas = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
-    $tervezo_het_kiadas->execute([$_SESSION['felhasznalo_nev'], $mai_nap]);
-    $tervezo_het_kiadas_sorok = $tervezo_het_kiadas->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($tervezo_het_kiadas_sorok as $sor) {
-        $osszeg = $sor['osszeg'] ?? 0;
-        $gyakorisag = $sor['gyakorisag'];
-        $datum = $sor['datum'];
-        $tipus = $sor['tipus'];
-
-        if ($tipus == 'Kiadás') {
-            $aktualis_datum = $datum;
-            while ($aktualis_datum <= $mai_nap) {
-                if ($aktualis_datum >= $het_eleje && $aktualis_datum <= $mai_nap) {
-                    $heti_kiadas += $osszeg;
-                }
-                switch ($gyakorisag) {
-                    case 'Napi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
-                        break;
-                    case 'Heti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        break;
-                    case 'Kétheti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        break;
-                    case 'Havi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        break;
-                    case 'Negyedévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        break;
-                    case 'Félévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        break;
-                    case 'Évi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        break;
-                }
-            }
-        }
-    }
-}
-
-$atlagos_kiadas = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_atlag_kiadas = $pdo->prepare("SELECT AVG(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
-    $naptar_atlag_kiadas->execute([$_SESSION['felhasznalo_id'], $mai_nap]);
-    $naptar_atlag_kiadas_eredmeny = $naptar_atlag_kiadas->fetch(PDO::FETCH_ASSOC);
-    $atlagos_kiadas = $naptar_atlag_kiadas_eredmeny['osszeg'] ?? 0;
-}
-
-$legnagyobb_kiadas = 0;
-if (isset($_SESSION['felhasznalo_id'])) {
-    $naptar_max_kiadas = $pdo->prepare("SELECT MAX(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
-    $naptar_max_kiadas->execute([$_SESSION['felhasznalo_id']]);
-    $naptar_max_kiadas_eredmeny = $naptar_max_kiadas->fetch(PDO::FETCH_ASSOC);
-    $legnagyobb_kiadas = $naptar_max_kiadas_eredmeny['osszeg'] ?? 0;
-
-    $tervezo_max_kiadas = $pdo->prepare("SELECT MAX(osszeg) as osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás'");
-    $tervezo_max_kiadas->execute([$_SESSION['felhasznalo_nev']]);
-    $tervezo_max_kiadas_eredmeny = $tervezo_max_kiadas->fetch(PDO::FETCH_ASSOC);
-    $legnagyobb_kiadas = max($legnagyobb_kiadas, $tervezo_max_kiadas_eredmeny['osszeg'] ?? 0);
-}
-
-$heti_bevetelek = array_fill(0, 7, 0);
-$heti_kiadasok = array_fill(0, 7, 0);
-for ($i = 0; $i < 7; $i++) {
-    $nap = date('Y-m-d', strtotime("$het_eleje +$i days"));
-    $naptar_nap_bev = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
-    $naptar_nap_bev->execute([$_SESSION['felhasznalo_id'], $nap]);
-    $naptar_nap_bev_eredmeny = $naptar_nap_bev->fetch(PDO::FETCH_ASSOC);
-    $heti_bevetelek[$i] = $naptar_nap_bev_eredmeny['osszeg'] ?? 0;
-
-    $naptar_nap_kiad = $pdo->prepare("SELECT SUM(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
-    $naptar_nap_kiad->execute([$_SESSION['felhasznalo_id'], $nap]);
-    $naptar_nap_kiad_eredmeny = $naptar_nap_kiad->fetch(PDO::FETCH_ASSOC);
-    $heti_kiadasok[$i] = $naptar_nap_kiad_eredmeny['osszeg'] ?? 0;
-
-    if ($nap <= $mai_nap) {
-        $tervezo_nap = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
-        $tervezo_nap->execute([$_SESSION['felhasznalo_nev'], $nap]);
-        $tervezo_nap_sorok = $tervezo_nap->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($tervezo_nap_sorok as $sor) {
-            $osszeg = $sor['osszeg'] ?? 0;
-            $gyakorisag = $sor['gyakorisag'];
-            $datum = $sor['datum'];
-            $tipus = $sor['tipus'];
-
-            $aktualis_datum = $datum;
-            while ($aktualis_datum <= $nap) {
-                if ($aktualis_datum == $nap) {
-                    if ($tipus == 'Bevétel') {
-                        $heti_bevetelek[$i] += $osszeg;
-                    } else if ($tipus == 'Kiadás') {
-                        $heti_kiadasok[$i] += $osszeg;
                     }
-                    break;
+                    switch ($gyakorisag) {
+                        case 'Napi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day')); break;
+                        case 'Heti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days')); break;
+                        case 'Kétheti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days')); break;
+                        case 'Havi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month')); break;
+                        case 'Negyedévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months')); break;
+                        case 'Félévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months')); break;
+                        case 'Évi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year')); break;
+                    }
                 }
-                switch ($gyakorisag) {
-                    case 'Napi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day'));
+            }
+        }
+    }
+
+    for ($i = 0; $i < $napok_szama; $i++) {
+        $nap = date('Y-m-d', strtotime("$honap_eleje +$i days"));
+        $naptar_nap_bev = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
+        $naptar_nap_bev->execute([$_SESSION['felhasznalo_id'], $nap]);
+        $havi_bevetelek[$i] = $naptar_nap_bev->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+        $naptar_nap_kiad = $pdo->prepare("SELECT SUM(ABS(NKiadas)) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NKiadas IS NOT NULL");
+        $naptar_nap_kiad->execute([$_SESSION['felhasznalo_id'], $nap]);
+        $havi_kiadasok[$i] = $naptar_nap_kiad->fetch(PDO::FETCH_ASSOC)['osszeg'] ?? 0;
+
+        if ($nap <= $mai_nap) {
+            $tervezo_nap = $pdo->prepare("SELECT osszeg, gyakorisag, datum, tipus FROM tervezo WHERE felhasznalo_nev = ? AND datum <= ?");
+            $tervezo_nap->execute([$_SESSION['felhasznalo_nev'], $nap]);
+            $tervezo_nap_sorok = $tervezo_nap->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($tervezo_nap_sorok as $sor) {
+                $osszeg = $sor['osszeg'] ?? 0;
+                $gyakorisag = $sor['gyakorisag'];
+                $datum = $sor['datum'];
+                $tipus = $sor['tipus'];
+                $aktualis_datum = $datum;
+
+                while ($aktualis_datum <= $nap) {
+                    if ($aktualis_datum == $nap) {
+                        if ($tipus == 'Bevétel') $havi_bevetelek[$i] += $osszeg;
+                        else if ($tipus == 'Kiadás') $havi_kiadasok[$i] += $osszeg;
                         break;
-                    case 'Heti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days'));
-                        break;
-                    case 'Kétheti':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days'));
-                        break;
-                    case 'Havi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month'));
-                        break;
-                    case 'Negyedévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months'));
-                        break;
-                    case 'Félévi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months'));
-                        break;
-                    case 'Évi':
-                        $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year'));
-                        break;
+                    }
+                    switch ($gyakorisag) {
+                        case 'Napi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 day')); break;
+                        case 'Heti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +7 days')); break;
+                        case 'Kétheti': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +14 days')); break;
+                        case 'Havi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 month')); break;
+                        case 'Negyedévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +3 months')); break;
+                        case 'Félévi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +6 months')); break;
+                        case 'Évi': $aktualis_datum = date('Y-m-d', strtotime($aktualis_datum . ' +1 year')); break;
+                    }
                 }
             }
         }
@@ -357,15 +280,28 @@ for ($i = 0; $i < 7; $i++) {
 
 $napi_bevetel_format = number_format($napi_bevetel, 0, '.', ',');
 $heti_bevetel_format = number_format($heti_bevetel, 0, '.', ',');
+$havi_bevetel_format = number_format($havi_bevetel, 0, '.', ',');
 $atlagos_bevetel_format = number_format($atlagos_bevetel, 0, '.', ',');
 $legnagyobb_bevetel_format = number_format($legnagyobb_bevetel, 0, '.', ',');
+$legkisebb_bevetel_format = $legkisebb_bevetel == PHP_INT_MAX ? '0' : number_format($legkisebb_bevetel, 0, '.', ',');
+
 $napi_kiadas_format = number_format($napi_kiadas, 0, '.', ',');
 $heti_kiadas_format = number_format($heti_kiadas, 0, '.', ',');
+$havi_kiadas_format = number_format($havi_kiadas, 0, '.', ',');
 $atlagos_kiadas_format = number_format($atlagos_kiadas, 0, '.', ',');
 $legnagyobb_kiadas_format = number_format($legnagyobb_kiadas, 0, '.', ',');
+$legkisebb_kiadas_format = $legkisebb_kiadas == PHP_INT_MAX ? '0' : number_format($legkisebb_kiadas, 0, '.', ',');
+
+$atlagos_napi_bevetel_format = number_format($atlagos_napi_bevetel, 0, '.', ',');
+$atlagos_heti_bevetel_format = number_format($atlagos_heti_bevetel, 0, '.', ',');
+$atlagos_havi_bevetel_format = number_format($atlagos_havi_bevetel, 0, '.', ',');
+$atlagos_napi_kiadas_format = number_format($atlagos_napi_kiadas, 0, '.', ',');
+$atlagos_heti_kiadas_format = number_format($atlagos_heti_kiadas, 0, '.', ',');
+$atlagos_havi_kiadas_format = number_format($atlagos_havi_kiadas, 0, '.', ',');
 
 $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
 $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
+
 ?>
 
 <!DOCTYPE html>
@@ -393,7 +329,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
         </video>
     </div>
 
-    <?php if (isset($_SESSION['felhasznalo_id']) && (!isset($_COOKIE['cookie_elfogadva']) || (isset($_COOKIE['cookie_elfogadva']) && (time() - $_COOKIE['cookie_elfogadva_ideje']) > 365 * 24 * 60 * 60))): ?>
+    <?php if (isset($_SESSION['felhasznalo_id']) && !isset($_COOKIE['cookie_elfogadva']) && !isset($_COOKIE['cookie_elutasitva'])): ?>
         <div class="modal fade custom-modal" id="cookieModal" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -402,17 +338,27 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                     </div>
                     <div class="modal-body text-center">
-                        Ez a weboldal sütiket (Cookie-kat) használ a jobb felhasználói élmény érdekében. Kérjük, fogadja el a sütik használatát!
+                        Ez a weboldal sütiket (Cookie-kat) használ a jobb felhasználói élmény érdekében. Kérjük, fogadja el vagy utasítsa el a sütik használatát!
                     </div>
                     <div class="modal-footer justify-content-center" style="border-top: none;">
                         <form method="post" id="cookieForm">
                             <button type="submit" name="cookie_elfogad" class="btn btn-primary">Elfogadom</button>
+                            <button type="submit" name="cookie_elutasit" class="btn btn-secondary">Elutasítom</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     <?php endif; ?>
+
+    <?php
+        if (isset($_POST['cookie_elutasit'])) {
+            setcookie('cookie_elutasitva', '1', time() + 60, "/"); // 1 percig érvényes
+            setcookie('cookie_elfogadva', '', time() - 3600, "/"); // Törli az elfogadást, ha volt
+            header("Refresh:0");
+            exit;
+        }
+    ?>
 
     <?php
     if (isset($_POST['teszt_ok'])) {
@@ -433,7 +379,6 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                         (!isset($_COOKIE['teszt_utolso_megjelenes']) || (time() - $_COOKIE['teszt_utolso_megjelenes']) >= 600);
 
     $kizaro_szerepkorok = array('Takarékos', 'Szerény', 'Átlagos', 'Kiegyensúlyozott', 'Tehetős', 'Luxus', 'Prémium', 'Elit', 'Admin', 'Moderátor', 'Tulaj');
-
     $szerepkor_kizarva = isset($_SESSION['szerepkor']) && in_array($_SESSION['szerepkor'], $kizaro_szerepkorok);
 
     if ($teszt_megjelenik && !$szerepkor_kizarva): 
@@ -447,14 +392,17 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                 </div>
                 <div class="modal-body text-center">
                     Szeretne kitölteni egy rövid tesztet, és felmérni szerepkörét?
+                    <br><br>
+                    <p style="color: white; font-size: 15px; font-style: italic;">RadarSzint jelentése: Az oldalon betöltött szereped / kategóriád</p>
                 </div>
                 <div class="text-center" style="color: red; margin-bottom: 15px;">
+                    <br>
                     <a href="?elrejt_teszt=1" style="color: red; text-decoration: none;">Ne jelenjen meg többé</a>
                 </div>
                 <div class="modal-footer justify-content-center" style="border-top: none;">
                     <form method="post" id="tesztForm">
-                        <a href="../szerepkorfelmeres/" class="btn btn-primary">Teszt kitöltése</a>
-                        <button type="submit" name="teszt_ok" class="btn btn-secondary">Kilépés</button>
+                        <a href="../felmero/" class="btn btn-primary">Teszt kitöltése</a>
+                        <button type="submit" name="teszt_ok" class="btn btn-secondary">Később</button>
                     </form>
                 </div>
             </div>
@@ -464,101 +412,99 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 
     <div class="container-fluid" id="mainContent">
         <div class="row">
-        <nav class="col-12 col-md-3 col-lg-2 oldalsav">
-            <div class="text-center">
-                <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
-            </div>
-            <h2 class="text-center">PénzRadar</h2>
-            <ul class="nav flex-column flex-md-column mt-4">
-            <li class="nav-item">
-                <a class="nav-link" href="../kezdolap/" style="background-color: #4ACDA3;">
-                    <i class="fas fa-home"></i>
-                    <span class="link-szoveg">Kezdőlap</span>
-                </a>
-            </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
-                        <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Tervező</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
-                        <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Naptár</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
-                        <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                        <span class="link-szoveg">Persely</span>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                            <i class="fas fa-lock lakat-jobb"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+            <nav class="col-12 col-md-3 col-lg-2 oldalsav">
+                <div class="text-center">
+                    <img src="../kepek/ujlogo.png" alt="PénzRadar Logó" class="logo">
+                </div>
+                <h2 class="text-center">PénzRadar</h2>
+                <ul class="nav flex-column flex-md-column mt-4">
                     <li class="nav-item">
-                        <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
-                            <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span class="link-szoveg">Kapcsolat</span>
+                        <a class="nav-link" href="../kezdolap/" style="background-color: #4ACDA3;">
+                            <i class="fas fa-home"></i>
+                            <span class="link-szoveg">Kezdőlap</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../tervezo/">
+                            <i class="fas fa-tasks <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Tervező</span>
                             <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
                                 <i class="fas fa-lock lakat-jobb"></i>
                             <?php endif; ?>
                         </a>
                     </li>
-                <?php endif; ?>
-                <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                <br>
-                <div id="arfolyamok" class="my-3">
-                    <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
-                    <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
-                </div>
-                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                    <div>
-                        <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
-                    </div>
-                <?php endif; ?>
-                <b class="d-flex justify-content-end py-3 border-bottom"></b>
-                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../naptar/">
+                            <i class="fas fa-calendar-alt <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Naptár</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock lakat-jobb"></i>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../persely/">
+                            <i class="fas fa-piggy-bank <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Persely</span>
+                            <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                <i class="fas fa-lock lakat-jobb"></i>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link kapcsolat-link <?php echo !isset($_SESSION['felhasznalo_id']) ? 'letiltott-link' : ''; ?>" href="../kapcsolat/">
+                                <i class="bi bi-envelope-at-fill <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                                <span class="link-szoveg">Kapcsolat</span>
+                                <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
+                                    <i class="fas fa-lock lakat-jobb"></i>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <br>
-                    <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
-                    <form id="kamatSzamitasForm">
-                        <div class="mb-2">
-                            <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
-                            <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <div class="mb-2">
-                            <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
-                            <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <div class="mb-2">
-                            <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
-                            <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
-                    </form>
-                    <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
-                <?php endif; ?>
-                <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                    <div>
-                        <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                        <li class="nav-item"><a class="nav-link" href="../admin/index.php"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel  <div id="felhszam"><?php echo $total_users; ?></div>
-                    </p></a></li>
+                    <div id="arfolyamok" class="my-3">
+                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                        <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
-                    <div>
-                        <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div>
-                    </p></a></li>
-                    </div>
-                <?php endif; ?>
-            </ul>
-        </nav>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                        <div>
+                            <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
+                        </div>
+                    <?php endif; ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <br>
+                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
+                        <form id="kamatSzamitasForm">
+                            <div class="mb-2">
+                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
+                        </form>
+                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                    <?php endif; ?>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
+                        <div>
+                            <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                            <li class="nav-item"><a class="nav-link" href="../admin/index.php"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel  <div id="felhszam"><?php echo $total_users; ?></div></p></a></li>
+                        </div>
+                        <div>
+                            <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div></p></a></li>
+                        </div>
+                    <?php endif; ?>
+                </ul>
+            </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
@@ -577,95 +523,126 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="<?php echo isset($_SESSION['felhasznalo_id']) ? 'visibility: visible;' : 'visibility: hidden;'; ?>">
-                <center>
-                <br>
-                <div class="het-tartalom">
-                    <center><h2 id="aktualishet">Aktuális hét:</h2></center>
-                    <div id="heti-tartalom" class="het-tartalma"></div>
-                    <div id="mai-nap" class="ma"></div>
-                    <br>
-                    <p id="aktualis-ido"></p>
-                </div>
-                </center>
-                <br><br>
-                <hr>
-                <br>
-                    <section id="bevetelek">
-                        <h3 class="text-center">Bevételek</h3>
-                        <br>
-                        <div class="row g-4">
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Napi bevétel</h5>
-                                    <b><?php echo $napi_bevetel_format; ?> Ft</b>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#bevetelek" data-bs-toggle="tab">Bevételek</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#kiadasok" data-bs-toggle="tab">Kiadások</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="bevetelek">
+                            <h3 class="text-center mt-4" style="color: #63ffbe;">Bevételek</h3>
+                            <div class="row g-4 mt-3">
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Napi bevétel</h5>
+                                        <b><?php echo $napi_bevetel_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_bevetel_format; ?> Ft</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Heti bevétel</h5>
+                                        <b><?php echo $heti_bevetel_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_heti_bevetel_format; ?> Ft</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Havi bevétel</h5>
+                                        <b><?php echo $havi_bevetel_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_havi_bevetel_format; ?> Ft</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Heti bevétel</h5>
-                                    <b><?php echo $heti_bevetel_format; ?> Ft</b>
+                            <div class="atlag-container">
+                                <div class="kartya text-center">
+                                    <h5>Legkisebb bevétel</h5>
+                                    <b><?php echo $legkisebb_bevetel_format; ?> Ft</b>
+                                    <p style="font-style: italic; font-size: 15px; color: #D3D3D3;">Az eddigi legkisebb bevétel</p>
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Átlagos napi bevétel</h5>
-                                    <b><?php echo $atlagos_bevetel_format; ?> Ft</b>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
+                                <div class="kartya text-center">
                                     <h5>Legnagyobb bevétel</h5>
                                     <b><?php echo $legnagyobb_bevetel_format; ?> Ft</b>
+                                    <p style="font-style: italic; font-size: 15px; color: #D3D3D3;">Az eddigi legnagyobb bevétel</p>
                                 </div>
+                            </div>
+                            <div class="text-center mt-4 period-selector">
+                                <form method="get" action="">
+                                    <label for="idoszak_valaszto">Grafikon beállításai:</label>
+                                    <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    <button type="submit" name="nezet" value="heti" class="btn2 btn-primary2">Heti nézet</button>
+                                    <button type="submit" name="nezet" value="havi" class="btn2 btn-primary2">Havi nézet</button>
+                                </form>
+                            </div>
+                            <div id="bevetelChartCim" class="text-center mt-3">
+                                <h5 class="chart-title">2025. március 24. - 2025. március 30.</h5>
+                                <p class="chart-subtitle">Ma: Hétfő</p>
+                            </div>
+                            <div class="grafikon-container">
+                                <canvas id="bevetelChart" style="max-height: 100%;"></canvas>
                             </div>
                         </div>
-                        <br><br>
-                        <div class="grafikon-container">
-                            <canvas id="hetiBevetelChart"></canvas>
-                        </div>
-                    </section>
-                    <br><br>
-                    <hr>
-                    <p id="heti-tartalom"></p>
-                    <p id="mai-nap"></p>
-                    <br>
-                    <section id="kiadasok">
-                        <h3 class="text-center">Kiadások</h3>
-                        <br>
-                        <div class="row g-4">
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Napi kiadás</h5>
-                                    <b><?php echo $napi_kiadas_format; ?> Ft</b>
+
+                        <div class="tab-pane fade" id="kiadasok">
+                            <h3 class="text-center mt-4" style="color: #63ffbe;">Kiadások</h3>
+                            <div class="row g-4 mt-3">
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Napi kiadás</h5>
+                                        <b><?php echo $napi_kiadas_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_kiadas_format; ?> Ft</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Heti kiadás</h5>
+                                        <b><?php echo $heti_kiadas_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_heti_kiadas_format; ?> Ft</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center">
+                                        <h5>Havi kiadás</h5>
+                                        <b><?php echo $havi_kiadas_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_havi_kiadas_format; ?> Ft</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Heti kiadás</h5>
-                                    <b><?php echo $heti_kiadas_format; ?> Ft</b>
+                            <div class="atlag-container">
+                                <div class="kartya text-center">
+                                    <h5>Legkisebb kiadás</h5>
+                                    <b><?php echo $legkisebb_kiadas_format; ?> Ft</b>
+                                    <p style="font-style: italic; font-size: 15px; color: #D3D3D3;">Az eddigi legkisebb kiadás</p>
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
-                                    <h5>Átlagos napi kiadás</h5>
-                                    <b><?php echo $atlagos_kiadas_format; ?> Ft</b>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <div class="kartya p-3 text-center">
+                                <div class="kartya text-center">
                                     <h5>Legnagyobb kiadás</h5>
                                     <b><?php echo $legnagyobb_kiadas_format; ?> Ft</b>
+                                    <p style="font-style: italic; font-size: 15px; color: #D3D3D3;">Az eddigi legnagyobb kiadás</p>
                                 </div>
                             </div>
+                            <div class="text-center mt-4 period-selector">
+                                <form method="get" action="">
+                                    <label for="idoszak_valaszto">Grafikon beállításai:</label>
+                                    <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    <button type="submit" name="nezet" value="heti" class="btn2 btn-primary2">Heti nézet</button>
+                                    <button type="submit" name="nezet" value="havi" class="btn2 btn-primary2">Havi nézet</button>
+                                </form>
+                            </div>
+                            <div id="kiadasChartCim" class="text-center mt-3">
+                                <h5 class="chart-title">2025. március 24. - 2025. március 30.</h5>
+                                <p class="chart-subtitle">Ma: Hétfő</p>
+                            </div>
+                            <div class="grafikon-container">
+                                <canvas id="kiadasChart" style="max-height: 100%;"></canvas>
+                            </div>
                         </div>
-                        <br><br>
-                        <div class="grafikon-container">
-                            <canvas id="hetiKiadasChart"></canvas>
-                        </div>
-                    </section>
-                    <br><br>
-                    <hr>
+                    </div>
                 </div>
+
                 <div class="dashboard mt-4" id="nemvagybejelentkezve" style="<?php echo !isset($_SESSION['felhasznalo_id']) ? 'visibility: visible;' : 'visibility: hidden;'; ?>">
                     <div class="card p-3 mt-3 kartya1">
                         <center>
@@ -704,7 +681,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                         <label for="idotartamLoggedOut">Futamidő (év):</label>
                                         <input type="number" id="idotartamLoggedOut" class="form-control" min="1" max="99" value="1" oninput="validateInput(this)">
                                     </div>
-                                    <button type="button" class="btn btn-primary w-100" onclick="szamitKamatLoggedOut()">Számítás</button>
+                                    <button type="button" class="btn2 btn-primary2 w-100" onclick="szamitKamatLoggedOut()">Számítás</button>
                                 </form>
                                 <p id="kamatEredmenyLoggedOut" class="mt-2"></p>
                             </div>
@@ -721,6 +698,8 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
         const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
         const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
         const bejelentkezve = '<?php echo isset($_SESSION["felhasznalo_id"]) ? "true" : "false"; ?>';
+        const valasztottIdoszak = '<?php echo $valasztott_idoszak; ?>';
+        const valasztottNezet = '<?php echo isset($_GET['nezet']) ? $_GET['nezet'] : 'heti'; ?>';
 
         document.addEventListener('DOMContentLoaded', function() {
             const introVideo = document.getElementById('introVideo');
@@ -735,117 +714,133 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                 }).catch(function(error) {
                     console.log("A videó automatikus lejátszása nem sikerült: ", error);
                     introModal.classList.add('fade-out');
-                    setTimeout(() => {
-                        introModal.style.display = 'none';
-                    }, 1000);
+                    setTimeout(() => introModal.style.display = 'none', 1000);
                 });
 
                 introVideo.onended = function() {
                     introModal.classList.add('fade-out');
-                    setTimeout(() => {
-                        introModal.style.display = 'none';
-                    }, 1000);
+                    setTimeout(() => introModal.style.display = 'none', 1000);
                 };
 
                 introVideo.onerror = function() {
                     introModal.classList.add('fade-out');
-                    setTimeout(() => {
-                        introModal.style.display = 'none';
-                    }, 1000);
+                    setTimeout(() => introModal.style.display = 'none', 1000);
                 };
+            }
+
+            const cookieModalElement = document.getElementById('cookieModal');
+            if (cookieModalElement) {
+                const cookieModal = new bootstrap.Modal(cookieModalElement, { backdrop: 'static', keyboard: false });
+                cookieModal.show();
+
+                const elutasitGomb = document.getElementById('cookieElutasit');
+                if (elutasitGomb) {
+                    elutasitGomb.addEventListener('click', function() {
+                        cookieModal.hide();
+                        setTimeout(() => {
+                            cookieModal.show();
+                        }, 120000); // 2 perc (120 000 ms) múlva újra megjelenik
+                    });
+                }
+            }
+
+            const tesztModalElement = document.getElementById('tesztModal');
+            if (tesztModalElement) {
+                const tesztModal = new bootstrap.Modal(tesztModalElement, { backdrop: 'static', keyboard: false });
+                tesztModal.show();
             }
 
             if (bejelentkezve === "true") {
                 const hetiBevetelek = <?php echo json_encode($heti_bevetelek); ?>;
                 const hetiKiadasok = <?php echo json_encode($heti_kiadasok); ?>;
+                const haviBevetelek = <?php echo json_encode($havi_bevetelek); ?>;
+                const haviKiadasok = <?php echo json_encode($havi_kiadasok); ?>;
                 const napok = ['Hét', 'Kedd', 'Szer', 'Csüt', 'Pén', 'Szo', 'Vas'];
+                const haviNapok = Array.from({length: <?php echo $napok_szama; ?>}, (_, i) => i + 1);
 
-                const hetiBevetelChart = new Chart(document.getElementById('hetiBevetelChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: napok,
-                        datasets: [{
-                            label: 'Heti bevétel (Ft)',
-                            data: hetiBevetelek,
-                            backgroundColor: '#63ffbe',
-                            borderColor: '#63ffbe',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#ffffff'
+                let bevetelChart = null;
+                let kiadasChart = null;
+
+                function grafikonFrissites(tipus, adatTipus) {
+                    const canvasId = adatTipus === 'bevetel' ? 'bevetelChart' : 'kiadasChart';
+                    const chartCimId = adatTipus === 'bevetel' ? 'bevetelChartCim' : 'kiadasChartCim';
+                    const chart = adatTipus === 'bevetel' ? bevetelChart : kiadasChart;
+                    const adatok = tipus === 'heti' ? (adatTipus === 'bevetel' ? hetiBevetelek : hetiKiadasok) : (adatTipus === 'bevetel' ? haviBevetelek : haviKiadasok);
+                    const cimkek = tipus === 'heti' ? napok : haviNapok;
+
+                    if (chart) chart.destroy();
+
+                    const chartCim = document.getElementById(chartCimId);
+                    if (tipus === 'heti') {
+                        chartCim.innerHTML = `
+                            <h5 class="chart-title">2025. március 24. - 2025. március 30.</h5>
+                            <p class="chart-subtitle">Ma: Hétfő</p>
+                        `;
+                    } else {
+                        const honapNevek = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
+                        const ev = valasztottIdoszak.split('-')[0];
+                        const honap = parseInt(valasztottIdoszak.split('-')[1], 10);
+                        chartCim.innerHTML = `
+                            <h5 class="chart-title">${ev}. ${honapNevek[honap - 1]}</h5>
+                            <p class="chart-subtitle">Ma: Hétfő</p>
+                        `;
+                    }
+
+                    const ujChart = new Chart(document.getElementById(canvasId), {
+                        type: 'bar',
+                        data: {
+                            labels: cimkek,
+                            datasets: [{
+                                label: `${tipus === 'heti' ? 'Heti' : 'Havi'} ${adatTipus === 'bevetel' ? 'bevétel' : 'kiadás'} (Ft)`,
+                                data: adatok,
+                                backgroundColor: '#63ffbe',
+                                borderColor: '#63ffbe',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { 
+                                    beginAtZero: true, 
+                                    ticks: { color: '#ffffff' }, 
+                                    grid: { color: '#555555' } 
                                 },
-                                grid: {
-                                    color: '#555555'
+                                x: {
+                                    ticks: {
+                                        color: '#ffffff',
+                                        callback: function(value, index, values) {
+                                            if (tipus === 'havi') {
+                                                const napokSzama = <?php echo $napok_szama; ?>;
+                                                const lepes = Math.ceil(napokSzama / 6);
+                                                if (index % lepes === 0) return cimkek[index];
+                                                return '';
+                                            }
+                                            return cimkek[index];
+                                        },
+                                        maxRotation: window.innerWidth <= 768 ? 45 : 0,
+                                        minRotation: window.innerWidth <= 768 ? 45 : 0
+                                    },
+                                    grid: { color: '#555555' }
                                 }
                             },
-                            x: {
-                                ticks: {
-                                    color: '#ffffff'
-                                },
-                                grid: {
-                                    color: '#555555'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#ffffff'
-                                }
+                            plugins: { 
+                                legend: { 
+                                    labels: { color: '#ffffff' } 
+                                } 
                             }
                         }
-                    }
-                });
+                    });
 
-                const hetiKiadasChart = new Chart(document.getElementById('hetiKiadasChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: napok,
-                        datasets: [{
-                            label: 'Heti kiadás (Ft)',
-                            data: hetiKiadasok,
-                            backgroundColor: '#63ffbe',
-                            borderColor: '#63ffbe',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#ffffff'
-                                },
-                                grid: {
-                                    color: '#555555'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#ffffff'
-                                },
-                                grid: {
-                                    color: '#555555'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#ffffff'
-                                }
-                            }
-                        }
-                    }
-                });
+                    if (adatTipus === 'bevetel') bevetelChart = ujChart;
+                    else kiadasChart = ujChart;
+                }
+
+                grafikonFrissites(valasztottNezet, 'bevetel');
+                grafikonFrissites(valasztottNezet, 'kiadas');
             }
         });
-    </script>
+        </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>

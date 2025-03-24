@@ -59,7 +59,7 @@ function eredmenyKalkulacio() {
         aktualisSzerepkor = "Elit";
     }
 
-    eredmenyDiv.textContent = "Megítélt szerepkör: " + aktualisSzerepkor;
+    eredmenyDiv.textContent = "Megítélt RadarSzint: " + aktualisSzerepkor + " költekező";
     eredmenyDiv.style.display = 'block';
     document.getElementById('mentes').style.display = 'block';
 }
@@ -76,7 +76,7 @@ function mentesSzerepkor() {
     .then(adatok => {
         let eredmenyDiv = document.getElementById('eredmeny');
         if (adatok.siker) {
-            eredmenyDiv.textContent = "Szerepkör sikeresen mentve: " + aktualisSzerepkor;
+            eredmenyDiv.textContent = "RadarSzint sikeresen mentve: " + aktualisSzerepkor;
             setTimeout(() => {
                 window.location.href = '../kezdolap/';
             }, 1000);

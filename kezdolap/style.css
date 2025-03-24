@@ -164,3 +164,135 @@
 .btn-close {
     display: none;
 }
+
+.nav-tabs { 
+    justify-content: center; 
+    margin-bottom: 30px; 
+    border-bottom: white; 
+    border-radius: 20px;
+}
+.nav-link:hover { 
+    color: #000000;
+    border-radius: 20px;
+}
+.nav-link.active { 
+    background: linear-gradient(45deg, #63ffbe, #4acda3); 
+    color: #1e1e1e; 
+    border-radius: 20px;
+}
+
+.kartya { 
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border-radius: 10px; 
+    padding: 15px; 
+    color: white; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    border: 1px solid #63ffbe; 
+    min-height: 120px; 
+}
+.kartya:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5); 
+}
+.kartya b { 
+    font-size: 1.5rem; 
+    font-weight: 600; 
+}
+.kartya .atlag { 
+    font-size: 1rem; 
+    color: #ffffff; 
+    margin-top: 5px; 
+}
+.atlag-container { 
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+    flex-wrap: wrap; 
+    margin-top: 20px; 
+}
+.atlag-container .kartya { 
+    flex: 1; 
+    min-width: 150px;
+}
+.grafikon-container { 
+    width: 100%; 
+    margin-top: 20px; 
+    background: #1e1e1e; 
+    border-radius: 15px; 
+    padding: 20px; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); 
+    border: 1px solid #63ffbe;
+    height: 60vh; 
+    max-width: 90vw; 
+}
+.btn-primary2 { 
+    background: linear-gradient(45deg, #63ffbe, #4acda3); 
+    border: none; 
+    color: #1e1e1e; 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    transition: all 0.3s ease; 
+    font-size: 0.9rem; 
+}
+.btn-primary2:hover { 
+    background: linear-gradient(45deg, #4acda3, #63ffbe); 
+    transform: scale(1.05); 
+}
+.chart-title { 
+    color: #63ffbe; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+}
+.chart-subtitle { 
+    color: #ffffff; 
+    font-weight: 400; 
+}
+.period-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+    .grafikon-container {
+        height: 50vh; 
+        max-width: 95vw; 
+    }
+    .kartya {
+        min-width: 120px;
+        padding: 10px;
+    }
+    .kartya h5 {
+        font-size: 0.9rem;
+    }
+    .kartya b {
+        font-size: 0.9rem;
+    }
+    .kartya .atlag {
+        font-size: 0.7rem;
+    }
+    .atlag-container {
+        gap: 10px;
+    }
+    .btn-primary2 {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+    }
+}
+@media (max-width: 576px) {
+    .grafikon-container {
+        height: 40vh; 
+        max-width: 100vw; 
+    }
+    .period-selector {
+        flex-direction: column;
+        align-items: center;
+    }
+}

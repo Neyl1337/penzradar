@@ -120,7 +120,7 @@ p {
 }
 
 .oldalsav h2:after {
-    content: "v2.6"; /*VERZIÓSZÁM*/
+    content: "v2.7"; /*VERZIÓSZÁM*/
     color: #63ffbe;
     font-family: "Arial Black", Impact, sans-serif;
     font-weight: bold;

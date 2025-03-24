@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['CONTENT_TYPE']) && 
                 $valasz['hiba'] = "Adatbázis hiba: " . $e->getMessage();
             }
         } else {
-            $valasz['hiba'] = "Nincs szerepkör megadva";
+            $valasz['hiba'] = "Nincs RadarSzint megadva";
         }
     } else {
         $valasz['hiba'] = "Nincs bejelentkezett felhasználó";
@@ -59,14 +59,14 @@ if (isset($_SESSION['felhasznalo_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szerepkör felmérő</title>
+    <title>RadarSzint felmérő</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="kontener">
         <h1>PénzRadar</h1>
-        <h2>Szerepkör felmérő</h2>
+        <h2>RadarSzint felmérő</h2>
         <center><p>Bejelentkezve mint: <?php echo isset($_SESSION['felhasznalo_nev']) ? htmlspecialchars($_SESSION['felhasznalo_nev']) : "Nem vagy bejelentkezve"; ?></p></center>
         <br><br>
         <div id="kerdesek">
@@ -179,12 +179,12 @@ if (isset($_SESSION['felhasznalo_id'])) {
         <button id="kovetkezo" onclick="lepjTovabb()">Következő</button>
         <div id="eredmeny">
             <?php
-            if (isset($_SESSION['szerepkor'])) {
-                echo "Megítélt szerepkör: " . htmlspecialchars($_SESSION['szerepkor']);
-            }
+                if (isset($_SESSION['szerepkor'])) {
+                    echo "Megítélt RadarSzint: " . htmlspecialchars($_SESSION['szerepkor']) . " költekező";
+                }
             ?>
         </div>
-        <button id="mentes" style="display: none;" onclick="mentesSzerepkor()">Kérem a szerepköröm!</button>
+        <button id="mentes" style="display: none;" onclick="mentesSzerepkor()">Kérem a RadarSzintem!</button>
     </div>
 
     <script src="script.js"></script>
