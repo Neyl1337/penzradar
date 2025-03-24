@@ -76,7 +76,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([':felhasznalo_id' => $_SESSION['felhasznalo_id']]);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
+$waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
 $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 ?>
 

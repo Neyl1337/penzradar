@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     let lastSubmissionTime = localStorage.getItem('lastSubmissionTime') ? parseInt(localStorage.getItem('lastSubmissionTime')) : 0;
-    const cooldownPeriod = 1 * 60 * 1000; // 1 perc cooldown
+    const cooldownPeriod = 30 * 60 * 1000; // 1 perc cooldown
     let isSubmitting = false;
 
     function updateCooldown() {

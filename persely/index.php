@@ -240,7 +240,7 @@ try {
     // Egyenleg frissítése a persely táblában (biztosítjuk, hogy mindig naprakész legyen)
     frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
 
-    $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
+    $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
     $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 
 } catch (PDOException $e) {
