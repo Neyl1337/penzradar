@@ -173,7 +173,6 @@
 }
 .nav-link:hover { 
     color: #000000;
-    border-radius: 20px;
 }
 .nav-link.active { 
     background: linear-gradient(45deg, #63ffbe, #4acda3); 
