@@ -391,7 +391,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                 </div>
                 <div class="modal-body text-center">
-                    Szeretne kitölteni egy rövid tesztet, és felmérni szerepkörét?
+                    Szeretne kitölteni egy rövid tesztet, és felmérni RadarSzintjét?
                     <br><br>
                     <p style="color: white; font-size: 15px; font-style: italic;">RadarSzint jelentése: Az oldalon betöltött szereped / kategóriád</p>
                 </div>
@@ -496,7 +496,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
-                        <span class="me-3" id="szerepkor" style="visibility: hidden;">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
+                        <span class="me-3" id="szerepkor" style="visibility: hidden;">RadarSzint: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                             <i class="fas fa-user-circle"></i> 
@@ -511,14 +511,14 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                     </div>
                 </header>
                 <div class="dashboard mt-4" id="statisztika" style="<?php echo isset($_SESSION['felhasznalo_id']) ? 'visibility: visible;' : 'visibility: hidden;'; ?>">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#bevetelek" data-bs-toggle="tab">Bevételek</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#kiadasok" data-bs-toggle="tab">Kiadások</a>
-                        </li>
-                    </ul>
+                <ul class="nav nav-tabs" style="gap: 10px;">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#bevetelek" data-bs-toggle="tab" style="border-radius: 10px;">Bevételek</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#kiadasok" data-bs-toggle="tab" style="border-radius: 10px;">Kiadások</a>
+                    </li>
+                </ul>
 
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="bevetelek">
@@ -561,7 +561,9 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <div class="text-center mt-4 period-selector">
                                 <form method="get" action="">
                                     <label for="idoszak_valaszto">Grafikon beállításai:</label>
-                                    <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    <div class="mb-3">
+                                        <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    </div>
                                     <button type="submit" name="nezet" value="heti" class="btn2 btn-primary2">Heti nézet</button>
                                     <button type="submit" name="nezet" value="havi" class="btn2 btn-primary2">Havi nézet</button>
                                 </form>
@@ -615,7 +617,9 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <div class="text-center mt-4 period-selector">
                                 <form method="get" action="">
                                     <label for="idoszak_valaszto">Grafikon beállításai:</label>
-                                    <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    <div class="mb-3">
+                                        <input type="month" id="idoszak_valaszto" name="idoszak" value="<?php echo $valasztott_idoszak; ?>">
+                                    </div>
                                     <button type="submit" name="nezet" value="heti" class="btn2 btn-primary2">Heti nézet</button>
                                     <button type="submit" name="nezet" value="havi" class="btn2 btn-primary2">Havi nézet</button>
                                 </form>
