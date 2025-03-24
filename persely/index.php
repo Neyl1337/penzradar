@@ -314,31 +314,22 @@ try {
                             <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                         </div>
                     <?php endif; ?>
-                    <br>
-                    <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
-                    <form id="kamatSzamitasForm">
-                        <div class="mb-2">
-                            <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
-                            <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <div class="mb-2">
-                            <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
-                            <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <div class="mb-2">
-                            <label for="idotartam" style="color: white; font-size: 1.2rem;">Futamidő (év):</label>
-                            <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                        </div>
-                        <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
-                    </form>
-                    <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../alapoldal/arfolyam/">
+                            <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Kamatszámítás</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
                             <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                             <li class="nav-item"><a class="nav-link" href="../admin/index.php"><p id="adminpanel"><i class="fas fa-cogs"></i> Admin Panel  <div id="felhszam"><?php echo $total_users; ?></div></p></a></li>
                         </div>
                         <div>
-                            <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam"><?php echo $waiting_supports; ?></div></p></a></li>
+                            <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div></p></a></li>
                         </div>
                     <?php endif; ?>
                 </nav>
@@ -346,7 +337,7 @@ try {
                     <header class="d-flex justify-content-end py-3 border-bottom">
                         <div class="dropdown d-flex align-items-center">
                             <span class="me-3" id="szerepkor">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
-                            <span class="me-3" id="perselyegyenleg">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
+                            <span class="me-3" id="perselyegyenleg">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo $formatált_egyenleg; ?></b> Ft</span>
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                                 <i class="fas fa-user-circle"></i> 
                                 <span id="felhasznaloNev"><?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?></span>

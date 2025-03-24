@@ -473,26 +473,14 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                         </div>
                     <?php endif; ?>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
-                        <br>
-                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
-                        <form id="kamatSzamitasForm">
-                            <div class="mb-2">
-                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
-                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <div class="mb-2">
-                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
-                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <div class="mb-2">
-                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
-                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
-                            </div>
-                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
-                        </form>
-                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../alapoldal/arfolyam/">
+                            <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
+                            <span class="link-szoveg">Kamatszámítás</span>
+                        </a>
+                    </li>
                     <?php endif; ?>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                         <div>
