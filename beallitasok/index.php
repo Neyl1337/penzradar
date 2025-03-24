@@ -131,7 +131,87 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
                 $mail->addAddress($uj_email, $nev);
                 $mail->Subject = 'Módosító kód';
                 $mail->CharSet = 'UTF-8';
-                $mail->Body = "Kedves $nev,\n\nA módosítás befejezéséhez használd ezt a kódot: $kod\n\nÜdvözlettel, PénzRadar csapata";
+                $mail->isHTML(true);
+
+                $logoUrl = 'https://penzradar.hu/kepek/ujlogo.png';
+
+                $emailBody = "
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            background-color: #2b2b2b;
+                            color: #ffffff;
+                            padding: 20px;
+                            margin: 0;
+                        }
+                        .container {
+                            background-color: #2b2b2b;
+                            padding: 20px;
+                            border-radius: 12px;
+                            border: 2px solid #63ffbe;
+                            max-width: 600px;
+                            margin: 0 auto;
+                            text-align: center;
+                        }
+                        .header {
+                            margin-bottom: 20px;
+                        }
+                        .header img {
+                            max-width: 80px;
+                            height: auto;
+                            margin-bottom: 10px;
+                        }
+                        .header h1 {
+                            color: #63ffbe;
+                            margin: 0;
+                            font-size: 24px;
+                        }
+                        h2 {
+                            color: #63ffbe;
+                            margin: 0 0 10px 0;
+                            font-size: 28px;
+                        }
+                        .code-box {
+                            background-color: #1e1e1e;
+                            color: #63ffbe;
+                            padding: 15px;
+                            border-radius: 8px;
+                            display: inline-block;
+                            font-size: 24px;
+                            font-weight: bold;
+                            margin: 20px 0;
+                        }
+                        p {
+                            line-height: 1.6;
+                            color: #ffffff;
+                        }
+                        .footer {
+                            margin-top: 20px;
+                            color: #ffffff;
+                            font-size: 14px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <img src='$logoUrl' alt='PénzRadar Logo' />
+                            <h1>PénzRadar</h1>
+                        </div>
+                        <h2>Kedves $nev</h2>
+                        <p>A módosítás befejezéséhez használd az alábbi kódot:</p>
+                        <div class='code-box'>$kod</div>
+                        <p>Kérjük, add meg ezt a kódot a megerősítés felületen.</p>
+                        <div class='footer'>
+                            <p>Üdvözlettel,<br>PénzRadar csapata</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+                $mail->Body = $emailBody;
                 $mail->send();
                 $siker_email = true;
                 header('Location: megerosites.php');
@@ -166,7 +246,87 @@ if (isset($_POST['uj_nev']) || isset($_POST['uj_email']) || isset($_POST['uj_jel
             $mail->addAddress($email, $nev);
             $mail->Subject = 'Törlés kód';
             $mail->CharSet = 'UTF-8';
-            $mail->Body = "Kedves $nev,\n\nA törlés befejezéséhez használd ezt a kódot: $kod\n\nÜdvözlettel, PénzRadar csapata";
+            $mail->isHTML(true);
+
+            $logoUrl = 'https://penzradar.hu/kepek/ujlogo.png';
+
+            $emailBody = "
+            <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            background-color: #2b2b2b;
+                            color: #ffffff;
+                            padding: 20px;
+                            margin: 0;
+                        }
+                        .container {
+                            background-color: #2b2b2b;
+                            padding: 20px;
+                            border-radius: 12px;
+                            border: 2px solid #63ffbe;
+                            max-width: 600px;
+                            margin: 0 auto;
+                            text-align: center;
+                        }
+                        .header {
+                            margin-bottom: 20px;
+                        }
+                        .header img {
+                            max-width: 80px;
+                            height: auto;
+                            margin-bottom: 10px;
+                        }
+                        .header h1 {
+                            color: #63ffbe;
+                            margin: 0;
+                            font-size: 24px;
+                        }
+                        h2 {
+                            color: #63ffbe;
+                            margin: 0 0 10px 0;
+                            font-size: 28px;
+                        }
+                        .code-box {
+                            background-color: #1e1e1e;
+                            color: #63ffbe;
+                            padding: 15px;
+                            border-radius: 8px;
+                            display: inline-block;
+                            font-size: 24px;
+                            font-weight: bold;
+                            margin: 20px 0;
+                        }
+                        p {
+                            line-height: 1.6;
+                            color: #ffffff;
+                        }
+                        .footer {
+                            margin-top: 20px;
+                            color: #ffffff;
+                            font-size: 14px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <img src='$logoUrl' alt='PénzRadar Logo' />
+                            <h1>PénzRadar</h1>
+                        </div>
+                        <h2>Kedves $nev</h2>
+                        <p>A törlés befejezéséhez használd az alábbi kódot:</p>
+                        <div class='code-box'>$kod</div>
+                        <p>Kérjük, add meg ezt a kódot a megerősítés felületen.</p>
+                        <div class='footer'>
+                            <p>Üdvözlettel,<br>PénzRadar csapata</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            ";
+            $mail->Body = $emailBody;
             $mail->send();
             header('Location: megerosites.php');
             exit;

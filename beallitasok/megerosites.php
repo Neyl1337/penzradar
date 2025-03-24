@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt1 = $pdo->prepare("DELETE FROM naptar WHERE felhasznalo_id = ?");
             $stmt1->execute([$felhasznalo_id]);
             
-            $stmt2 = $pdo->prepare("DELETE FROM perselyk WHERE felhasznalo_nev = ?");
+            $stmt2 = $pdo->prepare("DELETE FROM persely WHERE felhasznalo_id = ?");
             $stmt2->execute([$felhasznalo_id]);
             
             $stmt3 = $pdo->prepare("DELETE FROM tervezo WHERE felhasznalo_nev = ?");
@@ -38,8 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt4 = $pdo->prepare("DELETE FROM celok WHERE felhasznalo_nev = ?");
             $stmt4->execute([$felhasznalo_id]);
 
-            $stmt5 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt5 = $pdo->prepare("DELETE FROM perselyk WHERE felhasznalo_id = ?");
             $stmt5->execute([$felhasznalo_id]);
+
+            $stmt6 = $pdo->prepare("DELETE FROM felhasznalok WHERE id = ?");
+            $stmt6->execute([$felhasznalo_id]);
             
             $pdo->commit();
 
