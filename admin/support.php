@@ -609,42 +609,33 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
         </div>
     </div>
     <script>
-    const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
-    const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+ const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
+const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
 
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded esemény lefutott');
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded esemény lefutott');
 
-        // "Megtekintés" gombok eseménykezelője (Szöveg)
-        const viewButtons = document.querySelectorAll('.view-btn');
-        console.log('Megtalált "Megtekintés" gombok száma:', viewButtons.length);
+    // "Megtekintés" gombok eseménykezelője (Szöveg)
+    const viewButtons = document.querySelectorAll('.view-btn');
+    console.log('Megtalált "Megtekintés" gombok száma:', viewButtons.length);
 
-        viewButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                console.log('Megtekintés gomb megnyomva');
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            console.log('Megtekintés gomb megnyomva');
 
-                const supportId = this.getAttribute('data-support-id');
-                const statusElement = document.getElementById(`status-${supportId}`);
+            const supportId = this.getAttribute('data-support-id');
+            const statusElement = document.getElementById(`status-${supportId}`);
 
-                if (!statusElement) {
-                    console.error('Státusz elem nem található, ID:', supportId);
-                    return;
-                }
+            if (!statusElement) {
+                console.error('Státusz elem nem található, ID:', supportId);
+                return;
+            }
 
-                const currentStatus = statusElement.textContent.trim().toLowerCase();
-                console.log('Jelenlegi státusz:', currentStatus);
+            const currentStatus = statusElement.textContent.trim();
+            console.log('Jelenlegi státusz:', currentStatus);
 
-                if (currentStatus !== 'megtekintett' && currentStatus !== 'folyamatban' && currentStatus !== 'válasz elküldve') {
-                    console.log('Státusz váltás: Várakozás -> Megtekintett');
-                    statusElement.textContent = 'Megtekintett';
-                    statusElement.classList.remove('status-waiting');
-                    statusElement.classList.remove('status-in-progress');
-                    statusElement.classList.remove('status-responded');
-                    statusElement.classList.add('status-viewed');
-                } else {
-                    console.log('A státusz már Megtekintett, Folyamatban vagy Válasz elküldve, nincs váltás');
-                }
-
+            if (currentStatus === 'Várakozás') {
+                console.log('Státusz váltás: Várakozás -> Megtekintett');
                 fetch(window.location.href, {
                     method: 'POST',
                     headers: {
@@ -658,56 +649,44 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                 })
                 .then(data => {
                     console.log('AJAX válasz:', data);
-                    if (!data.success) {
+                    if (data.success) {
+                        statusElement.textContent = 'Megtekintett';
+                        statusElement.classList.remove('status-waiting');
+                        statusElement.classList.add('status-viewed');
+                    } else {
                         console.error('Hiba a státusz frissítésekor:', data.error);
-                        statusElement.textContent = 'Várakozás';
-                        statusElement.classList.remove('status-viewed');
-                        statusElement.classList.remove('status-in-progress');
-                        statusElement.classList.remove('status-responded');
-                        statusElement.classList.add('status-waiting');
                     }
                 })
                 .catch(error => {
                     console.error('AJAX hiba:', error);
-                    setTimeout(() => {
-                        statusElement.textContent = 'Várakozás';
-                        statusElement.classList.remove('status-viewed');
-                        statusElement.classList.remove('status-in-progress');
-                        statusElement.classList.remove('status-responded');
-                        statusElement.classList.add('status-waiting');
-                    }, 1000);
                 });
-            });
+            } else {
+                console.log('A státusz nem Várakozás, nincs váltás');
+            }
         });
+    });
 
-        // "Válasz" gombok eseménykezelője (csak akkor fut, ha a gomb nem disabled)
-        const responseStatusButtons = document.querySelectorAll('.response-status-btn');
-        console.log('Megtalált "Válasz" gombok száma:', responseStatusButtons.length);
+    // "Válasz" gombok eseménykezelője
+    const responseStatusButtons = document.querySelectorAll('.response-status-btn');
+    console.log('Megtalált "Válasz" gombok száma:', responseStatusButtons.length);
 
-        responseStatusButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                console.log('Válasz gomb megnyomva');
+    responseStatusButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            console.log('Válasz gomb megnyomva');
 
-                const supportId = this.getAttribute('data-support-id');
-                const statusElement = document.getElementById(`status-${supportId}`);
+            const supportId = this.getAttribute('data-support-id');
+            const statusElement = document.getElementById(`status-${supportId}`);
 
-                if (!statusElement) {
-                    console.error('Státusz elem nem található, ID:', supportId);
-                    return;
-                }
+            if (!statusElement) {
+                console.error('Státusz elem nem található, ID:', supportId);
+                return;
+            }
 
-                const currentStatus = statusElement.textContent.trim().toLowerCase();
-                console.log('Jelenlegi státusz:', currentStatus);
+            const currentStatus = statusElement.textContent.trim();
+            console.log('Jelenlegi státusz:', currentStatus);
 
-                if (currentStatus !== 'folyamatban' && currentStatus !== 'válasz elküldve') {
-                    console.log('Státusz váltás: -> Folyamatban');
-                    statusElement.textContent = 'Folyamatban';
-                    statusElement.classList.remove('status-waiting');
-                    statusElement.classList.remove('status-viewed');
-                    statusElement.classList.remove('status-responded');
-                    statusElement.classList.add('status-in-progress');
-                }
-
+            if (currentStatus === 'Megtekintett') {
+                console.log('Státusz váltás: Megtekintett -> Folyamatban');
                 fetch(window.location.href, {
                     method: 'POST',
                     headers: {
@@ -721,156 +700,151 @@ $adminok_szama = $pdo->query("SELECT COUNT(*) FROM felhasznalok WHERE rang = 'Ad
                 })
                 .then(data => {
                     console.log('AJAX válasz:', data);
-                    if (!data.success) {
-                        console.error('Hiba a státusz frissítésekor:', data.error);
-                        statusElement.textContent = 'Várakozás';
+                    if (data.success) {
+                        statusElement.textContent = 'Folyamatban';
                         statusElement.classList.remove('status-viewed');
-                        statusElement.classList.remove('status-in-progress');
-                        statusElement.classList.remove('status-responded');
-                        statusElement.classList.add('status-waiting');
+                        statusElement.classList.add('status-in-progress');
+                    } else {
+                        console.error('Hiba a státusz frissítésekor:', data.error);
                     }
                 })
                 .catch(error => {
                     console.error('AJAX hiba:', error);
-                    setTimeout(() => {
-                        statusElement.textContent = 'Várakozás';
-                        statusElement.classList.remove('status-viewed');
-                        statusElement.classList.remove('status-in-progress');
-                        statusElement.classList.remove('status-responded');
-                        statusElement.classList.add('status-waiting');
-                    }, 1000);
                 });
-            });
-        });
-
-        // "Válasz" modal gombok eseménykezelője
-        const responseButtons = document.querySelectorAll('.response-btn');
-        responseButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Megakadályozzuk az alapértelmezett viselkedést
-                const supportId = this.getAttribute('data-support-id');
-                const responseText = this.getAttribute('data-response-text'); // Az előre megírt válasz szövege
-                const textarea = document.getElementById(`response_text${supportId}`);
-                const sendButton = document.getElementById(`sendButton${supportId}`);
-                const isActive = this.classList.contains('button-orange-active');
-                const siblingButtons = document.querySelectorAll(`.response-btn[data-support-id="${supportId}"]`);
-                
-                // Debug: Ellenőrizzük, hogy milyen szöveget állítunk be
-                console.log(`Gomb szövege: ${responseText}, Support ID: ${supportId}`);
-
-                siblingButtons.forEach(sibling => {
-                    sibling.classList.remove('button-orange-active');
-                });
-
-                if (isActive) {
-                    textarea.value = '';
-                    textarea.placeholder = 'Írd ide a válaszadat...';
-                    sendButton.disabled = true; // Letiltjuk a Küldés gombot, ha üres a textarea
-                } else {
-                    this.classList.add('button-orange-active');
-                    textarea.value = responseText; // Az előre megírt szöveg kerül a textarea-ba
-                    sendButton.disabled = false; // Engedélyezzük a Küldés gombot
-                }
-
-                // Debug: Ellenőrizzük a textarea értékét és a Küldés gomb állapotát
-                console.log(`Textarea értéke beállítás után: ${textarea.value}`);
-                console.log(`Küldés gomb állapota: ${sendButton.disabled ? 'Letiltva' : 'Engedélyezve'}`);
-            });
-        });
-
-        // Küldés gomb engedélyezése/tiltása a textarea változásakor
-        document.querySelectorAll('.response-textarea').forEach(textarea => {
-            const supportId = textarea.id.replace('response_text', '');
-            const sendButton = document.getElementById(`sendButton${supportId}`);
-
-            textarea.addEventListener('input', function() {
-                console.log(`Textarea (${supportId}) értéke: ${this.value}`);
-                sendButton.disabled = !this.value.trim();
-                console.log(`Küldés gomb állapota (input után): ${sendButton.disabled ? 'Letiltva' : 'Engedélyezve'}`);
-            });
-
-            // Kezdeti állapot beállítása
-            sendButton.disabled = !textarea.value.trim();
-        });
-
-        // Űrlap elküldésének figyelése
-        document.querySelectorAll('form[id^="responseForm"]').forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Megakadályozzuk az alapértelmezett űrlap elküldést a debugoláshoz
-                console.log('Űrlap elküldve:', this.id);
-                const formData = new FormData(this);
-                const formDataObj = Object.fromEntries(formData);
-                console.log('Űrlap adatai:', formDataObj);
-
-                // Ellenőrizzük, hogy a response_text üres-e
-                if (!formDataObj.response_text) {
-                    console.error('Hiba: A response_text üres!');
-                    return;
-                }
-
-                // Űrlap elküldése manuálisan
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    console.log('Űrlap elküldés válasz státusz:', response.status);
-                    if (response.redirected) {
-                        window.location.href = response.url; // Átirányítás kezelése
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    console.log('Űrlap elküldés válasz:', data);
-                })
-                .catch(error => {
-                    console.error('Űrlap elküldés hiba:', error);
-                });
-            });
-        });
-
-        // Visszaszámláló
-        function startCountdown() {
-            const countdownElements = document.querySelectorAll('.countdown');
-            countdownElements.forEach(element => {
-                const supportId = element.getAttribute('data-support-id');
-                const startTime = parseInt(element.getAttribute('data-start-time')) * 1000;
-                const endTime = startTime + (10 * 60 * 60 * 1000); // 5 óra
-
-                function updateCountdown() {
-                    const now = Date.now();
-                    const timeLeft = endTime - now;
-
-                    if (timeLeft <= 0) {
-                        fetch(window.location.href, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `support_action=delete_support&support_id=${supportId}`
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                        element.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    }
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            });
-        }
-
-        startCountdown();
-
-        document.getElementById('felhasznalok_gomb').addEventListener('click', function() {
-            document.getElementById('usersTable').style.display = 'block';
-            document.getElementById('supportTable').style.display = 'none';
+            } else {
+                console.log('A státusz nem Megtekintett, nincs váltás');
+            }
         });
     });
+
+    // "Válasz" modal gombok eseménykezelője
+    const responseButtons = document.querySelectorAll('.response-btn');
+    responseButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Megakadályozzuk az alapértelmezett viselkedést
+            const supportId = this.getAttribute('data-support-id');
+            const responseText = this.getAttribute('data-response-text'); // Az előre megírt válasz szövege
+            const textarea = document.getElementById(`response_text${supportId}`);
+            const sendButton = document.getElementById(`sendButton${supportId}`);
+            const isActive = this.classList.contains('button-orange-active');
+            const siblingButtons = document.querySelectorAll(`.response-btn[data-support-id="${supportId}"]`);
+            
+            // Debug: Ellenőrizzük, hogy milyen szöveget állítunk be
+            console.log(`Gomb szövege: ${responseText}, Support ID: ${supportId}`);
+
+            siblingButtons.forEach(sibling => {
+                sibling.classList.remove('button-orange-active');
+            });
+
+            if (isActive) {
+                textarea.value = '';
+                textarea.placeholder = 'Írd ide a válaszadat...';
+                sendButton.disabled = true; // Letiltjuk a Küldés gombot, ha üres a textarea
+            } else {
+                this.classList.add('button-orange-active');
+                textarea.value = responseText; // Az előre megírt szöveg kerül a textarea-ba
+                sendButton.disabled = false; // Engedélyezzük a Küldés gombot
+            }
+
+            // Debug: Ellenőrizzük a textarea értékét és a Küldés gomb állapotát
+            console.log(`Textarea értéke beállítás után: ${textarea.value}`);
+            console.log(`Küldés gomb állapota: ${sendButton.disabled ? 'Letiltva' : 'Engedélyezve'}`);
+        });
+    });
+
+    // Küldés gomb engedélyezése/tiltása a textarea változásakor
+    document.querySelectorAll('.response-textarea').forEach(textarea => {
+        const supportId = textarea.id.replace('response_text', '');
+        const sendButton = document.getElementById(`sendButton${supportId}`);
+
+        textarea.addEventListener('input', function() {
+            console.log(`Textarea (${supportId}) értéke: ${this.value}`);
+            sendButton.disabled = !this.value.trim();
+            console.log(`Küldés gomb állapota (input után): ${sendButton.disabled ? 'Letiltva' : 'Engedélyezve'}`);
+        });
+
+        // Kezdeti állapot beállítása
+        sendButton.disabled = !textarea.value.trim();
+    });
+
+    // Űrlap elküldésének figyelése
+    document.querySelectorAll('form[id^="responseForm"]').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Megakadályozzuk az alapértelmezett űrlap elküldést a debugoláshoz
+            console.log('Űrlap elküldve:', this.id);
+            const formData = new FormData(this);
+            const formDataObj = Object.fromEntries(formData);
+            console.log('Űrlap adatai:', formDataObj);
+
+            // Ellenőrizzük, hogy a response_text üres-e
+            if (!formDataObj.response_text) {
+                console.error('Hiba: A response_text üres!');
+                return;
+            }
+
+            // Űrlap elküldése manuálisan
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Űrlap elküldés válasz státusz:', response.status);
+                if (response.redirected) {
+                    window.location.href = response.url; // Átirányítás kezelése
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log('Űrlap elküldés válasz:', data);
+            })
+            .catch(error => {
+                console.error('Űrlap elküldés hiba:', error);
+            });
+        });
+    });
+
+    // Visszaszámláló
+    function startCountdown() {
+        const countdownElements = document.querySelectorAll('.countdown');
+        countdownElements.forEach(element => {
+            const supportId = element.getAttribute('data-support-id');
+            const startTime = parseInt(element.getAttribute('data-start-time')) * 1000;
+            const endTime = startTime + (10 * 60 * 60 * 1000); // 5 óra
+
+            function updateCountdown() {
+                const now = Date.now();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `support_action=delete_support&support_id=${supportId}`
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    element.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    }
+
+    startCountdown();
+
+    document.getElementById('felhasznalok_gomb').addEventListener('click', function() {
+        document.getElementById('usersTable').style.display = 'block';
+        document.getElementById('supportTable').style.display = 'none';
+    });
+});
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../kezdolap/script.js"></script>
