@@ -215,3 +215,16 @@ span {
         display: none !important;
     }
 }
+
+.input-group .btn {
+    border-left: 0;
+}
+
+.toggle-password {
+    background: transparent;
+    color: #63ffbe;
+}
+
+.toggle-password:hover {
+    background: #63ffbe;
+}

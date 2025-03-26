@@ -1,31 +1,32 @@
-* {
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', Arial, sans-serif;
-}
-
-body {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    color: #63ffbe;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    overflow-x: hidden;
+    background: linear-gradient(45deg, #1a2a2a, #0a1a1a, #1a2a2a, #0a1a1a);
+    background-size: 400%;
+    animation: backgroundShift 15s ease infinite;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+}
+
+@keyframes backgroundShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .kontener {
-    background: rgba(40, 40, 40, 0.95);
-    padding: 40px;
-    border-radius: 20px;
-    max-width: 600px;
+    background: #1c2526;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.3);
+    border: 2px solid #63ffbe;
     width: 100%;
-    border: 1px solid rgba(99, 255, 190, 0.3);
-    box-shadow: 0 0 20px rgba(99, 255, 190, 0.2);
-    animation: fadeIn 0.8s ease-out;
-    backdrop-filter: blur(5px);
+    max-width: 400px;
+    text-align: center;
 }
 
 @keyframes fadeIn {
@@ -228,4 +229,30 @@ button:hover {
 
 #sutiBezár, #oldalBezár {
     background: linear-gradient(45deg, #f44336, #ef5350);
+}
+
+.kerdes {
+    text-align: center;
+}
+
+.kerdes-szam {
+    font-size: 24px;
+    color: #63ffbe;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.kerdes label {
+    display: block;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.valasz {
+    text-align: center;
+}
+
+#logo {
+    width: 100px;
+    height: auto;
 }

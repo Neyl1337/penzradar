@@ -62,6 +62,7 @@ function eredmenyKalkulacio() {
     eredmenyDiv.textContent = "Megítélt RadarSzint: " + aktualisSzerepkor + " költekező";
     eredmenyDiv.style.display = 'block';
     document.getElementById('mentes').style.display = 'block';
+    document.getElementById('vissza').style.display = 'block'; // Vissza gomb megjelenítése
 }
 
 function mentesSzerepkor() {

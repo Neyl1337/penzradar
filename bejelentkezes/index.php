@@ -6,6 +6,7 @@
     <title>PénzRadar - Bejelentkezés</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,16 +25,21 @@
                 <label for="nev" class="form-label">Felhasználónév</label>
                 <input type="text" class="form-control" id="nev" name="nev" placeholder="Felhasználónév" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="jelszo" class="form-label">Jelszó</label>
-                <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó" required>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó" required>
+                    <button class="btn btn-outline-secondary toggle-password" type="button" id="togglePassword2">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
             </div>
             <div class="form-check mb-3">
                 <input type="checkbox" class="form-check-input" id="emlekezzRam" name="emlekezzRam">
                 <label class="form-check-label" for="emlekezzRam">Név elmentése</label>
             </div>
             <button type="submit" class="btn btn-zold w-100">Bejelentkezés</button> <br> <br>
-            <div class= "oldal">
+            <div class="oldal">
                 <center><a href="../kezdolap/"><b>Vissza az oldalra</b></a></center>
             </div>
             <br id="mobilnezet"><b class="d-flex justify-content-end border-bottom" id="mobilnezet"></b>
@@ -44,6 +50,23 @@
             <p>Nincs még fiókod? <a href="../regisztracio/">Regisztráció</a></p>
         </div>
     </div>
+    <script>
+        // Toggle for the password field
+        document.getElementById('togglePassword2').addEventListener('click', function () {
+            const password = document.getElementById('jelszo');
+            const icon = this.querySelector('i');
+            
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -65,12 +65,15 @@ if (isset($_SESSION['felhasznalo_id'])) {
 </head>
 <body>
     <div class="kontener">
+        <img src='../../kepek/ujlogo.png' alt='PénzRadar' id="logo" />
         <h1>PénzRadar</h1>
         <h2>RadarSzint felmérő</h2>
         <center><p>Bejelentkezve mint: <?php echo isset($_SESSION['felhasznalo_nev']) ? htmlspecialchars($_SESSION['felhasznalo_nev']) : "Nem vagy bejelentkezve"; ?></p></center>
         <br><br>
         <div id="kerdesek">
             <div class="kerdes aktiv">
+                <center><div class="kerdes-szam">1/15</div></center>
+                <br>
                 <label>Mennyit költesz havonta ételre és alapvető élelmiszerekre?</label>
                 <div class="valasz"><input type="radio" name="etel" value="0"><span>Kevesebb mint 20 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="etel" value="1"><span>20 000 - 50 000 Ft</span></div>
@@ -78,6 +81,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="etel" value="3"><span>Több mint 100 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">2/15</div></center>
+                <br>
                 <label>Mennyit költesz havonta szórakozásra (pl. mozi, étterem, hobbi)?</label>
                 <div class="valasz"><input type="radio" name="szorakozas" value="0"><span>Kevesebb mint 10 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="szorakozas" value="1"><span>10 000 - 30 000 Ft</span></div>
@@ -85,6 +90,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="szorakozas" value="3"><span>Több mint 60 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">3/15</div></center>
+                <br>
                 <label>Hány ember megélhetéséről gondoskodsz (beleértve magadat is)?</label>
                 <div class="valasz"><input type="radio" name="emberek" value="0"><span>Csak magamról</span></div>
                 <div class="valasz"><input type="radio" name="emberek" value="1"><span>1-2 ember</span></div>
@@ -92,6 +99,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="emberek" value="3"><span>5 vagy több ember</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">4/15</div></center>
+                <br>
                 <label>Milyen gyakran vásárolsz új, nem alapvető dolgokat (pl. elektronika, bútor)?</label>
                 <div class="valasz"><input type="radio" name="vasarlas" value="0"><span>Ritkán vagy soha</span></div>
                 <div class="valasz"><input type="radio" name="vasarlas" value="1"><span>Havonta egyszer</span></div>
@@ -99,6 +108,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="vasarlas" value="3"><span>Majdnem naponta</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">5/15</div></center>
+                <br>
                 <label>Mennyit tudsz havonta megtakarítani?</label>
                 <div class="valasz"><input type="radio" name="takarekos" value="0"><span>Semmit</span></div>
                 <div class="valasz"><input type="radio" name="takarekos" value="1"><span>Kevesebb mint 20 000 Ft</span></div>
@@ -106,6 +117,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="takarekos" value="3"><span>Több mint 50 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">6/15</div></center>
+                <br>
                 <label>Mennyit költesz lakhatásra (bérleti díj, rezsi, vagy hitel)?</label>
                 <div class="valasz"><input type="radio" name="lakhatas" value="0"><span>0 Ft (pl. szüleimmel élek)</span></div>
                 <div class="valasz"><input type="radio" name="lakhatas" value="1"><span>Kevesebb mint 50 000 Ft</span></div>
@@ -113,6 +126,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="lakhatas" value="3"><span>Több mint 150 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">7/15</div></center>
+                <br>
                 <label>Milyen gyakran utazol belföldön vagy külföldön?</label>
                 <div class="valasz"><input type="radio" name="utazas" value="0"><span>Évente egyszer vagy ritkábban</span></div>
                 <div class="valasz"><input type="radio" name="utazas" value="1"><span>Évente 2-3 alkalommal</span></div>
@@ -120,6 +135,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="utazas" value="3"><span>Havonta vagy gyakrabban</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">8/15</div></center>
+                <br>
                 <label>Mennyit költesz ruházatra havonta?</label>
                 <div class="valasz"><input type="radio" name="ruha" value="0"><span>Kevesebb mint 10 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="ruha" value="1"><span>10 000 - 30 000 Ft</span></div>
@@ -127,6 +144,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="ruha" value="3"><span>Több mint 60 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">9/15</div></center>
+                <br>
                 <label>Van autód, és mennyit költesz rá havonta (üzemanyag, szerviz, biztosítás)?</label>
                 <div class="valasz"><input type="radio" name="auto" value="0"><span>Nincs autóm</span></div>
                 <div class="valasz"><input type="radio" name="auto" value="1"><span>Van, kevesebb mint 20 000 Ft</span></div>
@@ -134,6 +153,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="auto" value="3"><span>Van, több mint 50 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">10/15</div></center>
+                <br>
                 <label>Mennyit költesz ajándékokra évente?</label>
                 <div class="valasz"><input type="radio" name="ajandek" value="0"><span>Kevesebb mint 10 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="ajandek" value="1"><span>10 000 - 30 000 Ft</span></div>
@@ -141,6 +162,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="ajandek" value="3"><span>Több mint 70 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">11/15</div></center>
+                <br>
                 <label>Milyen lakásban élsz?</label>
                 <div class="valasz"><input type="radio" name="lakas_tipus" value="0"><span>Szüleim háza</span></div>
                 <div class="valasz"><input type="radio" name="lakas_tipus" value="1"><span>Bérelt lakás vagy szoba</span></div>
@@ -148,6 +171,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="lakas_tipus" value="3"><span>Saját lakás hitellel</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">12/15</div></center>
+                <br>
                 <label>Mennyit költesz közlekedésre (ha nincs autód, pl. bérlet, taxi)?</label>
                 <div class="valasz"><input type="radio" name="kozlekedes" value="0"><span>Kevesebb mint 5 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="kozlekedes" value="1"><span>5 000 - 15 000 Ft</span></div>
@@ -155,6 +180,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="kozlekedes" value="3"><span>Több mint 30 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">13/15</div></center>
+                <br>
                 <label>Van-e hiteled (kivéve lakáshitelt)?</label>
                 <div class="valasz"><input type="radio" name="hitel" value="0"><span>Nincs hitelem</span></div>
                 <div class="valasz"><input type="radio" name="hitel" value="1"><span>Van, havi törlesztés 20 000 Ft alatt</span></div>
@@ -162,6 +189,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="hitel" value="3"><span>Van, havi törlesztés 50 000 Ft felett</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">14/15</div></center>
+                <br>
                 <label>Mennyit költesz egészségügyre (pl. gyógyszer, orvos)?</label>
                 <div class="valasz"><input type="radio" name="egeszsegugy" value="0"><span>Kevesebb mint 5 000 Ft</span></div>
                 <div class="valasz"><input type="radio" name="egeszsegugy" value="1"><span>5 000 - 15 000 Ft</span></div>
@@ -169,6 +198,8 @@ if (isset($_SESSION['felhasznalo_id'])) {
                 <div class="valasz"><input type="radio" name="egeszsegugy" value="3"><span>Több mint 30 000 Ft</span></div>
             </div>
             <div class="kerdes">
+                <center><div class="kerdes-szam">15/15</div></center>
+                <br>
                 <label>Mennyit költesz oktatásra vagy önképzésre évente?</label>
                 <div class="valasz"><input type="radio" name="oktatas" value="0"><span>Semmit</span></div>
                 <div class="valasz"><input type="radio" name="oktatas" value="1"><span>Kevesebb mint 20 000 Ft</span></div>
@@ -185,6 +216,7 @@ if (isset($_SESSION['felhasznalo_id'])) {
             ?>
         </div>
         <button id="mentes" style="display: none;" onclick="mentesSzerepkor()">Kérem a RadarSzintem!</button>
+        <button id="vissza" style="display: none;" onclick="window.location.href='../kezdolap/'">Vissza az oldalra</button>
     </div>
 
     <script src="script.js"></script>

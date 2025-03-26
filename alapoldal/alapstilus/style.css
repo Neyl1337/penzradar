@@ -120,7 +120,7 @@ p {
 }
 
 .oldalsav h2:after {
-    content: "v2.7"; /*VERZIÓSZÁM*/
+    content: "v2.8"; /*VERZIÓSZÁM*/
     color: #63ffbe;
     font-family: "Arial Black", Impact, sans-serif;
     font-weight: bold;
@@ -439,7 +439,7 @@ canvas {
     .oldalsav h2 {
         font-size: 1.0rem;
     }
-    
+
     .oldalsav h2:after {
         display: none;
     }
@@ -450,7 +450,24 @@ canvas {
         font-size: 1.0rem;
     }
 
+    .link-szoveg {
+        font-size: 1.0rem;
+    }
+    
     .oldalsav h2:after {
+        display: none;
+    }
+}
+
+
+@media only screen and (max-width: 1344px) {
+    .link-szoveg {
+        font-size: 0.8rem;
+    }
+}
+
+@media only screen and (max-width: 1212px) {
+    .nav-link i {
         display: none;
     }
 }
@@ -461,6 +478,10 @@ canvas {
     }
 
     .oldalsav h2:after {
+        display: none;
+    }
+
+    .nav-link i {
         display: none;
     }
 }
@@ -491,6 +512,10 @@ canvas {
     }
 
     .oldalsav h2:after {
+        display: block;
+    }
+
+    .nav-link i {
         display: block;
     }
   }
