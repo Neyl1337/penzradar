@@ -165,11 +165,11 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                         </ul>
                     </div>
                 </header>
-                <div id="szemelyes" style="visibility: hidden;">
+                <div id="szemelyes" style="visibility: hidden;" class="mt-4 mb-4 settings-container">
                     <div class="container mt-4">
                         <h2 id="szemelyesadat">Személyes Adatok</h2>
                         <form id="profilbox" method="POST" action="felhasznalo_modositas.php">
-                            <div class="mb-3">
+                            <div class="mb-3" >
                                 <label class="form-label">Név</label>
                                 <div class="form-check">
                                     <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
@@ -212,13 +212,13 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             </div>
                         </form>
                     </div>
-                </div>
+            
 
 
 
 
-                <div id="Weboldali" style="visibility: hidden;">
-                    <div class="container mt-4">
+              
+                    <div class="container mt-4 ">
                         <h2 id="profilod">Web Adatok</h2>
                         <form id="profilbox" method="POST">
                         <div class="mb-3">

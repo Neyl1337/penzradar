@@ -1,21 +1,29 @@
 #szemelyes {
-    background-color: #1e1e1e;
-    border-radius: 12px;
-    padding: 20px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    margin-top: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #63ffbe;
+
+    background-color: #121212;
+    color: white;
+    cursor: url(../../kepek/cursor.ico), default !important;
+    font-family: Arial, sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #63ffbe #1e1e1e;
+    width: 66.6%;
 }
 
 
+
+#profilbox{
+    background: #2b2b2b;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
 
 #szemelyesadat{
     color: #63ffbe;
     font-weight: bold;
 }
+
+
 
 #Weboldali {
     background-color: #1e1e1e;
