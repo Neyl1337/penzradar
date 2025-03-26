@@ -1,12 +1,13 @@
 #szemelyes {
 
-    background-color: #121212;
-    color: white;
-    cursor: url(../../kepek/cursor.ico), default !important;
-    font-family: Arial, sans-serif;
-    scrollbar-width: thin;
-    scrollbar-color: #63ffbe #1e1e1e;
-    width: 66.6%;
+    background: #1e1e1e;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(99, 255, 190, 0.3);
+    border: 1px solid #63ffbe;
+    color: #ffffff;
+    width: 500px;
+    margin-left: 25%;
 }
 
 
