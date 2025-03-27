@@ -9,13 +9,11 @@ error_reporting(E_ALL);
 
 $_SESSION['szerepkor'] = null;
 $_SESSION['perselyegyenleg'] = null;
-$_SESSION['heti_maximum'] = null;
-$_SESSION['napi_maximum'] = null;
 $_SESSION['gyakorisag'] = null;
 
 if (isset($_SESSION['felhasznalo_nev'])) {
     $parancs = $pdo->prepare("
-        SELECT f.rang, p.egyenleg, f.hetimax, f.napimax 
+        SELECT f.rang, p.egyenleg
         FROM felhasznalok f
         INNER JOIN persely p ON f.id = p.felhasznalo_id
         WHERE f.nev = ?
@@ -26,8 +24,6 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     if ($felhasznalo) {
         $_SESSION['szerepkor'] = $felhasznalo['rang'];
         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
-        $_SESSION['heti_maximum'] = $felhasznalo['hetimax'];
-        $_SESSION['napi_maximum'] = $felhasznalo['napimax'];
     }
 
     $parancs_gyakorisag = $pdo->prepare("
@@ -75,12 +71,6 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
-$heti_maximum = $_SESSION['heti_maximum'] ?? null;
-$napi_maximum = $_SESSION['napi_maximum'] ?? null;
-$gyakorisag = $_SESSION['gyakorisag'] ?? null;
-$formatált_heti_maximum = $heti_maximum ? number_format($heti_maximum, 0, '.', ',') : 'Még nincs megadva';
-$formatált_napi_maximum = $napi_maximum ? number_format($napi_maximum, 0, '.', ',') : 'Még nincs megadva';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])) {
     if (isset($_POST['tipus']) && isset($_POST['osszeg']) && isset($_POST['gyakorisag'])) {
         $parancs_szamolas = $pdo->prepare("SELECT COUNT(*) FROM tervezo WHERE felhasznalo_nev = ?");
@@ -119,13 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])
     if (isset($_POST['torles_id'])) {
         $parancs = $pdo->prepare("DELETE FROM tervezo WHERE id = ? AND felhasznalo_nev = ?");
         $parancs->execute([$_POST['torles_id'], $_SESSION['felhasznalo_nev']]);
-    }
-    
-    if (isset($_POST['heti_maximum_megerosites'])) {
-        $parancs = $pdo->prepare("UPDATE felhasznalok SET hetimax = ?, napimax = ? WHERE nev = ?");
-        $parancs->execute([$_POST['heti_maximum'], $_POST['napi_maximum'], $_SESSION['felhasznalo_nev']]);
-        $_SESSION['heti_maximum'] = $_POST['heti_maximum'];
-        $_SESSION['napi_maximum'] = $_POST['napi_maximum'];
     }
     
     if (isset($_POST['cel_hozzaadas'])) {
@@ -283,7 +266,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
-                        <span class="me-3" id="szerepkor" style="visibility: hidden;">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
+                        <span class="me-3" id="szerepkor" style="visibility: hidden;">RadarSzint: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                             <i class="fas fa-user-circle"></i> 
@@ -300,24 +283,6 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                 <div class="container" id="tervezoablakok" style="visibility: hidden;">
                     <div class="row">
                         <div class="col-md-6 mb-4">
-                            <div class="mennyit-container">
-                                <center>
-                                    <h2 id="h2mennyit">Kiadások tervezése</h2>
-                                    <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#hetiMaximumModal">
-                                        Tervezett kiadások megadása
-                                    </button>
-                                    <br><br>
-                                    <div class="tervezett-koltseg">
-                                        <span style="color: white;">Tervezett heti kiadás:</span> 
-                                        <span style="color: #63ffbe;"><?php echo $formatált_heti_maximum; ?> Ft</span>
-                                    </div>
-                                    <div class="tervezett-koltseg">
-                                        <span style="color: white;">Tervezett napi kiadás:</span> 
-                                        <span style="color: #63ffbe;"><?php echo $formatált_napi_maximum; ?> Ft</span>
-                                    </div>
-                                </center>
-                            </div>
-
                             <form method="POST" class="tervezo-form mt-4">
                             <center><h2 id="h2mennyit">Rendszeres bevétel / kiadás</h2></center>
                                 <div class="mb-3">
@@ -496,38 +461,12 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="hetiMaximumModal" tabindex="-1" aria-labelledby="hetiMaximumModalCimke" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="hetiMaximumModalCimke">Tervezett kiadás beállítása</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" id="hetiMaximumUrlap">
-                                    <div class="mb-3">
-                                        <label for="heti_maximum" class="form-label">Tervezett heti kiadás (Ft)</label>
-                                        <input type="number" name="heti_maximum" id="heti_maximum" class="form-control" min="0" value="<?php echo $heti_maximum ?? ''; ?>">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="napi_maximum" class="form-label">Tervezett napi kiadás (Ft)</label>
-                                        <input type="number" name="napi_maximum" id="napi_maximum" class="form-control" min="0" value="<?php echo $napi_maximum ?? ''; ?>">
-                                    </div>
-                                    <button type="submit" name="heti_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-</div>
 <script>
     const felhasznaloNev = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
     const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
-    const hetiMaximum = '<?php echo htmlspecialchars($_SESSION["heti_maximum"] ?? ""); ?>';
-    const napiMaximum = '<?php echo htmlspecialchars($_SESSION["napi_maximum"] ?? ""); ?>';
     const gyakorisag = '<?php echo htmlspecialchars($_SESSION["gyakorisag"] ?? ""); ?>';
     
     if (felhasznaloNev) {
