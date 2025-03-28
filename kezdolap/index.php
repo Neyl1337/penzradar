@@ -436,6 +436,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
     <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="../hirdetes/style.css">
+    <link rel="stylesheet" href="../discord/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -612,6 +613,11 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
             </nav>
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
+                    <!-- <div>
+                        <a href="../discord/index.php" class="discord-navbanner">
+                            <img src="../discord/dcpr.png" alt="Csatlakozz a Discord szerverünkhöz!">
+                        </a>
+                    </div> -->
                     <div class="dropdown d-flex align-items-center">
                         <span class="me-3" id="szerepkor" style="visibility: hidden;">RadarSzint: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
@@ -751,6 +757,12 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <h4>Jelentkezz be <a href="../bejelentkezes/">itt</a></h4>
                             <h5>Amennyiben még nem regisztráltál, <a href="../regisztracio/">itt</a> megteheted</h5>
                         </center>
+                    </div>
+                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
+                    <div>
+                        <a href="../discord/index.php" class="discord-banner">
+                            <img src="../discord/dcpr.png" alt="Csatlakozz a Discord szerverünkhöz!">
+                        </a>
                     </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <div class="row">
