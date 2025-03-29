@@ -1,11 +1,11 @@
 .tervezo-form {
     max-width: 500px;
     margin: 20px 0;
-    background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     color: #ffffff;
-    box-shadow: 0 0 10px #63ffbe;
 }
 
 .tervezo-form label {
@@ -15,15 +15,15 @@
 .tervezo-form .form-control,
 .tervezo-form .form-select {
     background-color: #ffffff;
-    color: #000000;
+    color: #ffffff;
 }
 
 .tranzakcio-tabla {
     width: 100%;
     margin-top: 20px;
-    background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     color: #ffffff;
-    box-shadow: 0 0 10px #63ffbe;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -196,20 +196,27 @@ h1 {
 }
 
 .mennyit-container {
-    max-width: 500px;
     margin: 20px 0;
-    background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     color: #ffffff;
-    box-shadow: 0 0 10px #63ffbe;
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
+    max-width: 800px;
+}
+
+#megadasbox {
+    background: #1e1e1e;
+    border-radius: 10px;
+    color: #ffffff;
 }
 
 .form-control {
-    background-color: #1e1e1e;
+    background-color: #ffffff;
     border: 1px solid #63ffbe;
     color: white;
     border-radius: 5px;
@@ -331,8 +338,8 @@ h1 {
     text-align: center;
 }
 .celok-ablak {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 10px #63ffbe;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     border-radius: 10px;
     padding: 20px;
     margin-top: 20px;
@@ -383,32 +390,95 @@ h1 {
         padding: 0.2rem;
     }
 }
-.sporoasi-ablak {
-    text-align: center;
+.custom-modal {
+    background-color: #1e1e1e36;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
-.sporoasi-ablak h3 {
-    margin-bottom: 20px;
+
+.modal-content {
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
 }
-.sporolas {
-    list-style: none;
-    padding: 0;
-    counter-reset: tip-counter;
-    text-align: center;
-}
-.sporolas li {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 1s ease, transform 1s ease;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    display: none;
-    color: #63FFBE;
-    counter-increment: tip-counter;
-    position: relative;
-}
-.sporolas li.visible {
-    opacity: 1;
-    transform: translateY(0);
+
+.custom-modal .modal-header {
+    background-color: #63ffbe;
+    color: #121212;
+    border-bottom: 1px solid #55daa2;
     display: block;
+    padding: 10px;
+}
+
+.custom-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.custom-modal .btn-close {
+    filter: invert(1);
+}
+
+.custom-modal .modal-body {
+    font-size: 1.2rem;
+    padding: 20px;
     text-align: center;
+}
+
+.custom-modal .modal-footer {
+    border-top: 1px solid #63ffbe;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal .btn-secondary,
+.custom-modal .btn-primary,
+.custom-modal .btn-danger {
+    min-width: 100px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    text-align: center;
+}
+
+.custom-modal .btn-secondary {
+    background-color: #444;
+    border: none;
+    color: white;
+}
+
+.custom-modal .btn-secondary:hover {
+    background-color: #555;
+    color: #ffffff;
+}
+
+.custom-modal .btn-primary {
+    background-color: #63ffbe;
+    border: none;
+    color: #121212;
+}
+
+.custom-modal .btn-primary:hover {
+    background-color: #55daa2;
+    color: #ffffff;
+}
+
+.custom-modal .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #1e1e1e;
+}
+
+.custom-modal .btn-danger:hover {
+    background-color: #c82333;
+    color: #ffffff;
 }

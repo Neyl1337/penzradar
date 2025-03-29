@@ -67,22 +67,34 @@ $valasztott_ev = date('Y', strtotime($valasztott_idoszak));
 $havi_cim = "$valasztott_ev. {$honap_nevek[$valasztott_honap]}";
 
 if (isset($_SESSION['felhasznalo_id'])) {
-    $stmt = $pdo->prepare("SELECT f.rang, p.egyenleg FROM felhasznalok f INNER JOIN persely p ON f.id = p.felhasznalo_id WHERE f.id = ?");
+    $stmt = $pdo->prepare("SELECT f.rang, f.havimax, f.hetimax, f.napimax, p.egyenleg 
+                           FROM felhasznalok f 
+                           INNER JOIN persely p ON f.id = p.felhasznalo_id 
+                           WHERE f.id = ?");
     $stmt->execute([$_SESSION['felhasznalo_id']]);
     $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($felhasznalo) {
         $_SESSION['szerepkor'] = $felhasznalo['rang'];
         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
+        // Limitek tárolása
+        $havimax = $felhasznalo['havimax'] ?? 0;
+        $hetimax = $felhasznalo['hetimax'] ?? 0;
+        $napimax = $felhasznalo['napimax'] ?? 0;
     } else {
         $_SESSION['szerepkor'] = null;
         $_SESSION['perselyegyenleg'] = 0;
+        $havimax = 0;
+        $hetimax = 0;
+        $napimax = 0;
     }
 } else {
     $_SESSION['szerepkor'] = null;
     $_SESSION['perselyegyenleg'] = 0;
+    $havimax = 0;
+    $hetimax = 0;
+    $napimax = 0;
 }
-
 $formatált_egyenleg = number_format($_SESSION['perselyegyenleg'] ?? 0, 0, '.', ',');
 
 $napi_bevetel = 0;
@@ -110,6 +122,7 @@ $heti_bevetelek = array_fill(0, 7, 0);
 $heti_kiadasok = array_fill(0, 7, 0);
 $havi_bevetelek = array_fill(0, $napok_szama, 0);
 $havi_kiadasok = array_fill(0, $napok_szama, 0);
+
 
 if (isset($_SESSION['felhasznalo_id'])) {
     $naptar_lekerdezes = $pdo->prepare("SELECT SUM(NBevetel) as osszeg FROM naptar WHERE felhasznalo_id = ? AND datum = ? AND NBevetel IS NOT NULL");
@@ -419,6 +432,17 @@ $atlagos_havi_kiadas_format = number_format($atlagos_havi_kiadas, 0, '.', ',');
 $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
 $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 
+
+// Bevételek limit ellenőrzése
+$havi_bevetel_tullepes = $havi_bevetel > $havimax && $havimax > 0 ? 'tullepes' : '';
+$heti_bevetel_tullepes = $heti_bevetel > $hetimax && $hetimax > 0 ? 'tullepes' : '';
+$napi_bevetel_tullepes = $napi_bevetel > $napimax && $napimax > 0 ? 'tullepes' : '';
+
+// Kiadások limit ellenőrzése (opcionális, ha a kiadásokra is vonatkozik a limit)
+$havi_kiadas_tullepes = $havi_kiadas > $havimax && $havimax > 0 ? 'tullepes' : '';
+$heti_kiadas_tullepes = $heti_kiadas > $hetimax && $hetimax > 0 ? 'tullepes' : '';
+$napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -447,7 +471,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
         </video>
     </div>
 
-    <?php if (isset($_SESSION['felhasznalo_id']) && !isset($_COOKIE['cookie_elfogadva']) && !isset($_COOKIE['cookie_elutasitva'])): ?>
+    <?php if (!isset($_SESSION['felhasznalo_id']) && !isset($_COOKIE['cookie_elfogadva']) && !isset($_COOKIE['cookie_elutasitva'])): ?>
         <div class="modal fade custom-modal" id="cookieModal" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -649,11 +673,12 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <div class="row g-4 mt-3">
                                 <div class="col-12 col-sm-4">
                                     <div class="kartya text-center">
-                                        <h5>Napi bevétel</h5>
-                                        <b><?php echo $napi_bevetel_format; ?> Ft</b>
-                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_bevetel_format; ?> Ft</div>
+                                        <h5>Havi bevétel</h5>
+                                        <b><?php echo $havi_bevetel_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_havi_bevetel_format; ?> Ft</div>
                                     </div>
                                 </div>
+
                                 <div class="col-12 col-sm-4">
                                     <div class="kartya text-center">
                                         <h5>Heti bevétel</h5>
@@ -661,11 +686,12 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                         <div class="atlag">Átlag: <?php echo $atlagos_heti_bevetel_format; ?> Ft</div>
                                     </div>
                                 </div>
+
                                 <div class="col-12 col-sm-4">
                                     <div class="kartya text-center">
-                                        <h5>Havi bevétel</h5>
-                                        <b><?php echo $havi_bevetel_format; ?> Ft</b>
-                                        <div class="atlag">Átlag: <?php echo $atlagos_havi_bevetel_format; ?> Ft</div>
+                                        <h5>Napi bevétel</h5>
+                                        <b><?php echo $napi_bevetel_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_bevetel_format; ?> Ft</div>
                                     </div>
                                 </div>
                             </div>
@@ -700,24 +726,35 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                             <h3 class="text-center mt-4" style="color: #63ffbe;">Kiadások</h3>
                             <div class="row g-4 mt-3">
                                 <div class="col-12 col-sm-4">
-                                    <div class="kartya text-center">
-                                        <h5>Napi kiadás</h5>
-                                        <b><?php echo $napi_kiadas_format; ?> Ft</b>
-                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_kiadas_format; ?> Ft</div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-4">
-                                    <div class="kartya text-center">
-                                        <h5>Heti kiadás</h5>
-                                        <b><?php echo $heti_kiadas_format; ?> Ft</b>
-                                        <div class="atlag">Átlag: <?php echo $atlagos_heti_kiadas_format; ?> Ft</div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-4">
-                                    <div class="kartya text-center">
+                                    <div class="kartya text-center <?php echo $havi_kiadas_tullepes; ?>">
                                         <h5>Havi kiadás</h5>
                                         <b><?php echo $havi_kiadas_format; ?> Ft</b>
                                         <div class="atlag">Átlag: <?php echo $atlagos_havi_kiadas_format; ?> Ft</div>
+                                        <?php if ($havi_kiadas_tullepes): ?>
+                                            <p class="villogo-uzenet" style="color: red; font-size: 14px; margin-top: 10px;">Túllépte a havi limitet (<?php echo number_format($havimax, 0, '.', ','); ?> Ft)!</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center <?php echo $heti_kiadas_tullepes; ?>">
+                                        <h5>Heti kiadás</h5>
+                                        <b><?php echo $heti_kiadas_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_heti_kiadas_format; ?> Ft</div>
+                                        <?php if ($heti_kiadas_tullepes): ?>
+                                            <p class="villogo-uzenet" style="color: red; font-size: 14px; margin-top: 10px;">Túllépte a heti limitet (<?php echo number_format($hetimax, 0, '.', ','); ?> Ft)!</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-sm-4">
+                                    <div class="kartya text-center <?php echo $napi_kiadas_tullepes; ?>">
+                                        <h5>Napi kiadás</h5>
+                                        <b><?php echo $napi_kiadas_format; ?> Ft</b>
+                                        <div class="atlag">Átlag: <?php echo $atlagos_napi_kiadas_format; ?> Ft</div>
+                                        <?php if ($napi_kiadas_tullepes): ?>
+                                            <p class="villogo-uzenet" style="color: red; font-size: 14px; margin-top: 10px;">Túllépte a napi limitet (<?php echo number_format($napimax, 0, '.', ','); ?> Ft)!</p>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

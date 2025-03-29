@@ -264,3 +264,21 @@
     margin-bottom: 20px;
     flex-wrap: wrap;
 }
+
+
+@keyframes villogas {
+    0% { background-color: #ff3333; }
+    50% { background-color: #ffff99; }
+    100% { background-color: #ff3333; }
+}
+
+.villogo-uzenet {
+    color: #ff073a;
+    animation: szoveg-villogas 0.3s infinite;
+}
+
+@keyframes szoveg-villogas {
+    0% { color: #ff073a; }
+    50% { color: rgb(255, 255, 255); }
+    100% { color: #ff073a; }
+}

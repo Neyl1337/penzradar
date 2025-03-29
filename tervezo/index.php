@@ -9,11 +9,14 @@ error_reporting(E_ALL);
 
 $_SESSION['szerepkor'] = null;
 $_SESSION['perselyegyenleg'] = null;
+$_SESSION['heti_maximum'] = null;
+$_SESSION['napi_maximum'] = null;
+$_SESSION['havi_maximum'] = null;
 $_SESSION['gyakorisag'] = null;
 
 if (isset($_SESSION['felhasznalo_nev'])) {
     $parancs = $pdo->prepare("
-        SELECT f.rang, p.egyenleg
+        SELECT f.rang, p.egyenleg, f.hetimax, f.napimax, f.havimax 
         FROM felhasznalok f
         INNER JOIN persely p ON f.id = p.felhasznalo_id
         WHERE f.nev = ?
@@ -24,6 +27,9 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     if ($felhasznalo) {
         $_SESSION['szerepkor'] = $felhasznalo['rang'];
         $_SESSION['perselyegyenleg'] = $felhasznalo['egyenleg'];
+        $_SESSION['heti_maximum'] = $felhasznalo['hetimax'];
+        $_SESSION['napi_maximum'] = $felhasznalo['napimax'];
+        $_SESSION['havi_maximum'] = $felhasznalo['havimax'];
     }
 
     $parancs_gyakorisag = $pdo->prepare("
@@ -71,6 +77,14 @@ $formatált_egyenleg = isset($_SESSION['perselyegyenleg'])
     ? number_format($_SESSION['perselyegyenleg'], 0, '.', ',') 
     : '0';
 
+$heti_maximum = $_SESSION['heti_maximum'] ?? null;
+$napi_maximum = $_SESSION['napi_maximum'] ?? null;
+$havi_maximum = $_SESSION['havi_maximum'] ?? null;
+$gyakorisag = $_SESSION['gyakorisag'] ?? null;
+$formatált_heti_maximum = $heti_maximum ? number_format($heti_maximum, 0, '.', ',') : 'Még nincs megadva';
+$formatált_napi_maximum = $napi_maximum ? number_format($napi_maximum, 0, '.', ',') : 'Még nincs megadva';
+$formatált_havi_maximum = $havi_maximum ? number_format($havi_maximum, 0, '.', ',') : 'Még nincs megadva';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])) {
     if (isset($_POST['tipus']) && isset($_POST['osszeg']) && isset($_POST['gyakorisag'])) {
         $parancs_szamolas = $pdo->prepare("SELECT COUNT(*) FROM tervezo WHERE felhasznalo_nev = ?");
@@ -109,6 +123,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])
     if (isset($_POST['torles_id'])) {
         $parancs = $pdo->prepare("DELETE FROM tervezo WHERE id = ? AND felhasznalo_nev = ?");
         $parancs->execute([$_POST['torles_id'], $_SESSION['felhasznalo_nev']]);
+    }
+    
+    if (isset($_POST['heti_maximum_megerosites'])) {
+        $parancs = $pdo->prepare("UPDATE felhasznalok SET hetimax = ? WHERE nev = ?");
+        $parancs->execute([$_POST['heti_maximum'], $_SESSION['felhasznalo_nev']]);
+        $_SESSION['heti_maximum'] = $_POST['heti_maximum'];
+    }
+    
+    if (isset($_POST['napi_maximum_megerosites'])) {
+        $parancs = $pdo->prepare("UPDATE felhasznalok SET napimax = ? WHERE nev = ?");
+        $parancs->execute([$_POST['napi_maximum'], $_SESSION['felhasznalo_nev']]);
+        $_SESSION['napi_maximum'] = $_POST['napi_maximum'];
+    }
+    
+    if (isset($_POST['havi_maximum_megerosites'])) {
+        $parancs = $pdo->prepare("UPDATE felhasznalok SET havimax = ? WHERE nev = ?");
+        $parancs->execute([$_POST['havi_maximum'], $_SESSION['felhasznalo_nev']]);
+        $_SESSION['havi_maximum'] = $_POST['havi_maximum'];
     }
     
     if (isset($_POST['cel_hozzaadas'])) {
@@ -158,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['felhasznalo_nev'])
     exit;
 }
 
-$waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
+$varakozo_tamogatasok = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás'")->fetchColumn();
 $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
 ?>
 
@@ -241,15 +273,27 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                         <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
                     </div>
                 <?php endif; ?>
-                <?php if (isset($_SESSION['felhasznalo_id'])): ?>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../alapoldal/arfolyam/">
-                            <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
-                            <span class="link-szoveg">Kamatszámítás</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                <b class="d-flex justify-content-end py-3 border-bottom"></b>
+                    <?php if (isset($_SESSION['felhasznalo_id'])): ?>
+                        <br>
+                        <h4 style="color: #63ffbe; font-size: 1.2rem;">Kamatszámítás</h4>
+                        <form id="kamatSzamitasUrlap">
+                            <div class="mb-2">
+                                <label for="alapOsszeg" style="color: white; font-size: 1rem;">Tőke (Ft):</label>
+                                <input type="number" id="alapOsszeg" class="form-control" min="0" value="<?php echo htmlspecialchars($formatált_egyenleg); ?>" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="kamatSzazalek" style="color: white; font-size: 1rem;">Kamatláb (%):</label>
+                                <input type="number" id="kamatSzazalek" class="form-control" min="0" max="100" step="0.1" value="5" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <div class="mb-2">
+                                <label for="idotartam" style="color: white; font-size: 1rem;">Futamidő (év):</label>
+                                <input type="number" id="idotartam" class="form-control" min="1" max="99" value="1" style="background-color: #1e1e1e; color: white; border: 1px solid #63ffbe; border-radius: 5px;" oninput="validateInput(this)">
+                            </div>
+                            <button type="button" class="btn btn-primary w-100 kamat-button" onclick="szamitKamat()" style="background-color: #1e1e1e; border: 1px solid #63ffbe; color: white;">Számítás</button>
+                        </form>
+                        <p id="kamatEredmeny" class="mt-2" style="color: #63ffbe;"></p>
+                    <?php endif; ?>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                     <div>
                         <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
@@ -257,7 +301,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                     </p></a></li>
                     </div>
                     <div>
-                        <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $waiting_supports; ?></div>
+                        <li class="nav-item"><a class="nav-link" href="../admin/support.php"><p id="supportpanel"><i class="fas fa-users"></i> Support  <div id="supportszam">0<?php echo $varakozo_tamogatasok; ?></div>
                     </p></a></li>
                     </div>
                 <?php endif; ?>
@@ -266,7 +310,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
             <main class="col-12 col-md-9 col-lg-10 main-content">
                 <header class="d-flex justify-content-end py-3 border-bottom">
                     <div class="dropdown d-flex align-items-center">
-                        <span class="me-3" id="szerepkor" style="visibility: hidden;">RadarSzint: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
+                        <span class="me-3" id="szerepkor" style="visibility: hidden;">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                         <span class="me-3" id="perselyegyenleg" style="visibility: hidden;">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo htmlspecialchars($formatált_egyenleg); ?></b> Ft</span>
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                             <i class="fas fa-user-circle"></i> 
@@ -399,25 +443,41 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                             </div>
                         </div>
 
-                        <div class="sporoasi-ablak">
-                            <h3><span style="color: #63ffbe; font-weight: bold;">$</span> AI ALAPÚ SPÓROLÁSI TIPPEK <span style="color: #63ffbe; font-weight: bold;">$</span></h3>
-                            <ul class="sporolas">
-                                <li>Használj hűségkártyákat, kuponokat és cashback alkalmazásokat.</li>
-                                <li>Válts át előre fizetett mobilcsomagra, ha nem használod ki a havi előfizetésedet.</li>
-                                <li>Kerüld a kis értékű, de gyakori kiadásokat (pl. napi kávé, üdítő).</li>
-                                <li>Vásárolj használt vagy felújított műszaki cikkeket és bútorokat.</li>
-                                <li>Sétálj vagy biciklizz rövidebb utakra, így üzemanyagot spórolsz.</li>
-                                <li>Kapcsold ki a készenléti állapotban lévő elektromos eszközöket.</li>
-                                <li>Készíts otthon kávét vagy teát ahelyett, hogy naponta vennél egyet.</li>
-                                <li>Vásárolj nagyobb kiszerelésben, ha az hosszú távon olcsóbb.</li>
-                                <li>Adj el vagy cserélj el olyan dolgokat, amiket már nem használsz.</li>
-                                <li>Tervezz meg minden nagyobb vásárlást, és várd meg a leárazásokat.</li>
-                                <li>Ne menj éhesen bevásárolni, mert így feleslegesen többet költhetsz.</li>
-                                <li>Tanuld meg otthon megjavítani az egyszerűbb dolgokat, így nem kell mindig szakembert hívni.</li>
-                                <li>Keresd a helyi termelői piacokat, ahol gyakran olcsóbb és jobb minőségű az áru.</li>
-                                <li>Kapcsold ki a fűtést vagy a klímát, ha épp nem vagy otthon.</li>
-                            </ul>
-                        </div>
+                        <div class="mennyit-container">
+                                <center>
+                                    <h2 id="h2mennyit">Kiadások tervezése</h2><br>
+                                    <div id="megadasbox">
+                                        <br>
+                                        <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#haviMaximumModal">
+                                            Havi kiadások megadása
+                                        </button>
+                                        <br><br>
+                                        <div class="tervezett-koltseg">
+                                            <span style="color: white;">Tervezett havi kiadás:</span> 
+                                            <span style="color: #63ffbe;"><?php echo $formatált_havi_maximum; ?> Ft</span>
+                                        </div>
+                                        <br>
+                                        <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#hetiMaximumModal">
+                                            Heti kiadások megadása
+                                        </button>
+                                        <br><br>
+                                        <div class="tervezett-koltseg">
+                                            <span style="color: white;">Tervezett heti kiadás:</span> 
+                                            <span style="color: #63ffbe;"><?php echo $formatált_heti_maximum; ?> Ft</span>
+                                        </div>
+                                        <br>
+                                        <button type="button" class="btn btn-primary maxkoltes-gomb button2" data-bs-toggle="modal" data-bs-target="#napiMaximumModal">
+                                            Napi kiadások megadása
+                                        </button>
+                                        <br><br>
+                                        <div class="tervezett-koltseg">
+                                            <span style="color: white;">Tervezett napi kiadás:</span> 
+                                            <span style="color: #63ffbe;"><?php echo $formatált_napi_maximum; ?> Ft</span>
+                                        </div>
+                                        <br>
+                                    </div>
+                                </center>
+                            </div>
                     </div>
                 </div>
                 <div class="row">
@@ -446,12 +506,12 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                             <td data-label="Leírás"><?php echo htmlspecialchars($tranzakcio['leiras']); ?></td>
                                             <center>
                                             <td data-label="Műveletek">
-                                                <form method="POST">
-                                                    <input type="hidden" name="torles_id" value="<?php echo $tranzakcio['id']; ?>">
-                                                    <button type="submit" class="btn p-0 kuka-kozep">
-                                                        <i class="bi bi-trash button3"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn p-0 kuka-kozep torles-gomb" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#torlesMegerositesModal" 
+                                                        data-id="<?php echo $tranzakcio['id']; ?>">
+                                                    <i class="bi bi-trash button3"></i>
+                                                </button>
                                             </td>
                                             </center>
                                         </tr>
@@ -461,12 +521,91 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+                <div class="modal fade" id="hetiMaximumModal" tabindex="-1" aria-labelledby="hetiMaximumModalCimke" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="hetiMaximumModalCimke">Tervezett heti kiadás beállítása</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" id="hetiMaximumUrlap">
+                                    <div class="mb-3">
+                                        <label for="heti_maximum" class="form-label">Tervezett heti kiadás (Ft)</label>
+                                        <input type="number" name="heti_maximum" id="heti_maximum" class="form-control" min="0" value="<?php echo $heti_maximum ?? ''; ?>">
+                                    </div>
+                                    <button type="submit" name="heti_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="napiMaximumModal" tabindex="-1" aria-labelledby="napiMaximumModalCimke" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="napiMaximumModalCimke">Tervezett napi kiadás beállítása</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" id="napiMaximumUrlap">
+                                    <div class="mb-3">
+                                        <label for="napi_maximum" class="form-label">Tervezett napi kiadás (Ft)</label>
+                                        <input type="number" name="napi_maximum" id="napi_maximum" class="form-control" min="0" value="<?php echo $napi_maximum ?? ''; ?>">
+                                    </div>
+                                    <button type="submit" name="napi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="haviMaximumModal" tabindex="-1" aria-labelledby="haviMaximumModalCimke" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="haviMaximumModalCimke">Tervezett havi kiadás beállítása</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" id="haviMaximumUrlap">
+                                    <div class="mb-3">
+                                        <label for="havi_maximum" class="form-label">Tervezett havi kiadás (Ft)</label>
+                                        <input type="number" name="havi_maximum" id="havi_maximum" class="form-control" min="0" value="<?php echo $havi_maximum ?? ''; ?>">
+                                    </div>
+                                    <button type="submit" name="havi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="torlesMegerositesModal" tabindex="-1" aria-labelledby="torlesMegerositesModalCimke" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="torlesMegerositesModalCimke">Törlés megerősítése</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p style="font-size: 20px;">Biztosan törölni szeretné? Ez a művelet nem visszavonható.</p>
+                            <form method="POST" id="torlesMegerositesForm">
+                                <input type="hidden" name="torles_id" id="torles_id" value=""><br>
+                                <button type="submit" class="btn btn-danger button3">Törlöm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+</div>
 <script>
     const felhasznaloNev = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
     const egyenleg = '<?php echo htmlspecialchars($_SESSION["perselyegyenleg"] ?? "0"); ?>';
+    const hetiMaximum = '<?php echo htmlspecialchars($_SESSION["heti_maximum"] ?? ""); ?>';
+    const napiMaximum = '<?php echo htmlspecialchars($_SESSION["napi_maximum"] ?? ""); ?>';
+    const haviMaximum = '<?php echo htmlspecialchars($_SESSION["havi_maximum"] ?? ""); ?>';
     const gyakorisag = '<?php echo htmlspecialchars($_SESSION["gyakorisag"] ?? ""); ?>';
     
     if (felhasznaloNev) {
@@ -539,6 +678,14 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
 
     kovetkezoTippekMutatasa();
     setInterval(kovetkezoTippekMutatasa, 20000);
+});
+
+// Törlés megerősítése
+document.querySelectorAll('.torles-gomb').forEach(button => {
+    button.addEventListener('click', function() {
+        const tranzakcioId = this.getAttribute('data-id');
+        document.getElementById('torles_id').value = tranzakcioId;
+    });
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
