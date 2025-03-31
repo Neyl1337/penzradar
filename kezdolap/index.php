@@ -606,14 +606,13 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
                     <b class="d-flex justify-content-end py-3 border-bottom"></b>
                     <br>
                     <div id="arfolyamok" class="my-3">
-                        <h4 class="text-center" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
+                        <h4 class="text-center arfolyamok-cim" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
                         <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
-                        <div>
-                            <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>
-                        </div>
+                            <div id="frissites-ido" class="frissites-keret text-center"></div>
                     <?php endif; ?>
+                    <button id="frissites-gomb">Frissítés</button>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
@@ -813,29 +812,6 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
                                 <a href="../regisztracio/" class="cta-button" id="cta"></a>
                             </div>
                         </div>
-                        <?php if (!isset($_SESSION['felhasznalo_id'])): ?>
-                        <div class="col-12 col-md-6">
-                            <div class="kamat-container my-3">
-                                <h4>Kamatszámítás</h4>
-                                <form id="kamatSzamitasFormLoggedOut">
-                                    <div class="mb-2">
-                                        <label for="alapOsszegLoggedOut">Tőke (Ft):</label>
-                                        <input type="number" id="alapOsszegLoggedOut" class="form-control" min="0" value="0" oninput="validateInput(this)">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="kamatSzazalekLoggedOut">Kamatláb (%):</label>
-                                        <input type="number" id="kamatSzazalekLoggedOut" class="form-control" min="0" max="100" step="0.1" value="5" oninput="validateInput(this)">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="idotartamLoggedOut">Futamidő (év):</label>
-                                        <input type="number" id="idotartamLoggedOut" class="form-control" min="1" max="99" value="1" oninput="validateInput(this)">
-                                    </div>
-                                    <button type="button" class="btn2 btn-primary2 w-100" onclick="szamitKamatLoggedOut()">Számítás</button>
-                                </form>
-                                <p id="kamatEredmenyLoggedOut" class="mt-2"></p>
-                            </div>
-                        </div>
-                        <?php endif; ?>
                     </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                 </div>
