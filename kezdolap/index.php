@@ -457,7 +457,6 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="../hirdetes/style.css">
     <link rel="stylesheet" href="../discord/style.css">
@@ -618,7 +617,7 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
-                        <a class="nav-link" href="../alapoldal/arfolyam/">
+                        <a class="nav-link" href="../kamat/index.php">
                             <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                             <span class="link-szoveg">Kamatszámítás</span>
                         </a>
@@ -1015,7 +1014,6 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>
-    <script src="../alapoldal/kamat/js.js"></script>
     <script src="../hirdetes/js.js"></script>
 </body>
 </html>

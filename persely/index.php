@@ -261,7 +261,6 @@ try {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
-    <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -317,7 +316,7 @@ try {
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
-                        <a class="nav-link" href="../alapoldal/arfolyam/">
+                        <a class="nav-link" href="../kamat/index.php">
                             <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                             <span class="link-szoveg">Kamatszámítás</span>
                         </a>
@@ -336,7 +335,7 @@ try {
                 <main class="col-12 col-md-9 col-lg-10 main-content">
                     <header class="d-flex justify-content-end py-3 border-bottom">
                         <div class="dropdown d-flex align-items-center">
-                            <span class="me-3" id="szerepkor">RadarSzint: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
+                            <span class="me-3" id="szerepkor">Szerepkör: <b style="color: #63ffbe" id="szerepkorText"><?php echo htmlspecialchars($_SESSION['szerepkor'] ?? "Felhasználó"); ?></b></span>
                             <span class="me-3" id="perselyegyenleg">Persely egyenleg: <b style="color: #63ffbe" id="perselyegyenlegText"><?php echo $formatált_egyenleg; ?></b> Ft</span>
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="felhasznaloDropdownGomb">
                                 <i class="fas fa-user-circle"></i> 
@@ -453,7 +452,6 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>
-    <script src="../alapoldal/kamat/js.js"></script>
     <script src="../alapoldal/alapstilus/nav.js"></script>
 </body>
 </html>

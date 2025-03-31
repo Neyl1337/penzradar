@@ -91,7 +91,6 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../alapoldal/alapstilus/style.css">
-    <link rel="stylesheet" href="../alapoldal/kamat/style.css">
     <link rel="stylesheet" href="../alapoldal/arfolyam/style.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -162,7 +161,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                 <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
-                        <a class="nav-link" href="../alapoldal/arfolyam/">
+                        <a class="nav-link" href="../kamat/index.php">
                             <i class="bi bi-currency-exchange <?php echo !isset($_SESSION['felhasznalo_id']) ? 'felattetszo' : ''; ?>"></i> 
                             <span class="link-szoveg">Kamatszámítás</span>
                         </a>
@@ -236,7 +235,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                     <br>
                                     <br>
                                     jelöld meg, mikor (fog) történt:
-                                    <input type="date" id="dateInput" name="datum" required>
+                                    <input type="date" id="dateInput" name="datum" max="9999-12-31" required>
                                     <br>
                                     <br>
                                     Írd be az indokot
@@ -317,6 +316,5 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script src="../alapoldal/arfolyam/js.js"></script>
-    <script src="../alapoldal/kamat/js.js"></script>
 </body>
 </html>
