@@ -81,3 +81,16 @@
         box-shadow: 0 0 5px rgba(99, 255, 190, 0.5);
     }
 }
+
+.DateMentes{
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: url(../kepek/cursor.ico), default;
+    font-size: 14px;
+
+}

@@ -234,7 +234,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                     <br>
                                     <br>
                                     jelöld meg, mikor (fog) történt:
-                                    <input type="date" id="dateInput" name="datum" max="9999-12-31" required>
+                                    <input type="date" id="dateInput" name="datum" max="3000-12-31" required>
                                     <br>
                                     <br>
                                     Írd be az indokot

@@ -25,3 +25,5 @@ window.onload = () => {
         document.getElementById("Weboldali").style.visibility = "none";
     }
 };
+
+
