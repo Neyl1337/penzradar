@@ -564,7 +564,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                 <div id="modositas4" style="visibility: hidden;" class="mb-4">
                                     <div class="settings-section">
                                         <h2 id="fioktorles">Fiók törlése</h2>
-                                        <button type="button" class="button3" data-bs-toggle="modal" data-bs-target="#fioktorlesModal">Törlés</button>
+                                        <button type="button" id="torlesgomb" data-bs-toggle="modal" data-bs-target="#fioktorlesModal">Törlés</button>
                                     </div>
                                 </div>
                                 <div class="info-section">

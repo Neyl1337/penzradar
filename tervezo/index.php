@@ -54,13 +54,13 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     $parancs_koltseg = $pdo->prepare("
         SELECT SUM(osszeg) as osszes_koltseg 
         FROM tervezo 
-        WHERE felhasznalo_nev = ? AND tipus = 'Kiadás' AND felfuggesztve = 0
+        WHERE felhasznalo_nev = ? AND tipus = 'Kiadás'
     ");
     $parancs_koltseg->execute([$_SESSION['felhasznalo_nev']]);
     $osszes_koltseg = $parancs_koltseg->fetch(PDO::FETCH_ASSOC)['osszes_koltseg'] ?? 0;
 
     $parancs = $pdo->prepare("
-        SELECT id, tipus, osszeg, gyakorisag, leiras, datum, tipus_reszletezes, felfuggesztve 
+        SELECT id, tipus, osszeg, gyakorisag, leiras, datum, tipus_reszletezes
         FROM tervezo 
         WHERE felhasznalo_nev = ? 
         ORDER BY tipus, gyakorisag
@@ -487,7 +487,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                 </thead>
                                 <tbody>
                                     <?php foreach ($tranzakciok as $tranzakcio): ?>
-                                        <tr class="<?php echo $tranzakcio['felfuggesztve'] ? 'felfuggesztett' : ''; ?>" data-label="Sor">
+                                        <tr data-label="Sor">
                                             <td data-label="Típus"><?php echo htmlspecialchars($tranzakcio['tipus']); ?></td>
                                             <td data-label="Részletezés"><?php echo htmlspecialchars($tranzakcio['tipus_reszletezes'] ?? ''); ?></td>
                                             <td data-label="Összeg (Ft)"><?php echo number_format($tranzakcio['osszeg'], 0, '.', ','); ?></td>
@@ -578,10 +578,12 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p style="font-size: 20px;">Biztosan törölni szeretné? Ez a művelet nem visszavonható.</p>
+                            <p style="font-size: 16px;">Biztosan törölni szeretné? Ez a művelet nem visszavonható.</p>
+                        </div>
+                        <div class="modal-footer">
                             <form method="POST" id="torlesMegerositesForm">
                                 <input type="hidden" name="torles_id" id="torles_id" value=""><br>
-                                <button type="submit" class="btn btn-danger button3">Törlöm</button>
+                                <button type="submit" class="btn btn-danger button3">Törlöm!</button>
                             </form>
                         </div>
                     </div>

@@ -95,12 +95,6 @@ h1 {
     font-size: 14px;
 }
 
-.modal-content {
-    background-color: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 0 0 10px #63ffbe;
-}
-
 @media (max-width: 768px) {
     .oldalsav {
         min-height: auto;
@@ -131,16 +125,20 @@ h1 {
 }
 
 .button3 {
-    cursor: url("../kepek/cursor.ico"), default;
     background-color: #ff6969;
-    border-color: #ff6969;
-    box-shadow: 0 0 5px #ff6969;
-    color: #1e1e1e;
     border: none;
-    padding: 6px 10px;
+    color: #ffffff;
     border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease;
     cursor: url("../kepek/cursor.ico"), default;
+    padding: 6px 12px;
     font-size: 14px;
+}
+
+.button3:hover {
+    background-color: #e63939;
+    box-shadow: 0 0 10px rgba(255, 105, 105, 0.5);
 }
 
 .button4 {
@@ -148,45 +146,6 @@ h1 {
     background-color: #ffa51f;
     border-color: #ffa51f;
     box-shadow: 0 0 5px #ffa51f;
-    color: #1e1e1e;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
-    cursor: url("../kepek/cursor.ico"), default;
-    font-size: 14px;
-}
-
-.button2:hover {
-    cursor: url("../kepek/cursor.ico"), default;
-    background-color: #63ffbe;
-    border-color: #63ffbe;
-    box-shadow: 0 0 5px #63ffbe;
-    color: #1e1e1e;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
-    cursor: url("../kepek/cursor.ico"), default;
-    font-size: 14px;
-}
-
-.button3:hover {
-    cursor: url("../kepek/cursor.ico"), default;
-    background-color: #d40000;
-    border-color: #d40000;
-    box-shadow: 0 0 5px #d40000;
-    color: #1e1e1e;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
-    cursor: url("../kepek/cursor.ico"), default;
-    font-size: 14px;
-}
-
-.button4:hover {
-    cursor: url("../kepek/cursor.ico"), default;
-    background-color: #c27400;
-    border-color: #c27400;
-    box-shadow: 0 0 5px #c27400;
     color: #1e1e1e;
     border: none;
     padding: 6px 10px;
@@ -327,16 +286,6 @@ h1 {
     appearance: none;
 }
 
-.sporoasi-ablak {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 10px #63ffbe;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 800px;
-    text-align: center;
-}
 .celok-ablak {
     background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
     border: 1px solid #63ffbe; 
@@ -390,95 +339,28 @@ h1 {
         padding: 0.2rem;
     }
 }
-.custom-modal {
-    background-color: #1e1e1e36;
-    color: white;
-    border: 1px solid #63ffbe;
-    box-shadow: 0 0 15px #63ffbe;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+.modal-content, .modal-header, .modal-body, .modal-footer {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-bottom: none;
+    padding-bottom: 0;
+    border-top: none;
+    justify-content: flex-end;
+
 }
 
 .modal-content {
     background-color: #1e1e1e;
-    color: white;
-    border: 1px solid #63ffbe;
-    box-shadow: 0 0 15px #63ffbe;
-    border-radius: 10px;
+    color: #ffffff;
+    box-shadow: 0 0 10px #63ffbe;
 }
 
-.custom-modal .modal-header {
-    background-color: #63ffbe;
-    color: #121212;
-    border-bottom: 1px solid #55daa2;
-    display: block;
-    padding: 10px;
+
+.modal-footer {
+    padding: 16px 16px;
 }
 
-.custom-modal .modal-title {
-    font-size: 1.5rem;
+.modal-title {
+    color: #63ffbe;
     font-weight: bold;
-}
-
-.custom-modal .btn-close {
-    filter: invert(1);
-}
-
-.custom-modal .modal-body {
-    font-size: 1.2rem;
-    padding: 20px;
-    text-align: center;
-}
-
-.custom-modal .modal-footer {
-    border-top: 1px solid #63ffbe;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.custom-modal .btn-secondary,
-.custom-modal .btn-primary,
-.custom-modal .btn-danger {
-    min-width: 100px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: url("../kepek/cursor.ico"), default;
-    text-align: center;
-}
-
-.custom-modal .btn-secondary {
-    background-color: #444;
-    border: none;
-    color: white;
-}
-
-.custom-modal .btn-secondary:hover {
-    background-color: #555;
-    color: #ffffff;
-}
-
-.custom-modal .btn-primary {
-    background-color: #63ffbe;
-    border: none;
-    color: #121212;
-}
-
-.custom-modal .btn-primary:hover {
-    background-color: #55daa2;
-    color: #ffffff;
-}
-
-.custom-modal .btn-danger {
-    background-color: #dc3545;
-    border: none;
-    color: #1e1e1e;
-}
-
-.custom-modal .btn-danger:hover {
-    background-color: #c82333;
-    color: #ffffff;
 }
