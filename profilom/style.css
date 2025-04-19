@@ -7,10 +7,15 @@
     border: 1px solid #63ffbe;
     color: #ffffff;
     width: 500px;
-    margin-left: 25%;
+   
 }
 
-
+.form-check {
+    display: block;
+    min-height: 1.5rem;
+    margin-bottom: .125rem;
+    padding-left: 0 !important;
+}
 
 #profilbox{
     background: #2b2b2b;
@@ -82,7 +87,7 @@
     }
 }
 
-.DateMentes{
+#DateMentes{
     background-color: #63ffbe;
     border-color: #63ffbe;
     box-shadow: 0 0 5px #63ffbe;
@@ -90,7 +95,8 @@
     border: none;
     padding: 6px 10px;
     border-radius: 5px;
-    cursor: url(../kepek/cursor.ico), default;
     font-size: 14px;
-
+    margin-top: 4px;
 }
+
+

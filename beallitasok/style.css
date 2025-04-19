@@ -121,7 +121,6 @@
     font-weight: bold;
     transition: all 0.3s ease;
     cursor: url("../kepek/cursor.ico"), default;
-    font-size: 14px;
 }
 
 .button2:hover {
@@ -137,7 +136,6 @@
     font-weight: bold;
     transition: all 0.3s ease;
     cursor: url("../kepek/cursor.ico"), default;
-    font-size: 14px;
 }
 
 #torlesgomb {

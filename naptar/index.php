@@ -240,7 +240,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                     Írd be az indokot
                                     <br>
                                     <input type="text" id="ind" name="ind" required>
-                                    <input type="submit" id="kuld">
+                                    <input type="submit" id="kuld"><br><br>
                                 </form>
                                 </div>
                             </div>

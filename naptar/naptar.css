@@ -57,7 +57,8 @@ body {
     }
 
 #bevitel{
-    background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     border-radius: 10px;
     box-shadow: 0 0 15px #63ffbe;
     overflow: hidden;

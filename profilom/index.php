@@ -3,6 +3,7 @@ require_once '../adatbazis.php';
 
 session_start();
 
+// Felhasználói adatok lekérzése
 if (isset($_SESSION['felhasznalo_id'])) {
     $stmt = $pdo->prepare("
         SELECT f.rang, f.email, f.szuldatum, p.egyenleg
@@ -40,6 +41,15 @@ if ($felhasznaloId) {
     if ($regisztracioIdopont) {
         $_SESSION["regisztracio_idopont"] = $regisztracioIdopont;
     }
+
+    // Felhasználó nevének lekérdezése a felhasznalok táblából
+    $stmt = $pdo->prepare("SELECT nev FROM felhasznalok WHERE id = :id");
+    $stmt->execute(['id' => $felhasznaloId]);
+    $felhasznalo_nev = $stmt->fetchColumn();
+
+    if (!$felhasznalo_nev) {
+        die("Hiba: Nem található a felhasználó neve.");
+    }
 }
 
 $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
@@ -66,6 +76,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } 
 }
+
+// Bevételek és kiadások összesítése a `naptar` és `tervezo` táblákból
+$naptar_bevetelek = [];
+$naptar_kiadasok = [];
+$tervezo_bevetelek = [];
+$tervezo_kiadasok = [];
+
+if (!isset($_SESSION['felhasznalo_id'])) {
+    die("Hiba: Felhasználó ID nem található.");
+}
+
+// Naptar tábla bevételei
+$naptar_bevetel = $pdo->prepare("SELECT NBevetel FROM naptar WHERE felhasznalo_id = ? AND NBevetel IS NOT NULL");
+$naptar_bevetel->execute([$_SESSION['felhasznalo_id']]);
+while ($row = $naptar_bevetel->fetch(PDO::FETCH_ASSOC)) {
+    $naptar_bevetelek[] = $row['NBevetel'];
+}
+
+// Naptar tábla kiadásai
+$naptar_kiadas = $pdo->prepare("SELECT NKiadas FROM naptar WHERE felhasznalo_id = ? AND NKiadas IS NOT NULL");
+$naptar_kiadas->execute([$_SESSION['felhasznalo_id']]);
+while ($row = $naptar_kiadas->fetch(PDO::FETCH_ASSOC)) {
+    $naptar_kiadasok[] = $row['NKiadas'];
+}
+
+// Tervezo tábla bevételei (tipus = 'Bevétel')
+$tervezo_bevetel = $pdo->prepare("SELECT osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Bevétel' AND osszeg IS NOT NULL");
+$tervezo_bevetel->execute([$felhasznalo_nev]);
+while ($row = $tervezo_bevetel->fetch(PDO::FETCH_ASSOC)) {
+    $tervezo_bevetelek[] = $row['osszeg'];
+}
+
+// Tervezo tábla kiadásai (tipus = 'Kiadás')
+$tervezo_kiadas = $pdo->prepare("SELECT osszeg FROM tervezo WHERE felhasznalo_nev = ? AND tipus = 'Kiadás' AND osszeg IS NOT NULL");
+$tervezo_kiadas->execute([$felhasznalo_nev]);
+while ($row = $tervezo_kiadas->fetch(PDO::FETCH_ASSOC)) {
+    $tervezo_kiadasok[] = $row['osszeg'];
+}
+
+// Összes bevétel (naptar + tervezo)
+$bevetel_osszeg = array_sum($naptar_bevetelek) + array_sum($tervezo_bevetelek);
+
+// Összes kiadás (naptar + tervezo)
+$kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
 ?>
 
 <!DOCTYPE html>
@@ -184,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </ul>
                     </div>
                 </header>
-
+            <center>
                 <div id="szemelyes" style="visibility: hidden;" class="mt-4 mb-4 settings-container">
                     <div class="container mt-4">
                         <form id="profilbox" method="POST" action="">
@@ -208,18 +262,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="date" id="SzulDatum" name="SzulDatum" value="<?php echo htmlspecialchars($_SESSION['szuldatum'] ?? ''); ?>">
-                                    </label>
+                                    </label><br><br>
                                     <input type="submit" id="DateMentes" value="Mentés">
                                 </div>
                                 <?php if (isset($uzenet)): ?>
                                     <p style="color: <?php echo strpos($uzenet, 'Sikeres') !== false ? 'green' : 'red'; ?>;"><?php echo $uzenet; ?></p>
                                 <?php endif; ?>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Neme:</label>
-                                <div class="form-check">
-                                    <label class="form-check-label"><?php // Ide jöhet a neme mező logikája ?></label>
-                                </div>
                             </div>
                         </form>
                     </div>
@@ -237,13 +285,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="mb-3">
                                 <label class="form-label">Össz költés</label>
                                 <div class="form-check">
-                                    <label for=""></label>
+                                    <label for=""><label for=""><?php echo $kiadas_osszeg; ?> Ft</label></label>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Össz Bevétel</label>
                                 <div class="form-check">
-                                    <label for=""></label>
+                                    <label for=""><?php echo $bevetel_osszeg; ?> Ft</label>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -255,6 +303,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </form>
                     </div>
                 </div>
+                <center>
             </main>
         </div>
     </div>

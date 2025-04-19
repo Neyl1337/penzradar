@@ -12,12 +12,12 @@ p {
 
 /* Persely kártya stílusa (kisebb méret, modernebb dizájn) */
 .piggy-bank-card {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe;
     border-radius: 15px;
     padding: 20px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(99, 255, 190, 0.3);
 }
 
 .piggy-bank-card::before {
@@ -51,11 +51,10 @@ p {
 
 /* Bankkártya-szerű persely kártya */
 .piggy-bank-mini-card {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
     border: 1px solid #63ffbe;
     border-radius: 10px;
     padding: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
     height: 160px;

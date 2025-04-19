@@ -430,11 +430,6 @@ canvas {
     transform: translateY(-50%);
 }
 
-.nav-link::after {
-    content: attr(data-text);
-    margin-left: 5px;
-}
-
 @media only screen and (max-width: 1800px) {
     .oldalsav h2 {
         font-size: 1.0rem;

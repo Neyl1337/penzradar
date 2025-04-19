@@ -524,7 +524,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                         <label for="heti_maximum" class="form-label">Tervezett heti kiadás (Ft)</label>
                                         <input type="number" name="heti_maximum" id="heti_maximum" class="form-control" min="0" value="<?php echo $heti_maximum ?? ''; ?>">
                                     </div>
-                                    <button type="submit" name="heti_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                    <button type="submit" name="heti_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button><br><br>
                                 </form>
                             </div>
                         </div>
@@ -543,7 +543,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                         <label for="napi_maximum" class="form-label">Tervezett napi kiadás (Ft)</label>
                                         <input type="number" name="napi_maximum" id="napi_maximum" class="form-control" min="0" value="<?php echo $napi_maximum ?? ''; ?>">
                                     </div>
-                                    <button type="submit" name="napi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                    <button type="submit" name="napi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button><br><br>
                                 </form>
                             </div>
                         </div>
@@ -562,7 +562,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                         <label for="havi_maximum" class="form-label">Tervezett havi kiadás (Ft)</label>
                                         <input type="number" name="havi_maximum" id="havi_maximum" class="form-control" min="0" value="<?php echo $havi_maximum ?? ''; ?>">
                                     </div>
-                                    <button type="submit" name="havi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button>
+                                    <button type="submit" name="havi_maximum_megerosites" class="btn btn-primary button2">Megerősítés</button><br><br>
                                 </form>
                             </div>
                         </div>

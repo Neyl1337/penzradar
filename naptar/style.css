@@ -1,7 +1,7 @@
 .calendar {
-    background-color: #1e1e1e;
     border-radius: 10px;
-    box-shadow: 0 0 15px #63ffbe;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe;
     overflow: hidden;
     width: 500px;
     padding-bottom: 50px;
@@ -51,9 +51,9 @@
     }
 
 #bevitel{
-        background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe; 
     border-radius: 10px;
-    box-shadow: 0 0 15px #63ffbe;
     overflow: hidden;
     width: 300px;
     height: 372px;
@@ -68,7 +68,8 @@
         margin-left: 150px;
         background-color: #1e1e1e;
         color: #ffffff;
-        box-shadow: 0 0 10px #63ffbe;
+        background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+        border: 1px solid #63ffbe;
         border-radius: 10px;
         overflow: hidden;
     
@@ -96,8 +97,8 @@
     
     
     #PBevitel{
-    
-        background-color: #1e1e1e;
+        background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+        border: 1px solid #63ffbe; 
         border: 1px solid #63ffbe;
         color: white;
         border-radius: 5px;
@@ -147,16 +148,15 @@
         cursor: url(../kepek/cursor.ico), default;
         background-color: #63ffbe;
         border-color: #63ffbe;
-        box-shadow: 0 0 5px #63ffbe;
         color: #1e1e1e;
         border: none;
         padding: 6px 10px;
         border-radius: 5px;
         cursor: url(../kepek/cursor.ico), default;
         font-size: 14px;
-        margin-top: 18%;
+        margin-top: 11%;
         margin-left: 80%;
-    
+        box-shadow: 0 0 5px #63ffbe;
     }
 
     #kuld:focus{

@@ -7,10 +7,10 @@ body {
 
 /* Kartya stílusok a meglévő .kartya alapján */
 .kartya {
-    background-color: #1e1e1e;
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe;
     color: white;
     border-radius: 10px;
-    box-shadow: 0 0 15px #63ffbe;
     padding: 20px;
     margin-top: 20px;
     width: 70rem; /* Alapértelmezett szélesség */
