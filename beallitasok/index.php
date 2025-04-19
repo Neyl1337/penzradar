@@ -542,7 +542,7 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                                     </div>
                                                 <?php elseif ($hiba_email === "ilyen_email_mar_van"): ?>
                                                     <div class="alert alert-danger" role="alert">
-                                                        Ez az email cím már foglalt, kérlek válassz másikat!
+                                                        Ez az email cím már foglalt, kérlek válasszon másikat!
                                                     </div>
                                                 <?php endif; ?>
                                                 <?php if ($siker_email): ?>
@@ -570,10 +570,10 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                 <div class="info-section">
                                     <h3 class="info-title">Biztonsági tippek</h3>
                                     <ul>
-                                        <li>Használj erős, egyedi jelszót.</li>
-                                        <li>Ne oszd meg senkivel a jelszavadat.</li>
-                                        <li>Frissítsd rendszeresen a jelszavadat.</li>
-                                        <li>Ha gyanús tevékenységet észlelsz, azonnal lépj kapcsolatba velünk.</li>
+                                        <li>Használjon erős, egyedi jelszót.</li>
+                                        <li>Ne ossza meg senkivel sem a jelszavát.</li>
+                                        <li>Frissítse rendszeresen a jelszavát.</li>
+                                        <li>Ha gyanús tevékenységet észlel, azonnal lépjen kapcsolatba velünk.</li>
                                     </ul>
                                 </div>
                             </div>

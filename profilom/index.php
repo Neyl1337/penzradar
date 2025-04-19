@@ -246,12 +246,6 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
                                 <h2 id="szemelyesadat">Személyes Adatok</h2>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Név:</label>
-                                <div class="form-check">
-                                    <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
                                 <label class="form-label">Email:</label>
                                 <div class="form-check">
                                     <label class="form-check-label" for="emailValtoztatas"><?php echo htmlspecialchars($_SESSION["email"] ?? ""); ?></label>
@@ -261,9 +255,9 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
                                 <label class="form-label">Születési Dátum:</label>
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input type="date" id="SzulDatum" name="SzulDatum" value="<?php echo htmlspecialchars($_SESSION['szuldatum'] ?? ''); ?>">
+                                        <input type="date" id="SzulDatum" name="SzulDatum" value="<?php echo htmlspecialchars($_SESSION['szuldatum'] ?? ''); ?>" class="form-control">
                                     </label><br><br>
-                                    <input type="submit" id="DateMentes" value="Mentés">
+                                    <input type="submit" id="DateMentes" value="Mentés" class="btn btn-primary">
                                 </div>
                                 <?php if (isset($uzenet)): ?>
                                     <p style="color: <?php echo strpos($uzenet, 'Sikeres') !== false ? 'green' : 'red'; ?>;"><?php echo $uzenet; ?></p>
@@ -274,24 +268,24 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
                     <div class="container mt-4">
                         <form id="profilbox" method="POST">
                             <div class="mb-3">
-                                <h2 id="profilod">Web Adatok</h2>
+                                <h2 id="profilod">Weboldal adatok</h2>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">FelhasználóNév</label>
+                                <label class="form-label">Felhasználónév</label>
                                 <div class="form-check">
                                     <label class="form-check-label" for="nevValtoztatas"><?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?></label>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Össz költés</label>
+                                <label class="form-label">Eddigi összes kiadás</label>
                                 <div class="form-check">
-                                    <label for=""><label for=""><?php echo $kiadas_osszeg; ?> Ft</label></label>
+                                    <label class="form-check-label"><?php echo $kiadas_osszeg; ?> Ft</label>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Össz Bevétel</label>
+                                <label class="form-label">Eddigi összes bevétel</label>
                                 <div class="form-check">
-                                    <label for=""><?php echo $bevetel_osszeg; ?> Ft</label>
+                                    <label class="form-check-label"><?php echo $bevetel_osszeg; ?> Ft</label>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -303,7 +297,7 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
                         </form>
                     </div>
                 </div>
-                <center>
+                </center>
             </main>
         </div>
     </div>

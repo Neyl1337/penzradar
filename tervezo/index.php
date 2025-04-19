@@ -350,7 +350,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                                 </div>
                                 <div class="mb-3">
                                     <label for="datum" class="form-label" id="datumCimke">Dátum: (Mikor történik a jóváírás?)</label>
-                                    <input type="date" name="datum" id="datum" class="form-control" value="<?php echo date('Y-m-d'); ?>" required <?php echo count($tranzakciok) >= 50 ? 'disabled' : ''; ?>>
+                                    <input type="date" name="datum" id="datum" class="form-control" max="3000-12-31" value="<?php echo date('Y-m-d'); ?>" required <?php echo count($tranzakciok) >= 50 ? 'disabled' : ''; ?>>
                                 </div>
                                 <div class="mb-3">
                                     <label for="leiras" class="form-label">Leírás (Opcionális)</label>

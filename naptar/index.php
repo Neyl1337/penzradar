@@ -229,15 +229,15 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                     </select>
                                     <br>
                                     <br>
-                                    Írd be a költésed/bevételed:
+                                    Bevétel vagy Kiadás értéke
                                     <input type="number" id="PBevitel" name="PBevitel" required>
                                     <br>
                                     <br>
-                                    jelöld meg, mikor (fog) történt:
+                                    Bevétel vagy Kiadás dátuma
                                     <input type="date" id="dateInput" name="datum" max="3000-12-31" required>
                                     <br>
                                     <br>
-                                    Írd be az indokot
+                                    Bevétel vagy Kiadás indoklása
                                     <br>
                                     <input type="text" id="ind" name="ind" required>
                                     <input type="submit" id="kuld"><br><br>
@@ -250,9 +250,9 @@ $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
                                 <table class="table table-striped tranzakcio-tabla mx-auto" style="width: 100%; max-width: 1000px;">
                                     <thead>
                                         <tr>
-                                            <th>Összeg</th>
-                                            <th>Állapot</th>
-                                            <th>Mikor</th>
+                                            <th>Érték</th>
+                                            <th>Típus</th>
+                                            <th>Dátum</th>
                                             <th>Indok</th>
                                             <th>Műveletek</th>
                                         </tr>
