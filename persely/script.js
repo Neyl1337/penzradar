@@ -45,7 +45,7 @@ function frissitesFelhasznaloAdatok() {
             const perselyegyenlegText = document.getElementById('perselyegyenlegText');
             if (perselyegyenlegText) {
                 const egyenleg = parseFloat(data.perselyegyenleg) || 0;
-                perselyegyenlegText.textContent = egyenleg.toLocaleString('hu-HU');
+                perselyegyenlegText.textContent = egyenleg.toLocaleString('hu-HU').replace(/\s/g, ',');
             }
         })
         .catch(error => {

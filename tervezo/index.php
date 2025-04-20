@@ -266,10 +266,7 @@ $osszes_felhasznalo = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchCol
                         <h4 class="text-center arfolyamok-cim" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
                         <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                             <div id="frissites-ido" class="frissites-keret text-center"></div>
-                    <?php endif; ?>
-                    <button id="frissites-gomb">Frissítés</button>
                 <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                     <div>
                         <b id="frissites-ido" style="color: red;" class="text-center d-block"></b>

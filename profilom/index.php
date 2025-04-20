@@ -127,7 +127,7 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PénzRadar - Beállítások</title>
+    <title>PénzRadar - Profilom</title>
     <link rel="icon" type="image/x-icon" href="../kepek/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -195,10 +195,7 @@ $kiadas_osszeg = array_sum($naptar_kiadasok) + array_sum($tervezo_kiadasok);
                         <h4 class="text-center arfolyamok-cim" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
                         <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
-                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                             <div id="frissites-ido" class="frissites-keret text-center"></div>
-                    <?php endif; ?>
-                    <button id="frissites-gomb">Frissítés</button>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
