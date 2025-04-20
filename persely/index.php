@@ -42,6 +42,40 @@ if (isset($_SESSION['felhasznalo_nev'])) {
     $_SESSION['perselyegyenleg'] = $result['total_osszeg'] ? (int)$result['total_osszeg'] : 0;
 }
 
+// Segédfüggvény: Összes egyenleg kiszámítása és a persely tábla frissítése
+function frissitPerselyTablat($pdo, $felhasznalo_id) {
+    // Összes persely betesz és kivesz adatainak lekérdezése
+    $stmt = $pdo->prepare("
+        SELECT SUM(betesz) as total_betesz, SUM(kivesz) as total_kivesz 
+        FROM perselyk 
+        WHERE felhasznalo_id = ?
+    ");
+    $stmt->execute([$felhasznalo_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Egyenleg kiszámítása: total_betesz - total_kivesz
+    $total_betesz = $result['total_betesz'] ? (float)$result['total_betesz'] : 0;
+    $total_kivesz = $result['total_kivesz'] ? (float)$result['total_kivesz'] : 0;
+    $egyenleg = $total_betesz - $total_kivesz;
+
+    // Persely tábla frissítése vagy beszúrása
+    $check_stmt = $pdo->prepare("SELECT COUNT(*) FROM persely WHERE felhasznalo_id = ?");
+    $check_stmt->execute([$felhasznalo_id]);
+    $exists = $check_stmt->fetchColumn();
+
+    if ($exists > 0) {
+        // Frissítés, ha már létezik rekord
+        $update_stmt = $pdo->prepare("UPDATE persely SET egyenleg = ? WHERE felhasznalo_id = ?");
+        $update_stmt->execute([$egyenleg, $felhasznalo_id]);
+    } else {
+        // Beszúrás, ha még nem létezik rekord
+        $insert_stmt = $pdo->prepare("INSERT INTO persely (felhasznalo_id, egyenleg) VALUES (?, ?)");
+        $insert_stmt->execute([$felhasznalo_id, $egyenleg]);
+    }
+
+    return $egyenleg;
+}
+
 try {
     // Felhasználó adatainak lekérdezése
     if (!isset($_SESSION['felhasznalo_nev'])) {
@@ -126,6 +160,9 @@ try {
                         $stmt->execute([$osszeg, $persely_id, $_SESSION['felhasznalo_id']]);
                         $_SESSION['utolso_muvelet'] = "Módosítás: Az összeg frissítve $osszeg Ft-ra, betét és kivét nullázva.";
                     }
+
+                    // Persely tábla frissítése a művelet után
+                    frissitPerselyTablat($pdo, $_SESSION['felhasznalo_id']);
                 } else {
                     $_SESSION['utolso_muvelet'] = "Hiba: Érvénytelen persely!";
                 }
@@ -151,6 +188,9 @@ try {
                 $stmt = $pdo->prepare("DELETE FROM perselyk WHERE ID = ? AND felhasznalo_id = ?");
                 $stmt->execute([$persely_id, $_SESSION['felhasznalo_id']]);
                 $_SESSION['utolso_muvelet'] = "Persely törölve: $persely_nev";
+
+                // Persely tábla frissítése a törlés után
+                frissitPerselyTablat($pdo, $_SESSION['felhasznalo_id']);
             } else {
                 $_SESSION['utolso_muvelet'] = "Hiba: A persely nem található!";
             }
@@ -174,6 +214,9 @@ try {
                 ");
                 $stmt->execute([$felhasznalo_id, $felhasznalo_nev, $uj_persely_nev, $datum]);
                 $_SESSION['utolso_muvelet'] = "Új persely létrehozva: $uj_persely_nev";
+
+                // Persely tábla frissítése az új persely létrehozása után
+                frissitPerselyTablat($pdo, $_SESSION['felhasznalo_id']);
             } else {
                 $_SESSION['utolso_muvelet'] = "Hiba: A '$uj_persely_nev' nevű persely már létezik!";
             }
@@ -270,7 +313,10 @@ try {
                         <h4 class="text-center arfolyamok-cim" style="color: #63ffbe; font-size: 1.2rem;">Árfolyamok</h4>
                         <ul id="arfolyam-lista" class="arfolyam-stilus list-unstyled d-flex flex-column align-items-center"></ul>
                     </div>
+                    <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                             <div id="frissites-ido" class="frissites-keret text-center"></div>
+                    <?php endif; ?>
+                    <button id="frissites-gomb">Frissítés</button>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
