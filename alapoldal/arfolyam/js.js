@@ -164,7 +164,7 @@ async function frissitArfolyamok(retryCount = 0, maxRetries = 3) {
                 li.appendChild(rateSpan);
                 arfolyamLista.appendChild(li);
             });
-            frissitesIdo.textContent = `Utolsó frissítés: (alapértelmezett adatok, nem frissek – kérlek, próbáld meg frissíteni)`;
+            frissitesIdo.textContent = `Utolsó frissítés: (alapértelmezett adatok, nem frisseek – kérlek, próbáld meg frissíteni)`;
         }
 
         // Újrapróbálkozás, ha nem értük el a maximális próbálkozási számot

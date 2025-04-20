@@ -18,52 +18,38 @@ if (!isset($_SESSION['felhasznalo_id'])) {
     exit;
 }
 
-// Függvény az egyenleg frissítésére a persely táblában
-function frissitPerselyEgyenleg($pdo, $felhasznalo_id) {
-    try {
-        // Összeadjuk az osszeg értékeket a perselyk táblában az adott felhasznalo_id-hez
-        $stmt = $pdo->prepare("SELECT SUM(osszeg) as total_osszeg FROM perselyk WHERE felhasznalo_id = ?");
-        $stmt->execute([$felhasznalo_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $ossz_egyenleg = $result['total_osszeg'] ? (int)$result['total_osszeg'] : 0; // Ha NULL, akkor 0
+// Munkamenet-változók inicializálása
+$_SESSION['szerepkor'] = null;
+$_SESSION['perselyegyenleg'] = 0; // Alapértelmezett érték 0
 
-        // Ellenőrizzük, hogy létezik-e már rekord a persely táblában
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM persely WHERE felhasznalo_id = ?");
-        $stmt->execute([$felhasznalo_id]);
-        $exists = $stmt->fetchColumn();
+if (isset($_SESSION['felhasznalo_nev'])) {
+    $parancs = $pdo->prepare("
+        SELECT rang 
+        FROM felhasznalok 
+        WHERE nev = ?
+    ");
+    $parancs->execute([$_SESSION['felhasznalo_nev']]);
+    $felhasznalo = $parancs->fetch(PDO::FETCH_ASSOC);
 
-        if ($exists) {
-            // Ha létezik, frissítjük az egyenleget
-            $stmt = $pdo->prepare("UPDATE persely SET egyenleg = ? WHERE felhasznalo_id = ?");
-            $stmt->execute([$ossz_egyenleg, $felhasznalo_id]);
-        } else {
-            // Ha nem létezik, beszúrunk egy új rekordot
-            $stmt = $pdo->prepare("INSERT INTO persely (felhasznalo_id, egyenleg) VALUES (?, ?)");
-            $stmt->execute([$felhasznalo_id, $ossz_egyenleg]);
-        }
-    } catch (PDOException $e) {
-        $_SESSION['utolso_muvelet'] = "Hiba az egyenleg frissítése közben a persely táblában: " . $e->getMessage();
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
+    if ($felhasznalo) {
+        $_SESSION['szerepkor'] = $felhasznalo['rang'];
     }
+
+    // Egyenleg kiszámítása a perselyk táblából
+    $stmt = $pdo->prepare("SELECT SUM(osszeg) as total_osszeg FROM perselyk WHERE felhasznalo_id = ?");
+    $stmt->execute([$_SESSION['felhasznalo_id']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $_SESSION['perselyegyenleg'] = $result['total_osszeg'] ? (int)$result['total_osszeg'] : 0;
 }
 
 try {
     // Felhasználó adatainak lekérdezése
-    $stmt = $pdo->prepare("SELECT id, nev AS felhasznalo_nev, rang FROM felhasznalok WHERE id = ?");
-    $stmt->execute([$_SESSION['felhasznalo_id']]);
-    $felhasznalo = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($felhasznalo) {
-        $_SESSION['felhasznalo_nev'] = $felhasznalo['felhasznalo_nev'];
-        $_SESSION['szerepkor'] = $felhasznalo['rang'];
-    } else {
-        $_SESSION['szerepkor'] = null;
+    if (!isset($_SESSION['felhasznalo_nev'])) {
         header("Location: ../bejelentkezes/");
         exit;
     }
 
-    // Perselyek lekérdezése az adott felhasználóhoz, további adatokkal (datum, betesz, kivesz)
+    // Perselyek lekérdezése az adott felhasználóhoz
     $stmt = $pdo->prepare("
         SELECT ID, felhasznalo_id, perselynev, osszeg, betesz, kivesz, datum 
         FROM perselyk 
@@ -72,26 +58,23 @@ try {
     $stmt->execute([$_SESSION['felhasznalo_id']]);
     $perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Alapértelmezett kiválasztott persely összegének lekérdezése (első persely)
+    // Alapértelmezett kiválasztott persely összegének lekérdezése
     $alapertelmezett_persely_id = !empty($_POST['persely_id']) ? (int)$_POST['persely_id'] : (isset($perselyek[0]['ID']) ? $perselyek[0]['ID'] : null);
     $jelenlegi_osszeg = 0;
     if ($alapertelmezett_persely_id) {
         $stmt = $pdo->prepare("SELECT osszeg FROM perselyk WHERE ID = ? AND felhasznalo_id = ?");
         $stmt->execute([$alapertelmezett_persely_id, $_SESSION['felhasznalo_id']]);
         $persely = $stmt->fetch(PDO::FETCH_ASSOC);
-        $jelenlegi_osszeg = $persely ? (float)$persely['osszeg'] : 0; // decimal(10,2) típusú, ezért float-ként kezeljük
+        $jelenlegi_osszeg = $persely ? (float)$persely['osszeg'] : 0;
     }
     $formatált_jelenlegi_osszeg = number_format($jelenlegi_osszeg, 0, '.', ',');
 
-    // Összes egyenleg kiszámítása
+    // Összes egyenleg kiszámítása a perselyk táblából
     $osszegek = array_map(function($persely) {
-        return (float)$persely['osszeg']; // Biztosítjuk, hogy az osszeg float legyen
+        return (float)$persely['osszeg'];
     }, $perselyek);
     $ossz_egyenleg = array_sum($osszegek);
     $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
-
-    // Egyenleg frissítése a persely táblában
-    frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
 
     // Persely műveletek kezelése
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -119,7 +102,6 @@ try {
                         ");
                         $stmt->execute([$osszeg, $osszeg, $persely_id, $_SESSION['felhasznalo_id']]);
                         $_SESSION['utolso_muvelet'] = "Betét: +$osszeg Ft";
-
                     } elseif ($muvelet === 'kivet') {
                         if ($jelenlegi_osszeg >= $osszeg) {
                             $stmt = $pdo->prepare("
@@ -154,7 +136,6 @@ try {
         if (isset($_POST['torles_persely_id'])) {
             $persely_id = (int)$_POST['torles_persely_id'];
 
-            // Hibakeresés: Ellenőrizzük, hogy a torles_persely_id értéke megérkezik-e
             if (empty($persely_id)) {
                 $_SESSION['utolso_muvelet'] = "Hiba: A persely ID nem érkezett meg!";
                 header("Location: " . $_SERVER['PHP_SELF']);
@@ -207,38 +188,19 @@ try {
         $stmt->execute([$_SESSION['felhasznalo_id']]);
         $perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Összes egyenleg újraszámítása
+        // Összes egyenleg újraszámítása a perselyk táblából
         $osszegek = array_map(function($persely) {
             return (float)$persely['osszeg'];
         }, $perselyek);
         $ossz_egyenleg = array_sum($osszegek);
         $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
 
-        // Egyenleg frissítése a persely táblában a POST műveletek után
-        frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
+        // Munkamenet egyenlegének frissítése
+        $_SESSION['perselyegyenleg'] = $ossz_egyenleg;
 
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
-
-    // Perselyek újbóli lekérdezése a frissítés után, további adatokkal
-    $stmt = $pdo->prepare("
-        SELECT ID, perselynev, osszeg, betesz, kivesz, datum 
-        FROM perselyk 
-        WHERE felhasznalo_id = ?
-    ");
-    $stmt->execute([$_SESSION['felhasznalo_id']]);
-    $perselyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Összes egyenleg kiszámítása
-    $osszegek = array_map(function($persely) {
-        return (float)$persely['osszeg'];
-    }, $perselyek);
-    $ossz_egyenleg = array_sum($osszegek);
-    $formatált_egyenleg = number_format($ossz_egyenleg, 0, '.', ',');
-
-    // Egyenleg frissítése a persely táblában (biztosítjuk, hogy mindig naprakész legyen)
-    frissitPerselyEgyenleg($pdo, $_SESSION['felhasznalo_id']);
 
     $waiting_supports = $pdo->query("SELECT COUNT(*) FROM support WHERE statusz = 'Várakozás' or statusz = 'Megtekintett' or statusz = 'Folyamatban'")->fetchColumn();
     $total_users = $pdo->query("SELECT COUNT(*) FROM felhasznalok")->fetchColumn();
@@ -445,8 +407,8 @@ try {
         </div>
     </div>
     <script>
-        const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
-        const egyenleg = '<?php echo htmlspecialchars($formatált_egyenleg); ?>';
+    const userName = '<?php echo htmlspecialchars($_SESSION["felhasznalo_nev"] ?? ""); ?>';
+    const egyenleg = <?php echo (int)$_SESSION['perselyegyenleg']; ?>;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>

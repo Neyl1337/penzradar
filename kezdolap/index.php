@@ -801,19 +801,14 @@ $napi_kiadas_tullepes = $napi_kiadas > $napimax && $napimax > 0 ? 'tullepes' : '
                     </div>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="ad-container">
-                                <h1 id="title"></h1>
-                                <div class="subtitle" id="subtitle"></div>
-                                <div class="calculator">
-                                    <div class="circle"></div>
-                                    <div class="counter" id="counter"></div>
-                                </div>
-                                <a href="../regisztracio/" class="cta-button" id="cta"></a>
+                        <div class="col-12">
+                            <div class="ad-short">
+                                <h3>Kevesebb kiadás, több megtakarítás!</h3>
+                                <p>Regisztrálj most, és tartsd kézben pénzügyeidet a PénzRadar segítségével!</p>
+                                <a href="../regisztracio/" class="btn btn-primary2">Regisztráció</a>
                             </div>
                         </div>
                     </div>
-                    <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                 </div>
             </main>
         </div>
