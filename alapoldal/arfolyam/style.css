@@ -50,15 +50,31 @@
     border-radius: 8px;
     color: #63ffbe;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer; /* Kattintható elem jelzése */
 }
 
-.arfolyam-stilus li:hover {
+.arfolyam-stilus li.normal:hover {
     background-color: #4acda3;
     color: #1e1e1e;
     transform: translateX(5px);
 }
 
-.arfolyam-stilus li:hover .arfolyam-ertek {
+.arfolyam-stilus li.normal:hover .arfolyam-ertek {
+    color: #1e1e1e;
+}
+
+/* Megfordított állapot stílusa */
+.arfolyam-stilus li.reversed {
+    background-color: #ff6363;
+    color: #1e1e1e;
+}
+
+.arfolyam-stilus li.reversed:hover {
+    background-color: #ff8a8a;
+    transform: translateX(5px);
+}
+
+.arfolyam-stilus li.reversed .arfolyam-ertek {
     color: #1e1e1e;
 }
 
@@ -71,13 +87,13 @@
 .arfolyam-stilus li img {
     width: clamp(20px, 4vw, 30px);
     height: auto;
-    margin-right: 4px; /* Csökkentett margó a zászló és a valutakód között */
+    margin-right: 4px;
     border-radius: 3px;
 }
 
 /* Valutakód stílusa */
 .currency-code {
-    margin-right: 5px; /* Térköz a valutakód és az árfolyam érték között */
+    margin-right: 5px;
 }
 
 /* Árfolyam érték (szám) fehér színnel */
@@ -234,7 +250,7 @@
 }
 
 .hiba {
-    color: #ff6b6b; /* Piros szín a hibaüzenethez */
+    color: #ff6b6b;
 }
 
 /* Frissítés gomb stílusa */

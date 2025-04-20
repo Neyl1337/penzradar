@@ -316,7 +316,6 @@ try {
                     <?php if ($_SESSION['szerepkor'] == 'Admin' || $_SESSION['szerepkor'] == 'Tulaj'): ?>
                             <div id="frissites-ido" class="frissites-keret text-center"></div>
                     <?php endif; ?>
-                    <button id="frissites-gomb">Frissítés</button>
                     <?php if (isset($_SESSION['felhasznalo_id'])): ?>
                     <b class="d-flex justify-content-end py-3 border-bottom"></b><br>
                     <li class="nav-item">
