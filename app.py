@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit, join_room
+=======
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask_socketio import SocketIO, emit, join_room, leave_room
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
 import json
 import random
 from utils.chronicle_generator import generate_chronicle
@@ -8,8 +13,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abszurdvar2025!'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+<<<<<<< HEAD
 # Szobák memóriában
 rooms = {}
+=======
+# Szobák tárolása memóriában
+rooms = {}  # {'1234': {'players': [...], 'phase': 1, 'data': {}, 'logs': [], 'password': ''}}
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
 
 # Adatok betöltése
 with open('data/problems.json', encoding='utf-8') as f:
@@ -47,13 +57,25 @@ def on_join(data):
     room = data['room']
     username = data['username']
     password = data.get('password', '')
+<<<<<<< HEAD
     if room not in rooms or rooms[room]['password'] != password:
         emit('error', {'msg': 'Hibás szoba vagy jelszó!'})
         return
+=======
+
+    if room not in rooms or rooms[room]['password'] != password:
+        emit('error', {'msg': 'Hibás szoba vagy jelszó!'})
+        return
+
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
     join_room(room)
     if username not in rooms[room]['players']:
         rooms[room]['players'].append(username)
         rooms[room]['logs'].append(f"{username} belépett a városba!")
+<<<<<<< HEAD
+=======
+
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
     emit('joined', {'players': rooms[room]['players'], 'logs': rooms[room]['logs'][-20:]})
     emit('message', {'msg': f"🎉 {username} megérkezett Abszurdvárba!"}, room=room)
     emit('update_players', rooms[room]['players'], room=room)
@@ -72,15 +94,28 @@ def start_phase(data):
     room = data['room']
     phase = data['phase']
     rooms[room]['phase'] = phase
+<<<<<<< HEAD
     rooms[room]['data'] = {}
+=======
+    rooms[room]['data'] = {}  # Reset phase data
+
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
     if phase == 1:
         problem = random.choice(problems['phase1'])
         twist = random.choice(twists['generic'])
         emit('new_problem', {'problem': problem, 'twist': twist}, room=room)
         rooms[room]['logs'].append("🗳️ 1. Fázis indult: Választási Ígéretek!")
+<<<<<<< HEAD
     elif phase == 2:
         emit('new_image', {'image_url': '/static/images/banana_mayor.png'}, room=room)
         rooms[room]['logs'].append("🎨 2. Fázis indult: Közösségi Képfaragó!")
+=======
+
+    elif phase == 2:
+        emit('new_image', {'image_url': '/static/images/banana_mayor.png'}, room=room)
+        rooms[room]['logs'].append("🎨 2. Fázis indult: Közösségi Képfaragó!")
+
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
     elif phase == 3:
         scandal = random.choice(problems['phase3'])
         target = random.choice(rooms[room]['players'])
@@ -111,4 +146,8 @@ def end_game(data):
     emit('game_over', {'chronicle': chronicle_html}, room=room)
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+=======
+    socketio.run(app, debug=True, port=5000)
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842

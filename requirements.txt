@@ -1,4 +1,8 @@
 flask==3.0.3
 flask-socketio==5.3.6
+<<<<<<< HEAD
 gevent==24.2.1  # SocketIO engine
+=======
+eventlet==0.36.1  # SocketIO engine
+>>>>>>> 07e333b53e5e2d615cac804340430a909b370842
 python-socketio==5.11.4
