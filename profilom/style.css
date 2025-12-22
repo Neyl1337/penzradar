@@ -1,0 +1,212 @@
+#szemelyes {
+
+    background: #1e1e1e;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(99, 255, 190, 0.3);
+    border: 1px solid #63ffbe;
+    color: #ffffff;
+    width: 500px;
+   
+}
+
+.form-check {
+    display: block;
+    min-height: 1.5rem;
+    margin-bottom: .125rem;
+    padding-left: 0 !important;
+}
+
+#profilbox{
+    background: #2b2b2b;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#szemelyesadat{
+    color: #63ffbe;
+    font-weight: bold;
+}
+
+
+
+#Weboldali {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    margin-top: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+#profilod{
+    color: #63ffbe;
+    font-weight: bold;
+}
+
+#valaszto{
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%2363ffbe' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+}
+
+#valaszto:focus{
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    outline: none;
+    animation: pulseBorder 1s infinite;
+   }
+
+   @keyframes pulseBorder {
+    0% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 5px rgba(99, 255, 190, 0.5);
+    }
+    50% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 15px rgba(99, 255, 190, 1);
+    }
+    100% {
+        border-color: #63ffbe;
+        box-shadow: 0 0 5px rgba(99, 255, 190, 0.5);
+    }
+}
+
+#DateMentes{
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    box-shadow: 0 0 5px #63ffbe;
+    color: #1e1e1e;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.settings-container {
+    padding: 15px;
+}
+.settings-container h2 {
+    font-size: 1.5rem;
+    text-align: center;
+}
+.form-label {
+    font-size: 0.9rem;
+}
+.form-check-label {
+    font-size: 0.85rem;
+}
+#profilbox {
+    padding: 10px;
+}
+#DateMentes {
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+
+/* Form Inputs */
+.form-control {
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: #1e1e1e;
+    border: 1px solid #63ffbe;
+    color: white;
+    outline: none;
+    animation: pulseBorder 1s infinite;
+}
+
+.form-control::placeholder {
+    color: grey;
+}
+
+.form-label {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+
+.container.mt-4 {
+    margin-bottom: 20px;
+}
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.settings-container {
+    padding: 15px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.settings-container h2 {
+    font-size: 1.5rem;
+    text-align: center;
+}
+.form-label {
+    font-size: 0.9rem;
+}
+.form-check-label {
+    font-size: 0.85rem;
+}
+#profilbox {
+    padding: 10px;
+}
+
+.container.mt-4 {
+    margin-bottom: 20px;
+}
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+@media (max-width: 520px) {
+    .main-content {
+        padding: 10px;
+        overflow-x: hidden;
+    }
+    .settings-container {
+        padding: 10px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    .container.mt-4 {
+        padding: 0;
+    }
+    #profilbox {
+        padding: 8px;
+    }
+    .settings-container h2 {
+        font-size: 1.2rem;
+    }
+    .form-label {
+        font-size: 0.8rem;
+    }
+    .form-check-label {
+        font-size: 0.75rem;
+    }
+    #SzulDatum {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+}

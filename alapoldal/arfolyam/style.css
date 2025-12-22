@@ -1,0 +1,286 @@
+/* Árfolyamok konténer */
+#arfolyamok {
+    width: 100%;
+    padding: 10px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(99, 255, 190, 0.3);
+    overflow-y: auto;
+    max-height: 200px;
+    margin: 10px 0;
+}
+
+/* Árfolyamok cím */
+.arfolyamok-cim {
+    margin-top: 5px !important;
+    margin-bottom: 8px !important;
+}
+
+/* Utolsó frissítés keret */
+.frissites-keret {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background-color: #252525;
+    border-radius: 8px;
+    color: #ff6363;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.frissites-keret:hover {
+    background-color: #ff6363;
+    color: #1e1e1e;
+    transform: translateX(5px);
+}
+
+/* Árfolyam lista */
+.arfolyam-stilus {
+    padding: 0;
+    margin: 0;
+}
+
+.arfolyam-stilus li {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #252525;
+    border-radius: 8px;
+    color: #63ffbe;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer; /* Kattintható elem jelzése */
+}
+
+.arfolyam-stilus li.normal:hover {
+    background-color: #4acda3;
+    color: #1e1e1e;
+    transform: translateX(5px);
+}
+
+.arfolyam-stilus li.normal:hover .arfolyam-ertek {
+    color: #1e1e1e;
+}
+
+/* Megfordított állapot stílusa */
+.arfolyam-stilus li.reversed {
+    background-color: #ff6363;
+    color: #1e1e1e;
+}
+
+.arfolyam-stilus li.reversed:hover {
+    background-color: #ff8a8a;
+    transform: translateX(5px);
+}
+
+.arfolyam-stilus li.reversed .arfolyam-ertek {
+    color: #1e1e1e;
+}
+
+/* Zászló és valutakód közös konténer */
+.currency-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.arfolyam-stilus li img {
+    width: clamp(20px, 4vw, 30px);
+    height: auto;
+    margin-right: 4px;
+    border-radius: 3px;
+}
+
+/* Valutakód stílusa */
+.currency-code {
+    margin-right: 5px;
+}
+
+/* Árfolyam érték (szám) fehér színnel */
+.arfolyam-ertek {
+    color: #ffffff;
+}
+
+/* Görgetősáv testreszabása */
+#arfolyamok::-webkit-scrollbar {
+    width: 8px;
+}
+
+#arfolyamok::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+#arfolyamok::-webkit-scrollbar-thumb {
+    background: #63ffbe;
+    border-radius: 10px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+#arfolyamok::-webkit-scrollbar-thumb:hover {
+    background: #4acda3;
+}
+
+#arfolyamok {
+    scrollbar-width: thin;
+    scrollbar-color: #63ffbe #1e1e1e;
+}
+
+/* Reszponzív média lekérdezések */
+@media (max-width: 1200px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .perselyek-container {
+        width: 100%;
+    }
+
+    #arfolyamok {
+        max-height: 150px;
+        padding: 8px;
+    }
+
+    .arfolyam-stilus li {
+        padding: 6px 8px;
+        margin: 5px 0;
+    }
+
+    .arfolyam-stilus li img {
+        width: clamp(15px, 3vw, 20px);
+        margin-right: 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .nav-menu {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color: #1e1e1e;
+        z-index: 1000;
+    }
+
+    .main-content {
+        padding: 10px;
+        padding-bottom: 60px;
+    }
+
+    .persely-container {
+        gap: 10px;
+    }
+
+    .arfolyamok-cim {
+        font-size: 1rem;
+        margin-top: 3px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .frissites-keret {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+
+    .arfolyam-stilus li {
+        font-size: 0.9rem;
+        padding: 5px 8px;
+    }
+
+    .arfolyam-stilus li img {
+        width: clamp(12px, 3vw, 18px);
+        margin-right: 3px;
+    }
+
+    .arfolyam-stilus li .currency-code {
+        margin-right: 4px;
+    }
+
+    #arfolyamok {
+        max-height: 120px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .arfolyamok-cim {
+        font-size: 0.9rem;
+    }
+
+    .frissites-keret {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+    }
+
+    .arfolyam-stilus li {
+        font-size: 0.8rem;
+        padding: 4px 6px;
+    }
+
+    .arfolyam-stilus li img {
+        width: clamp(10px, 2.5vw, 15px);
+        margin-right: 2px;
+    }
+
+    .arfolyam-stilus li .currency-code {
+        margin-right: 3px;
+    }
+
+    #arfolyamok {
+        max-height: 100px;
+        padding: 4px;
+    }
+}
+
+/* Betöltési és hibaüzenetek stílusa */
+.betoltes, .hiba {
+    color: #63ffbe;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 8px 12px;
+    background-color: #252525;
+    border-radius: 8px;
+}
+
+.hiba {
+    color: #ff6b6b;
+}
+
+/* Frissítés gomb stílusa */
+#frissites-gomb {
+    display: block;
+    margin: 10px auto;
+    padding: 8px 16px;
+    background-color: #4acda3;
+    color: #1e1e1e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#frissites-gomb:hover {
+    background-color: #63ffbe;
+}
+
+#frissites-gomb:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+/* Újrapróbálkozási üzenet stílusa */
+.info {
+    color: #4acda3;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 8px 12px;
+    background-color: #252525;
+    border-radius: 8px;
+}

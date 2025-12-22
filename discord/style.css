@@ -1,0 +1,46 @@
+.main-content {
+    position: relative; /* A position: absolute a main-content-hez képest működik */
+    overflow: hidden; /* Megakadályozza a görgetősáv megjelenését */
+}
+
+.discord-banner {
+    display: block;
+    margin-bottom: 10px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.discord-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+    border: 3px solid #63ffbe;
+}
+
+.discord-navbanner {
+    position: absolute; /* Abszolút pozícionálás a main-content-hez képest */
+    top: 10px; /* Kis távolság a felső széltől */
+    left: 10px; /* Kis távolság a bal széltől */
+    display: block;
+    text-decoration: none;
+    transition: all 0.3s;
+    z-index: 10; /* Biztosítja, hogy a banner más elemek felett legyen */
+}
+
+.discord-navbanner img {
+    width: 300px; /* Fix szélesség, hogy kisebb legyen */
+    height: auto; /* Arányos magasság */
+    display: block;
+    border-radius: 5px;
+    border: 1px solid #1a1a1a;
+}
+
+.discord-banner:hover {
+    transform: scale(1.01);
+    opacity: 0.8;
+}
+
+.main-content {
+    overflow: hidden;
+}

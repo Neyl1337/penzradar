@@ -1,0 +1,516 @@
+body {
+    background-color: #121212;
+    color: white;
+    cursor: url("../../kepek/cursor.ico"), default !important;
+    font-family: Arial, sans-serif; /* Alapértelmezett betűtípus */
+    scrollbar-width: thin;
+    scrollbar-color: #63ffbe #1e1e1e;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #63ffbe;
+    border-radius: 10px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4acda3;
+}
+
+button, a, select, input {
+    cursor: url("../../kepek/cursor.ico"), default !important;
+}
+
+p {
+    font-size: 150%;
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem; /* Alapértelmezett betűméret */
+    padding: 10px 15px;
+    background-color: #2e2e2e;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link i {
+    font-size: 1.8rem;
+    min-width: 35px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.nav-link:hover {
+    background-color: #4acda3;
+    color: #1e1e1e;
+}
+
+.nav-link_kapcsolat:hover {
+    background-color: #FFBA00;
+    color: #1e1e1e;
+}
+
+.kapcsolat-link:hover {
+    background-color: #FFBA00;
+    color: #1e1e1e;
+}
+
+.nav-link .fa-lock {
+    color: #ff4444;
+    font-size: 1.3rem;
+    opacity: 1;
+}
+
+.kartya1 {
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 10px;
+}
+
+.kartya1 a {
+    color: #63ffbe;
+    text-decoration: none;
+}
+
+.kartya1 h3 {
+    color: #ff073a;
+}
+
+.oldalsav {
+    background-color: #1e1e1e;
+    min-height: 100vh;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    position: relative;
+    /* border-right: 2px solid #63ffbe; */
+    border-radius: 15px 0 0 15px;
+}
+
+.oldalsav h2 {
+    color: #63ffbe;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    text-transform: uppercase;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-weight: bold;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.oldalsav h2:after {
+    content: "v3.4"; /*VERZIÓSZÁM*/
+    color: #63ffbe;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-weight: bold;
+    font-size: 0.8rem;
+    position: relative;
+    top: 0.5em;
+    margin-left: 5px;
+}
+
+.oldalsav h2:hover {
+    color: #63ffbe; /* Hover hatást kikapcsolva */
+}
+
+.oldalsav a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.oldalsav a:hover {
+    color: #ffffff;
+}
+
+/* Collapsed sidebar styles */
+.oldalsav.hidden {
+    transform: translateX(-70%);
+}
+
+.oldalsav.hidden .nav-link {
+    justify-content: center;
+    background-color: #2e2e2e;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.oldalsav.hidden .nav-link span {
+    display: none;
+}
+
+.oldalsav.hidden .nav-link i {
+    margin: 0;
+    color: #ffffff;
+}
+
+.oldalsav.hidden .nav-link:hover {
+    background-color: #4acda3;
+    color: #1e1e1e;
+}
+
+.oldalsav.hidden .logo {
+    display: block !important;
+    margin: 0 10px 10px 0;
+    text-align: right;
+    max-width: 80px;
+    height: auto;
+}
+
+.oldalsav.hidden h2 {
+    display: none;
+}
+
+.oldalsav.hidden #arfolyamok {
+    display: none;
+}
+
+.oldalsav.hidden #kamatSzamitasForm {
+    display: none;
+}
+
+.oldalsav.hidden #frissites-ido {
+    display: none !important;
+}
+
+.kartya {
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+.kartya b {
+    color: #63ffbe;
+}
+
+.dropdown-menu {
+    background-color: #63ffbe !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    padding: 0 !important;
+    margin-top: -1px !important;
+    position: absolute !important;
+    min-width: 150px !important;
+}
+
+.dropdown-item {
+    color: #1e1e1e !important;
+    padding: 10px 20px !important;
+    font-weight: normal !important;
+    background-color: #63ffbe !important;
+    border: none !important; /* Alapértelmezett border eltávolítva */
+    text-align: center !important;
+    width: 100 !important;
+    border-radius: 60px !important;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Csak háttér és szín váltás */
+}
+
+.dropdown-item:hover {
+    background-color: #4acda3 !important;
+    color: #1e1e1e !important;
+    border: none !important; /* Hover esetén is nincs border */
+    border-radius: 60px !important;
+}
+
+.btn-secondary {
+    background-color: #1e1e1e;
+    border-color: #1e1e1e;
+}
+
+.btn-secondary:hover {
+    background-color: #63ffbe;
+    border-color: #63ffbe;
+    color: #1e1e1e;
+}
+
+#role, #balance {
+    color: #63ffbe;
+    font-size: 1rem;
+}
+
+a, button, span {
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+canvas {
+    background: #1E1E1E;
+    border-radius: 8px;
+    box-shadow: 0 0 15px #63ffbe;
+}
+
+#adminpanel {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-right: auto;
+}
+
+#supportpanel {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-right: auto;
+}
+
+#supportszam {
+    color: #FFBA00;
+    border: #FFBA00 4px solid;
+    border-radius: 20px;
+    margin-left: 10px; 
+    padding: 2px 6px;
+    align-items: right; 
+    justify-content: right; 
+    font-size: 1rem;
+}
+
+#felhszam {
+    color: #63ffbe;
+    border: #63ffbe 4px solid;
+    border-radius: 20px;
+    margin-left: 10px; 
+    padding: 2px 6px;
+    align-items: right; 
+    justify-content: right; 
+    font-size: 1rem;
+}
+
+@media only screen and (max-width: 1750px) {
+    #adminpanel {
+        font-size: 1rem;
+    }
+    
+    #supportpanel {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #adminpanel {
+        font-size: 1.5rem;
+    }
+
+    #supportpanel {
+        font-size: 1.5rem;
+    }
+}
+
+#mainContent {
+    opacity: 1;
+}
+
+/* Egyedi stílus a bejelentkezés/kijelentkezés gombhoz */
+#felhasznaloDropdownGomb {
+    background-color: #63ffbe !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 5px 15px !important;
+    color: #1e1e1e !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    text-align: center !important;
+}
+
+#felhasznaloDropdownGomb:hover {
+    background-color: #4acda3 !important;
+    color: #1e1e1e !important;
+}
+
+#felhasznaloDropdownGomb i {
+    margin-right: 5px !important;
+}
+
+/* Biztosítja, hogy a legördülő a gomb szélességéhez igazodjon */
+.dropdown-menu[data-bs-popper] {
+    left: auto !important;
+    right: 0 !important;
+    min-width: 150px !important;
+}
+
+.letiltott-link {
+    opacity: 0.7;
+    pointer-events: none;
+    color: #a9a9a9 !important;
+}
+
+.felattetszo {
+    opacity: 0.5;
+}
+
+.logo {
+    max-width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    pointer-events: none;
+}
+
+/* Toggle Button Styles */
+.toggle-nav-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background-color: #1e1e1e;
+    color: white;
+    border: 2px solid #63ffbe;
+    border-radius: 15px;
+    padding: 10px;
+    cursor: url("../../kepek/cursor.ico"), default !important;
+    transition: left 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.oldalsav.hidden ~ .toggle-nav-btn {
+    left: calc(30% - 30px);
+}
+
+.toggle-nav-btn i {
+    transition: transform 0.3s ease;
+    color: #63ffbe;
+    font-size: 1.5rem;
+}
+
+.oldalsav.hidden ~ .toggle-nav-btn i {
+    transform: rotate(180deg);
+}
+
+.toggle-nav-btn:hover {
+    background-color: #63ffbe;
+    color: #1e1e1e;
+}
+
+.nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    display: flex;
+    align-items: center;
+}
+
+.kapcsolat-link {
+    font-size: 1.4rem;
+    padding: 5px 15px;
+}
+
+.lakat-jobb {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media only screen and (max-width: 1800px) {
+    .oldalsav h2 {
+        font-size: 1.0rem;
+    }
+
+    .oldalsav h2:after {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1570px) {
+    .oldalsav h2 {
+        font-size: 1.0rem;
+    }
+
+    .link-szoveg {
+        font-size: 1.0rem;
+    }
+    
+    .oldalsav h2:after {
+        display: none;
+    }
+}
+
+
+@media only screen and (max-width: 1344px) {
+    .link-szoveg {
+        font-size: 0.8rem;
+    }
+}
+
+@media only screen and (max-width: 1212px) {
+    .nav-link i {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1135px) {
+    .oldalsav h2 {
+        font-size: 0.7rem;
+    }
+
+    .oldalsav h2:after {
+        display: none;
+    }
+
+    .nav-link i {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1165px) {
+    .link-szoveg {
+        font-size: 15px;
+    }
+}
+
+  @media only screen and (max-width: 1320px) {
+    .lakat-jobb {
+        display: none;
+    }
+  }
+
+  @media only screen and (max-width: 767px) {
+    .oldalsav h2 {
+        font-size: 1.7rem;
+    }
+
+    .link-szoveg {
+        font-size: 22.4px;
+    }
+
+    .lakat-jobb {
+        display: block;
+    }
+
+    .oldalsav h2:after {
+        display: block;
+    }
+
+    .nav-link i {
+        display: block;
+    }
+  }

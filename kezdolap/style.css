@@ -1,0 +1,336 @@
+#introModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+    pointer-events: none;
+}
+
+#introModal.fade-out {
+    opacity: 0;
+}
+
+#introModal video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+}
+
+.grafikon-container {
+    width: 100%;
+    margin: auto;
+    padding: 10px;
+}
+
+.grafikon-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.het-tartalom {
+    padding: 20px;
+    display: inline-block;
+    background-color: #1e1e1e73;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #63ffbe;
+    border-color: #63ffbe;
+    border-style: solid;
+}
+.het-tartalma {
+    margin: 10px 0;
+}
+.ma {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.zold-nap {
+    color: #63ffbe;
+}
+
+#aktualis-ido {
+    font-size: 1.3em;
+}
+
+#aktualishet{
+    font-weight: bold;
+    color: #63ffbe;
+}
+
+.grafikon-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.custom-modal {
+    background-color: #1e1e1e36;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #63ffbe;
+    box-shadow: 0 0 15px #63ffbe;
+    border-radius: 10px;
+}
+
+.custom-modal .modal-header {
+    background-color: #63ffbe;
+    color: #121212;
+    border-bottom: 1px solid #55daa2;
+    display: block;
+    padding: 10px;
+}
+
+.custom-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.custom-modal .btn-close {
+    filter: invert(1);
+}
+
+.custom-modal .modal-body {
+    font-size: 1.2rem;
+    padding: 20px;
+    text-align: center;
+}
+
+.custom-modal .modal-footer {
+    border-top: 1px solid #63ffbe;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal .btn-secondary,
+.custom-modal .btn-primary,
+.custom-modal .btn-danger {
+    min-width: 100px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: url("../kepek/cursor.ico"), default;
+    text-align: center;
+}
+
+.custom-modal .btn-secondary {
+    background-color: #444;
+    border: none;
+    color: white;
+}
+
+.custom-modal .btn-secondary:hover {
+    background-color: #555;
+    color: #ffffff;
+}
+
+.custom-modal .btn-primary {
+    background-color: #63ffbe;
+    border: none;
+    color: #121212;
+}
+
+.custom-modal .btn-primary:hover {
+    background-color: #55daa2;
+    color: #ffffff;
+}
+
+.custom-modal .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #1e1e1e;
+}
+
+.custom-modal .btn-danger:hover {
+    background-color: #c82333;
+    color: #ffffff;
+}
+.btn-close {
+    display: none;
+}
+
+.nav-tabs { 
+    justify-content: center; 
+    margin-bottom: 30px; 
+    border-bottom: white; 
+    border-radius: 20px;
+    gap: 10px;
+}
+
+.nav.nav-tabs {
+    gap: 10px;
+}
+
+.nav-link {
+    border-radius: 10px;
+}
+
+.nav-link:hover { 
+    color: #ffffff;
+}
+.nav-link.active { 
+    background: linear-gradient(45deg, #63ffbe, #4acda3); 
+    color: #ffffff; 
+    border-radius: 20px;
+}
+
+.kartya { 
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border-radius: 10px; 
+    padding: 15px; 
+    color: white; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    border: 1px solid #63ffbe; 
+    min-height: 120px; 
+}
+.kartya:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5); 
+}
+.kartya b { 
+    font-size: 1.5rem; 
+    font-weight: 600; 
+}
+.kartya .atlag { 
+    font-size: 1rem; 
+    color: #ffffff; 
+    margin-top: 5px; 
+}
+.atlag-container { 
+    display: flex; 
+    justify-content: center; 
+    gap: 20px; 
+    flex-wrap: wrap; 
+    margin-top: 20px; 
+}
+.atlag-container .kartya { 
+    flex: 1; 
+    min-width: 150px;
+}
+.grafikon-container { 
+    width: 100%; 
+    margin-top: 20px; 
+    background: #1e1e1e; 
+    border-radius: 15px; 
+    padding: 20px; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); 
+    border: 1px solid #63ffbe;
+    height: 60vh; 
+    max-width: 90vw; 
+}
+.btn-primary2 { 
+    background: linear-gradient(45deg, #63ffbe, #4acda3); 
+    border: none; 
+    color: #1e1e1e; 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    transition: all 0.3s ease; 
+    font-size: 0.9rem; 
+}
+.btn-primary2:hover { 
+    background: linear-gradient(45deg, #4acda3, #63ffbe); 
+    transform: scale(1.05); 
+}
+.chart-title { 
+    color: #63ffbe; 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+}
+.chart-subtitle { 
+    color: #ffffff; 
+    font-weight: 400; 
+}
+.period-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+
+@keyframes villogas {
+    0% { background-color: #ff3333; }
+    50% { background-color: #ffff99; }
+    100% { background-color: #ff3333; }
+}
+
+.villogo-uzenet {
+    color: #ff073a;
+    animation: szoveg-villogas 0.3s infinite;
+}
+
+@keyframes szoveg-villogas {
+    0% { color: #ff073a; }
+    50% { color: rgb(255, 255, 255); }
+    100% { color: #ff073a; }
+}
+
+.ad-short {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    border: 1px solid #63ffbe;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.ad-short::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(99,255,190,0.1) 0%, rgba(99,255,190,0) 70%);
+    pointer-events: none;
+}
+
+.ad-short h3 {
+    font-size: 1.5rem;
+    color: #63ffbe;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.ad-short p {
+    font-size: 1.1rem;
+    color: #D3D3D3;
+    margin-bottom: 15px;
+}
+
+.ad-short .btn-primary2 {
+    background-color: #63ffbe;
+    color: #121212;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.ad-short .btn-primary2:hover {
+    background-color: #55daa2;
+    color: #ffffff;
+    transform: scale(1.05);
+}

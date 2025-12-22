@@ -1,0 +1,280 @@
+/* Alapértelmezett stílusok az oldalhoz */
+body {
+    background-color: #121212;
+    color: white;
+    cursor: url("../kepek/cursor.ico"), default;
+}
+
+p {
+    font-size: 150%;
+    margin: 0;
+}
+
+/* Persely kártya stílusa (kisebb méret, modernebb dizájn) */
+.piggy-bank-card {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.piggy-bank-card::before {
+    content: "\f4c0";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 30px;
+    color: #63ffbe;
+    opacity: 0.2;
+}
+
+.piggy-bank-title {
+    color: #63ffbe;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.piggy-bank-body {
+    padding: 15px;
+    background: rgba(30, 30, 30, 0.9);
+    border-radius: 10px;
+    border: 1px solid #63ffbe;
+}
+
+/* Bankkártya-szerű persely kártya */
+.piggy-bank-mini-card {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e); 
+    border: 1px solid #63ffbe;
+    border-radius: 10px;
+    padding: 15px;
+    position: relative;
+    overflow: hidden;
+    height: 160px;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.piggy-bank-mini-card:hover {
+    transform: translateY(-5px);
+}
+
+.piggy-bank-mini-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 20%, rgba(99, 255, 190, 0.2), transparent);
+    opacity: 0.5;
+    pointer-events: none; /* Biztosítjuk, hogy a ::before ne fogja el a kattintásokat */
+}
+
+.piggy-bank-mini-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+}
+
+.piggy-bank-mini-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.piggy-bank-mini-center {
+    flex: 1;
+    text-align: center;
+}
+
+.piggy-bank-mini-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.piggy-bank-mini-title {
+    color: #63ffbe;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+    z-index: 1;
+}
+
+.piggy-bank-mini-detail {
+    color: #b0b0b0;
+    font-size: 0.85rem;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 2px 0;
+    z-index: 1;
+}
+
+/* Törlés gomb stílusa a persely kártyák alatt */
+.piggy-bank-mini-btn {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    border: 2px solid #b80000;
+    color: white;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 0.75rem;
+    width: 100%;
+    transition: background 0.3s ease;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2; /* Biztosítjuk, hogy a gomb a ::before felett legyen */
+}
+
+.piggy-bank-mini-btn:hover {
+    background: linear-gradient(135deg, #cc0000 0%, #6d0000 100%);
+}
+
+/* Egyéb meglévő stílusok */
+.piggy-bank-selected-balance {
+    color: #63ffbe;
+    font-size: 1.3rem;
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px;
+    background-color: #121212;
+    border-radius: 8px;
+}
+
+.piggy-bank-balance {
+    color: #63ffbe;
+    font-size: 1.3rem;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #121212;
+    border-radius: 8px;
+}
+
+.piggy-bank-last-action {
+    color: #63ffbe;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    background-color: #121212;
+    border-radius: 8px;
+}
+
+.piggy-bank-empty {
+    color: #63ffbe;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+/* Űrlapok és beviteli mezők stílusa */
+.form-label {
+    color: white;
+    font-size: 1rem;
+}
+
+.form-select, .form-control {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+    color: white !important;
+    border: 2px solid #63ffbe;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #4acda3;
+    box-shadow: 0 0 8px #63ffbe;
+    outline: none;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+}
+
+/* Legördülő menü opcióinak stílusa */
+.form-select option {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+/* Gombok stílusa */
+.piggy-bank-btn {
+    background: linear-gradient(135deg, #63ffbe 0%, #4acda3 100%);
+    border: none;
+    color: #1e1e1e;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-top: 8px;
+    transition: background 0.3s ease;
+    text-transform: uppercase;
+}
+
+.piggy-bank-btn:hover {
+    background: linear-gradient(135deg, #4acda3 0%, #63ffbe 100%);
+}
+
+/* Reszponzivitás */
+@media (max-width: 768px) {
+    .piggy-bank-card {
+        padding: 10px;
+    }
+
+    .piggy-bank-title {
+        font-size: 1.2rem;
+    }
+
+    .piggy-bank-mini-card {
+        height: 140px;
+    }
+
+    .piggy-bank-mini-content {
+        height: 70px;
+    }
+
+    .piggy-bank-mini-title {
+        font-size: 0.9rem;
+    }
+
+    .piggy-bank-mini-detail {
+        font-size: 0.7rem;
+    }
+
+    .piggy-bank-btn {
+        font-size: 0.8rem;
+        padding: 6px 15px;
+    }
+
+    .piggy-bank-mini-btn {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+
+    .piggy-bank-last-action {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+}
+
+/* Egyedi kurzor */
+button, a, select, input {
+    cursor: url("../kepek/cursor.ico"), default;
+}
