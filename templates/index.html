@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Káosz-Kampány – Abszurdvár</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌀 Káosz-Kampány: Abszurdvár Polgármesteri Harca 🌀</h1>
+        <p>Csatlakozz egy szobához, és kezdjük a bolondok harcát!</p>
+
+        <h2>Új szoba létrehozása</h2>
+        <input type="password" id="new_password" placeholder="Jelszó (opcionális)">
+        <button onclick="createRoom()">Szoba létrehozása</button>
+        <div id="created_room"></div>
+
+        <h2>Csatlakozás meglévő szobához</h2>
+        <input type="text" id="username" placeholder="Polgármester-jelölt neve" required>
+        <input type="text" id="room_id" placeholder="Szoba ID (pl. 1234)" required>
+        <input type="password" id="password" placeholder="Jelszó (ha van)">
+        <button onclick="joinRoom()">Belépés Abszurdvárba</button>
+    </div>
+
+    <script>
+        function createRoom() {
+            const password = document.getElementById('new_password').value;
+            fetch('/create_room', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `password=${encodeURIComponent(password)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('created_room').innerHTML = `
+                    <strong>Létrehozva!</strong><br>
+                    Szoba ID: <big>${data.room_id}</big><br>
+                    Link: <a href="/room/${data.room_id}" target="_blank">http://localhost:5000/room/${data.room_id}</a>
+                `;
+            });
+        }
+
+        function joinRoom() {
+            const username = document.getElementById('username').value.trim();
+            const room = document.getElementById('room_id').value.trim();
+            const password = document.getElementById('password').value;
+            if (!username || !room) {
+                alert("Töltsd ki a nevet és a szoba ID-t!");
+                return;
+            }
+            window.location.href = `/room/${room}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        }
+    </script>
+</body>
+</html>

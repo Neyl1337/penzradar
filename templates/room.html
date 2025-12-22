@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Abszurdvár – Szoba {{ room_id }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>🌀 Abszurdvár – Szoba {{ room_id }} 🌀</h1>
+
+    <div id="players">Játékosok: <span id="player_list"></span></div>
+
+    <div id="game_area">
+        <div id="phase1" class="phase hidden">
+            <h2>1. Fázis: Választási Ígéretek</h2>
+            <p id="problem"></p>
+            <p><em>Twist:</em> <span id="twist"></span></p>
+            <p>Írd le az abszurd ígéreted a chatben!</p>
+        </div>
+
+        <div id="phase2" class="phase hidden">
+            <h2>2. Fázis: Közösségi Képfaragó</h2>
+            <canvas id="collage_canvas" width="800" height="600"></canvas>
+            <br>
+            <input type="text" id="caption_input" placeholder="Írj feliratot a képre!">
+            <button onclick="addCaption()">Hozzáadás</button>
+            <button onclick="pressChaos()">🌀 KÁOSZ GOMB</button>
+        </div>
+
+        <div id="phase3" class="phase hidden">
+            <h2>3. Fázis: Botrány-Híradó</h2>
+            <h3 id="scandal"></h3>
+            <p>Védekezz a chatben abszurd logikával!</p>
+        </div>
+
+        <div id="moderator_controls">
+            <button onclick="startPhase(1)">1. Fázis indítása</button>
+            <button onclick="startPhase(2)">2. Fázis indítása</button>
+            <button onclick="startPhase(3)">3. Fázis indítása</button>
+            <button onclick="endGame()" style="background:red;color:white;">Játék vége – Krónika!</button>
+        </div>
+    </div>
+
+    <div id="chat_area">
+        <div id="messages"></div>
+        <input type="text" id="chat_input" placeholder="Írj ide... (Enter)" onkeypress="if(event.key==='Enter') sendChat()">
+        <button onclick="sendChat()">Küldés</button>
+    </div>
+
+    <div id="chronicle" class="hidden"></div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username') || prompt("Mi a neved, polgármesterjelölt?");
+        const room = "{{ room_id }}";
+        const password = urlParams.get('password') || '';
+
+        if (!username) location.href = '/';
+
+        const socket = io();
+        socket.emit('join', {room, username, password});
+
+        socket.on('error', data => alert(data.msg));
+        socket.on('joined', data => {
+            document.getElementById('player_list').innerHTML = data.players.join(', ');
+            data.logs.forEach(log => addMessage(log));
+        });
+    </script>
+</body>
+</html>

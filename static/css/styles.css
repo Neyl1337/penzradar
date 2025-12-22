@@ -1,0 +1,59 @@
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(to bottom, #ffeb3b, #4caf50);
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+.container { max-width: 800px; margin: 0 auto; text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.3); }
+
+h1 { color: #ff5722; text-shadow: 3px 3px #000; }
+
+#collage_canvas {
+    border: 5px dashed #ff9800;
+    border-radius: 15px;
+    box-shadow: 0 0 30px #ffeb3b;
+    background: white;
+}
+
+#chat_area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    color: white;
+}
+
+#messages {
+    height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+.hidden { display: none; }
+
+button {
+    background: #ff5722;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover { background: #f50057; transform: scale(1.1); }
+
+#chronicle {
+    background: white;
+    padding: 30px;
+    border: 5px solid gold;
+    border-radius: 20px;
+    margin: 20px;
+}
